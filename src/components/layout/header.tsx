@@ -1,4 +1,6 @@
-import { Droplets, Menu, Stethoscope, MapPin, Newspaper } from 'lucide-react';
+'use client';
+
+import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -8,8 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import SettingsSheet from '../settings-sheet';
+import { useLanguage } from '../language-provider';
 
 const Header: FC = () => {
+  const { t } = useLanguage();
+
   return (
     <header className="absolute top-0 left-0 w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,10 +25,10 @@ const Header: FC = () => {
               <Droplets className="h-6 w-6 text-primary-foreground" />
             </div>
             <span className="text-xl md:text-2xl font-bold text-foreground">
-              Jivaan Suraksha
+              {t('appName')}
             </span>
           </Link>
-          <nav>
+          <nav className='flex items-center gap-2'>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -34,23 +40,31 @@ const Header: FC = () => {
                 <DropdownMenuItem asChild>
                   <Link href="/symptom-checker">
                     <Stethoscope className="mr-2 h-4 w-4" />
-                    <span>Symptom Checker</span>
+                    <span>{t('symptomChecker')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/nearby-clinics">
                     <MapPin className="mr-2 h-4 w-4" />
-                    <span>Nearby Clinics</span>
+                    <span>{t('nearbyClinics')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/news">
                     <Newspaper className="mr-2 h-4 w-4" />
-                    <span>Medical News</span>
+                    <span>{t('medicalNews')}</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <SettingsSheet>
+                <Button variant="outline" size="icon">
+                    <Settings className="h-6 w-6" />
+                    <span className="sr-only">{t('settings')}</span>
+                </Button>
+            </SettingsSheet>
+
           </nav>
         </div>
       </div>

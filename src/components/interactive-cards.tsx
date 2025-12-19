@@ -4,6 +4,7 @@ import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Stethoscope, MapPin, Newspaper } from 'lucide-react';
+import { useLanguage } from './language-provider';
 
 const InteractiveCard = ({
   href,
@@ -67,28 +68,29 @@ const InteractiveCard = ({
 };
 
 export default function InteractiveCards() {
+  const { t } = useLanguage();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
       <InteractiveCard
         href="/symptom-checker"
         icon={Stethoscope}
-        title="AI Symptom Checker"
-        description="Describe your symptoms and get instant AI-powered insights into possible conditions related to water contamination."
-        buttonText="Start Checking"
+        title={t('symptomChecker')}
+        description={t('symptomCheckerDescription')}
+        buttonText={t('startChecking')}
       />
       <InteractiveCard
         href="/nearby-clinics"
         icon={MapPin}
-        title="Find Nearby Clinics"
-        description="Use your location to find the nearest clinics and hospitals for professional medical assistance."
-        buttonText="Find Clinics"
+        title={t('nearbyClinics')}
+        description={t('nearbyClinicsDescription')}
+        buttonText={t('findClinics')}
       />
       <InteractiveCard
         href="/news"
         icon={Newspaper}
-        title="Medical News"
-        description="Stay informed with the latest articles and updates on water-borne diseases and public health."
-        buttonText="Read News"
+        title={t('medicalNews')}
+        description={t('medicalNewsDescription')}
+        buttonText={t('readNews')}
       />
     </div>
   );

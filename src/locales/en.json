@@ -1,0 +1,20 @@
+{
+    "appName": "Jivaan Suraksha",
+    "welcomeMessage": "Welcome to Jivaan Suraksha",
+    "appDescription": "Your AI-powered guide to understanding symptoms of water-borne diseases and finding help near you.",
+    "symptomChecker": "AI Symptom Checker",
+    "symptomCheckerDescription": "Describe your symptoms and get instant AI-powered insights into possible conditions related to water contamination.",
+    "startChecking": "Start Checking",
+    "nearbyClinics": "Find Nearby Clinics",
+    "nearbyClinicsDescription": "Use your location to find the nearest clinics and hospitals for professional medical assistance.",
+    "findClinics": "Find Clinics",
+    "medicalNews": "Medical News",
+    "medicalNewsDescription": "Stay informed with the latest articles and updates on water-borne diseases and public health.",
+    "readNews": "Read News",
+    "settings": "Settings",
+    "settingsDescription": "Manage your theme and language preferences.",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language"
+}
