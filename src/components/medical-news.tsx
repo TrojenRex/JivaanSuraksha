@@ -71,8 +71,9 @@ export default function MedicalNews() {
                   <Image
                     src={article.urlToImage}
                     alt={article.title}
-                    layout="fill"
-                    objectFit="cover"
+                    width={600}
+                    height={400}
+                    className="object-cover w-full h-full"
                     data-ai-hint="medical news"
                   />
                 </div>
