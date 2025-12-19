@@ -20,36 +20,37 @@ type Clinic = {
   distance: string;
 };
 
-// This is mock data. In a real application, this would come from an API.
-const mockClinics: Clinic[] = [
-  {
-    id: '1',
-    name: 'City General Hospital',
-    address: '123 Health St, Medville, 12345',
-    phone: '(555) 123-4567',
-    distance: '1.2 miles',
-  },
-  {
-    id: '2',
-    name: 'Community Care Clinic',
-    address: '456 Wellness Ave, Medville, 12345',
-    phone: '(555) 987-6543',
-    distance: '2.5 miles',
-  },
-  {
-    id: '3',
-    name: 'Riverdale Urgent Care',
-    address: '789 Cure Blvd, Medville, 12345',
-    phone: '(555) 555-1212',
-    distance: '3.1 miles',
-  },
-];
-
 export default function NearbyClinics() {
   const [location, setLocation] = useState<GeolocationPosition['coords'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clinics, setClinics] = useState<Clinic[]>([]);
+
+  const fetchClinics = async (coords: GeolocationPosition['coords']) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/places?lat=${coords.latitude}&lon=${coords.longitude}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch clinics.');
+      }
+      const data: Clinic[] = await response.json();
+      if (data.length === 0) {
+        setError("No clinics or hospitals found within a 5km radius. Please try refreshing if you believe this is an error.")
+      }
+      setClinics(data);
+    } catch (err: any) {
+      if (err.message.includes('API configuration error')) {
+        setError('This feature is not configured correctly. The developer needs to provide a Google Maps API Key.');
+      } else {
+        setError(err.message);
+      }
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getLocation = () => {
     setLoading(true);
@@ -60,12 +61,7 @@ export default function NearbyClinics() {
       navigator.geolocation.getCurrentPosition(
         (position: GeolocationPosition) => {
           setLocation(position.coords);
-          // In a real app, you would use the location to fetch data from an API.
-          // For now, we'll just use the mock data.
-          setTimeout(() => {
-            setClinics(mockClinics);
-            setLoading(false);
-          }, 1500); // Simulate network delay
+          fetchClinics(position.coords);
         },
         (error) => {
           setError(`Error getting location: ${error.message}`);
@@ -84,7 +80,7 @@ export default function NearbyClinics() {
         <CardTitle className="text-2xl font-bold text-center">Find Nearby Clinics</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4">
-        {!location && !loading && (
+        {!location && !loading && clinics.length === 0 && (
           <>
             <p className="text-center text-muted-foreground">
               Click the button to use your current location to find nearby clinics and hospitals.
@@ -103,12 +99,12 @@ export default function NearbyClinics() {
           </div>
         )}
 
-        {error && <p className="text-destructive text-sm">{error}</p>}
+        {error && <p className="text-destructive text-sm text-center">{error}</p>}
 
-        {location && clinics.length > 0 && (
+        {clinics.length > 0 && (
           <div className="w-full space-y-4">
             <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
               {clinics.map((clinic) => (
                 <div key={clinic.id} className="p-4 bg-muted/50 rounded-lg border">
                   <div className="flex items-start justify-between">
@@ -119,14 +115,16 @@ export default function NearbyClinics() {
                       </h4>
                       <p className="text-sm text-muted-foreground pl-7">{clinic.address}</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary">{clinic.distance}</span>
+                    <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
                   </div>
-                  <div className="flex items-center gap-2 pt-2 pl-7">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <a href={`tel:${clinic.phone}`} className="text-sm text-primary hover:underline">
-                      {clinic.phone}
-                    </a>
-                  </div>
+                   {clinic.phone !== 'N/A' && (
+                    <div className="flex items-center gap-2 pt-2 pl-7">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <a href={`tel:${clinic.phone}`} className="text-sm text-primary hover:underline">
+                        {clinic.phone}
+                        </a>
+                    </div>
+                   )}
                 </div>
               ))}
             </div>
