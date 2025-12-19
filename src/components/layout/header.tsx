@@ -22,21 +22,7 @@ const Header: FC = () => {
               Jivaan Suraksha
             </span>
           </Link>
-          <nav className="hidden md:flex">
-            <Button asChild variant="outline">
-              <Link href="/symptom-checker" className="flex items-center gap-2">
-                <Stethoscope className="h-4 w-4" />
-                <span>Symptom Checker</span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="ml-2">
-              <Link href="/nearby-clinics" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span>Nearby Clinics</span>
-              </Link>
-            </Button>
-          </nav>
-          <div className="md:hidden">
+          <nav>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -59,7 +45,7 @@ const Header: FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </nav>
         </div>
       </div>
     </header>
