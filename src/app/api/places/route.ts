@@ -59,7 +59,9 @@ export async function GET(request: NextRequest) {
       out center;
     `;
     const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
-    const placesResponse = await fetch(overpassUrl);
+    const placesResponse = await fetch(overpassUrl, {
+        headers: { 'User-Agent': 'JivaanSuraksha/1.0 (Firebase Studio App)' } 
+    });
     
     if (!placesResponse.ok) {
         const errorText = await placesResponse.text();
