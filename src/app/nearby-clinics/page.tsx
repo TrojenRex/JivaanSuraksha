@@ -7,7 +7,7 @@ export default function NearbyClinicsPage() {
     <div className="relative flex flex-col min-h-screen w-full">
       <WaveBackground />
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 pt-24 md:pt-28">
         <NearbyClinics />
       </main>
     </div>
