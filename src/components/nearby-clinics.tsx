@@ -144,6 +144,7 @@ export default function NearbyClinics() {
       setLoading(true);
       setError(null);
       setApiResponse(null);
+      setLocationInput(''); // Clear previous input
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -252,7 +253,7 @@ export default function NearbyClinics() {
             ) : (
               <p className="text-destructive text-sm text-center">{error}</p>
             )}
-             <Button onClick={() => { setError(null); setApiResponse(null); }} variant="outline" className="w-full mt-4">
+             <Button onClick={() => { setError(null); setApiResponse(null); setLocationInput(''); }} variant="outline" className="w-full mt-4">
                 Try Again
             </Button>
           </div>
