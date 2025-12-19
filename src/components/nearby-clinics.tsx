@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Hospital, Search, LocateFixed, Map } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
-import { Input } from './ui/input';
 import { useLanguage } from './language-provider';
 import Link from 'next/link';
 
@@ -25,87 +24,26 @@ type ApiResponse = {
   clinics: Clinic[];
 }
 
-type AutocompletePrediction = {
-  description: string;
-  place_id: string;
-};
-
 export default function NearbyClinics() {
   const { t } = useLanguage();
-  const [locationInput, setLocationInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [isApiError, setIsApiError] = useState(false);
-  const [suggestions, setSuggestions] = useState<AutocompletePrediction[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [wrapperRef]);
-
-  useEffect(() => {
-    if (locationInput.length > 2) {
-      const fetchSuggestions = async () => {
-        try {
-          const response = await fetch(`/api/autocomplete?input=${encodeURIComponent(locationInput)}`);
-          if (response.ok) {
-            const data = await response.json();
-            setSuggestions(data.suggestions || []);
-            setShowSuggestions(true);
-          } else {
-            setSuggestions([]);
-          }
-        } catch (error) {
-          console.error('Failed to fetch suggestions', error);
-          setSuggestions([]);
-        }
-      };
-
-      const handler = setTimeout(() => {
-        fetchSuggestions();
-      }, 300); // Debounce API calls
-
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [locationInput]);
-
-
-  const findClinics = async (query?: string) => {
-    const finalQuery = query || locationInput;
-    if (!finalQuery.trim()) {
-        setError("Please enter a location, such as a city, address, or pin code.");
-        return;
-    }
+  const findClinicsByCoords = async (latitude: number, longitude: number) => {
     setLoading(true);
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
-    setShowSuggestions(false);
-    setLocationInput(finalQuery);
 
     try {
-      const response = await fetch(`/api/places?location=${encodeURIComponent(finalQuery)}`);
+      const response = await fetch(`/api/places?location=${latitude},${longitude}`);
       
       if (!response.ok) {
         const errorText = await response.text();
         let errorMessage = errorText;
         try {
-          // Check if the error is JSON, if so, use its message
           const errorJson = JSON.parse(errorText);
           if (errorJson.error) {
             errorMessage = errorJson.error;
@@ -119,12 +57,12 @@ export default function NearbyClinics() {
       const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {
-        setError(`No clinics or hospitals found near "${finalQuery}". Please try a different or more specific location.`)
+        setError(`No clinics or hospitals found near your location. Please try again from a different area.`)
       }
       setApiResponse(data);
     } catch (err: any) {
        if (err.message.includes('API configuration error') || err.message.includes('request was denied')) {
-        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" and "Geocoding API" are enabled in the Google Cloud Console.');
+        setError('This feature is not configured correctly. The developer needs to ensure the API Key is valid and that the necessary APIs are enabled in the Cloud Console.');
         setIsApiError(true);
       } else {
         setError(err.message);
@@ -135,26 +73,21 @@ export default function NearbyClinics() {
     }
   };
   
-  const handleSuggestionClick = (suggestion: AutocompletePrediction) => {
-    findClinics(suggestion.description);
-  };
-  
-  const handleUseMyLocation = () => {
+  const handleFindClinicsClick = () => {
     if (navigator.geolocation) {
       setLoading(true);
       setError(null);
       setApiResponse(null);
-      setLocationInput(''); // Clear previous input
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          findClinics(`${latitude},${longitude}`);
+          findClinicsByCoords(latitude, longitude);
         },
         (error) => {
           setLoading(false);
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              setError("You denied the request for Geolocation. Please enable location services in your browser settings.");
+              setError("You denied the request for Geolocation. Please enable location services in your browser settings to use this feature.");
               break;
             case error.POSITION_UNAVAILABLE:
               setError("Location information is unavailable.");
@@ -182,55 +115,17 @@ export default function NearbyClinics() {
         <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
-        {!loading && clinics.length === 0 && !error && (
-          <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4">
-            <Button onClick={handleUseMyLocation} className="w-full" disabled={loading}>
-              <LocateFixed className="mr-2 h-4 w-4" />
-              {t('useMyLocation')}
-            </Button>
-            <div className="flex items-center w-full">
-                <div className="flex-grow border-t border-gray-300"></div>
-                <span className="flex-shrink mx-4 text-muted-foreground text-sm">OR</span>
-                <div className="flex-grow border-t border-gray-300"></div>
+        {!apiResponse && !loading && !error && (
+            <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4 text-center">
+                 <LocateFixed className="h-16 w-16 text-primary" />
+                <p className="text-muted-foreground">
+                    Click the button below to allow location access and find medical facilities near you.
+                </p>
+                <Button onClick={handleFindClinicsClick} className="w-full" disabled={loading}>
+                    <Search className="mr-2 h-4 w-4" />
+                    {t('findClinics')}
+                </Button>
             </div>
-             <p className="text-center text-muted-foreground">
-              {t('enterLocationPrompt')}
-            </p>
-             <div className="relative w-full" ref={wrapperRef}>
-                <div className="flex w-full items-center space-x-2">
-                    <Input 
-                        type="text" 
-                        placeholder={t('locationPlaceholder')}
-                        value={locationInput}
-                        onChange={(e) => setLocationInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              findClinics();
-                            }
-                        }}
-                        onFocus={() => setShowSuggestions(locationInput.length > 2)}
-                        disabled={loading}
-                    />
-                    <Button type="submit" onClick={() => findClinics()} disabled={loading}>
-                        <Search className="h-4 w-4" />
-                        <span className="sr-only">Search</span>
-                    </Button>
-                </div>
-                {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg">
-                        {suggestions.map((suggestion) => (
-                            <div
-                                key={suggestion.place_id}
-                                className="p-2 hover:bg-accent cursor-pointer"
-                                onClick={() => handleSuggestionClick(suggestion)}
-                            >
-                                {suggestion.description}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-          </div>
         )}
 
         {loading && (
@@ -253,7 +148,7 @@ export default function NearbyClinics() {
             ) : (
               <p className="text-destructive text-sm text-center">{error}</p>
             )}
-             <Button onClick={() => { setError(null); setApiResponse(null); setLocationInput(''); }} variant="outline" className="w-full mt-4">
+             <Button onClick={() => { setError(null); setApiResponse(null); }} variant="outline" className="w-full mt-4">
                 Try Again
             </Button>
           </div>
@@ -286,7 +181,7 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={() => { setApiResponse(null); setLocationInput(''); }} variant="outline" className="w-full">
+             <Button onClick={() => { setApiResponse(null); setError(null); }} variant="outline" className="w-full">
               Start New Search
             </Button>
           </div>
