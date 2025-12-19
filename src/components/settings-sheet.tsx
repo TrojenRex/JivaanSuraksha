@@ -14,6 +14,7 @@ import {
 import { Label } from "./ui/label"
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { useLanguage } from "./language-provider"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 
 export default function SettingsSheet({ children }: { children: React.ReactNode }) {
     const { setTheme, theme } = useTheme()
@@ -31,10 +32,12 @@ export default function SettingsSheet({ children }: { children: React.ReactNode 
             {t('settingsDescription')}
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-6 py-4">
-            <div className="grid gap-3">
-                <Label htmlFor="theme">{t('theme')}</Label>
-                 <RadioGroup id="theme" defaultValue={theme} onValueChange={(value) => setTheme(value)}>
+        <Accordion type="single" collapsible className="w-full mt-4">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>{t('theme')}</AccordionTrigger>
+            <AccordionContent>
+              <div className="grid gap-3 pl-2">
+                <RadioGroup id="theme" defaultValue={theme} onValueChange={(value) => setTheme(value)}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="light" id="theme-light" />
                         <Label htmlFor="theme-light">{t('light')}</Label>
@@ -44,9 +47,13 @@ export default function SettingsSheet({ children }: { children: React.ReactNode 
                         <Label htmlFor="theme-dark">{t('dark')}</Label>
                     </div>
                 </RadioGroup>
-            </div>
-             <div className="grid gap-3">
-                <Label htmlFor="language">{t('language')}</Label>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>{t('language')}</AccordionTrigger>
+            <AccordionContent>
+               <div className="grid gap-3 pl-2">
                 <RadioGroup id="language" defaultValue={language} onValueChange={(value) => setLanguage(value as any)}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="en" id="lang-en" />
@@ -62,7 +69,9 @@ export default function SettingsSheet({ children }: { children: React.ReactNode 
                     </div>
                 </RadioGroup>
             </div>
-        </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </SheetContent>
     </Sheet>
   )
