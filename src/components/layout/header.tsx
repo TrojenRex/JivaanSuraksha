@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings, Sun, Moon, Languages } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,17 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
-import SettingsSheet from '../settings-sheet';
 import { useLanguage } from '../language-provider';
+import { useTheme } from 'next-themes';
 
 const Header: FC = () => {
-  const { t } = useLanguage();
+  const { t, setLanguage } = useLanguage();
+  const { setTheme } = useTheme();
 
   return (
     <header className="absolute top-0 left-0 w-full z-10">
@@ -58,13 +63,52 @@ const Header: FC = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <SettingsSheet>
-                <Button variant="outline" size="icon">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                 <Button variant="outline" size="icon">
                     <Settings className="h-6 w-6" />
                     <span className="sr-only">{t('settings')}</span>
                 </Button>
-            </SettingsSheet>
-
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                 <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 mr-2" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 mr-2" />
+                    <span>{t('theme')}</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setTheme("light")}>
+                        {t('light')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("dark")}>
+                        {t('dark')}
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Languages className="mr-2 h-4 w-4" />
+                    <span>{t('language')}</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setLanguage('en')}>
+                        English
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setLanguage('bn')}>
+                        বাংলা (Bengali)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setLanguage('hi')}>
+                        हिन्दी (Hindi)
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
       </div>
