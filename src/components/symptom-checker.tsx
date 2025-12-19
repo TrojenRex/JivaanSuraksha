@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from './language-provider';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
@@ -41,6 +42,7 @@ const SpeechRecognition =
 
 
 export default function SymptomChecker() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -208,7 +210,7 @@ export default function SymptomChecker() {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
       <CardHeader>
-        <h2 className="text-xl sm:text-2xl font-bold text-center">AI Symptom Checker</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-center">{t('symptomChecker')}</h2>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[50vh] sm:h-[400px] w-full pr-4" ref={scrollAreaRef}>
