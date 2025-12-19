@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings, Sun, Moon, Languages } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings, Sun, Moon, Languages, Home } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,12 @@ const Header: FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/">
+                    <Home className="mr-2 h-4 w-4" />
+                    <span>Home</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/symptom-checker">
                     <Stethoscope className="mr-2 h-4 w-4" />
