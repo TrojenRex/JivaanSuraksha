@@ -8,6 +8,13 @@ export default {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
@@ -88,10 +95,20 @@ export default {
             height: '0',
           },
         },
+        "wave-flow": {
+          "0%": { "background-position-x": "0" },
+          "100%": { "background-position-x": "-200%" },
+        },
+        "wave-flow-alt": {
+          "0%": { "background-position-x": "-200%" },
+          "100%": { "background-position-x": "0" },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        "wave-flow": "wave-flow 25s linear infinite",
+        "wave-flow-alt": "wave-flow-alt 15s linear infinite",
       },
     },
   },
