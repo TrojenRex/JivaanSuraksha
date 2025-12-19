@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Newspaper, Settings, Sun, Moon, Languages, Home } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -58,12 +58,6 @@ const Header: FC = () => {
                   <Link href="/nearby-clinics">
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>{t('nearbyClinics')}</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/news">
-                    <Newspaper className="mr-2 h-4 w-4" />
-                    <span>{t('medicalNews')}</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>

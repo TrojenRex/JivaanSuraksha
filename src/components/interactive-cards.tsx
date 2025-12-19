@@ -3,7 +3,7 @@
 import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { Stethoscope, MapPin, Newspaper } from 'lucide-react';
+import { Stethoscope, MapPin } from 'lucide-react';
 import { useLanguage } from './language-provider';
 
 const InteractiveCard = ({
@@ -70,7 +70,7 @@ const InteractiveCard = ({
 export default function InteractiveCards() {
   const { t } = useLanguage();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
       <InteractiveCard
         href="/symptom-checker"
         icon={Stethoscope}
@@ -84,13 +84,6 @@ export default function InteractiveCards() {
         title={t('nearbyClinics')}
         description={t('nearbyClinicsDescription')}
         buttonText={t('findClinics')}
-      />
-      <InteractiveCard
-        href="/news"
-        icon={Newspaper}
-        title={t('medicalNews')}
-        description={t('medicalNewsDescription')}
-        buttonText={t('readNews')}
       />
     </div>
   );
