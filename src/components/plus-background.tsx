@@ -10,6 +10,8 @@ const PlusBackground = () => {
   const [pluses, setPluses] = useState<PlusSign[]>([]);
 
   useEffect(() => {
+    // This effect runs only once on the client after the component mounts.
+    // This avoids hydration errors.
     const plusSigns = [];
     for (let i = 0; i < 20; i++) {
       plusSigns.push({
@@ -17,13 +19,17 @@ const PlusBackground = () => {
         style: {
           top: `${Math.random() * 100}%`,
           left: `${Math.random() * 100}%`,
-          fontSize: `${Math.random() * 24 + 12}px`,
-          animationDelay: `${Math.random() * 10}s`,
+          fontSize: `${Math.random() * 30 + 20}px`,
+          animationDelay: `${Math.random() * 12}s`,
         },
       });
     }
     setPluses(plusSigns);
   }, []);
+
+  if (!pluses.length) {
+    return null;
+  }
 
   return (
     <div className="plus-background" aria-hidden="true">
