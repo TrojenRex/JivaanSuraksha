@@ -13,7 +13,7 @@ const Header: FC = () => {
               <Droplets className="h-6 w-6 text-primary-foreground" />
             </div>
             <span className="text-xl md:text-2xl font-bold text-foreground">
-              Jal Suraksha
+              Jivaan Suraksha
             </span>
           </Link>
           <nav>

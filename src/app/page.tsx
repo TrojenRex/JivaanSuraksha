@@ -12,7 +12,7 @@ export default function Home() {
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome to Jal Suraksha</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome to Jivaan Suraksha</h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Your AI-powered guide to understanding symptoms of water-borne diseases and finding help near you.
           </p>
