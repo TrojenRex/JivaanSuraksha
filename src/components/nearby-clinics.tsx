@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef }from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Loader2, Hospital, Search, LocateFixed, Map } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
@@ -24,21 +25,72 @@ type ApiResponse = {
   clinics: Clinic[];
 }
 
+type Suggestion = {
+    description: string;
+    place_id: string;
+};
+
 export default function NearbyClinics() {
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [isApiError, setIsApiError] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const findClinicsByCoords = async (latitude: number, longitude: number) => {
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+            setShowSuggestions(false);
+        }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.length > 2) {
+      const fetchSuggestions = async () => {
+        try {
+          const response = await fetch(`/api/autocomplete?input=${searchQuery}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSuggestions(data.suggestions || []);
+            setShowSuggestions(true);
+          } else {
+            setSuggestions([]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch autocomplete suggestions:", error);
+          setSuggestions([]);
+        }
+      };
+
+      const debounce = setTimeout(fetchSuggestions, 300);
+      return () => clearTimeout(debounce);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery]);
+
+
+  const findClinics = async (location: string | {latitude: number, longitude: number}) => {
     setLoading(true);
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
+    setSuggestions([]);
+    setShowSuggestions(false);
+
+    const query = typeof location === 'string' ? location : `${location.latitude},${location.longitude}`;
 
     try {
-      const response = await fetch(`/api/places?location=${latitude},${longitude}`);
+      const response = await fetch(`/api/places?location=${encodeURIComponent(query)}`);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -57,7 +109,7 @@ export default function NearbyClinics() {
       const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {
-        setError(`No clinics or hospitals found near your location. Please try again from a different area.`)
+        setError(`No clinics or hospitals found near "${query}". Please try a different search.`)
       }
       setApiResponse(data);
     } catch (err: any) {
@@ -73,7 +125,7 @@ export default function NearbyClinics() {
     }
   };
   
-  const handleFindClinicsClick = () => {
+  const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       setLoading(true);
       setError(null);
@@ -81,7 +133,7 @@ export default function NearbyClinics() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          findClinicsByCoords(latitude, longitude);
+          findClinics({latitude, longitude});
         },
         (error) => {
           setLoading(false);
@@ -106,6 +158,19 @@ export default function NearbyClinics() {
     }
   };
 
+  const handleManualSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+        setError("Please enter a location to search.");
+        return;
+    }
+    findClinics(searchQuery);
+  };
+  
+  const handleSuggestionClick = (suggestion: Suggestion) => {
+    setSearchQuery(suggestion.description);
+    findClinics(suggestion.description);
+  };
 
   const clinics = apiResponse?.clinics || [];
 
@@ -116,15 +181,58 @@ export default function NearbyClinics() {
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
         {!apiResponse && !loading && !error && (
-            <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4 text-center">
-                 <LocateFixed className="h-16 w-16 text-primary" />
+            <div className="w-full max-w-md mx-auto flex flex-col items-center gap-4 text-center">
                 <p className="text-muted-foreground">
-                    Click the button below to allow location access and find medical facilities near you.
+                    Find medical facilities by using your current location or by searching manually.
                 </p>
-                <Button onClick={handleFindClinicsClick} className="w-full" disabled={loading}>
-                    <Search className="mr-2 h-4 w-4" />
-                    {t('findClinics')}
+                <Button onClick={handleUseMyLocation} className="w-full" disabled={loading}>
+                    <LocateFixed className="mr-2 h-4 w-4" />
+                    {t('useMyLocation')}
                 </Button>
+
+                <div className="w-full flex items-center gap-2">
+                    <hr className="flex-grow border-t" />
+                    <span className="text-muted-foreground text-xs">OR</span>
+                    <hr className="flex-grow border-t" />
+                </div>
+                
+                <form onSubmit={handleManualSearch} className="w-full space-y-2" ref={searchContainerRef}>
+                    <p className="text-muted-foreground text-sm">{t('enterLocationPrompt')}</p>
+                    <div className='relative w-full'>
+                        <div className="flex w-full gap-2">
+                            <Input 
+                                type="text"
+                                placeholder={t('locationPlaceholder')}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                disabled={loading}
+                                onFocus={() => setShowSuggestions(true)}
+                            />
+                            <Button type="submit" disabled={loading || !searchQuery}>
+                                <Search className="mr-2 h-4 w-4" />
+                                Search
+                            </Button>
+                        </div>
+                        {showSuggestions && suggestions.length > 0 && (
+                            <Card className="absolute top-full mt-2 w-full z-10 shadow-lg">
+                                <CardContent className="p-2">
+                                    <ul className="space-y-1">
+                                        {suggestions.map((suggestion) => (
+                                            <li key={suggestion.place_id}>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    className="w-full justify-start h-auto py-2 text-left"
+                                                    onClick={() => handleSuggestionClick(suggestion)}>
+                                                    {suggestion.description}
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                </form>
             </div>
         )}
 
@@ -148,7 +256,7 @@ export default function NearbyClinics() {
             ) : (
               <p className="text-destructive text-sm text-center">{error}</p>
             )}
-             <Button onClick={() => { setError(null); setApiResponse(null); }} variant="outline" className="w-full mt-4">
+             <Button onClick={() => { setError(null); setApiResponse(null); setSearchQuery(''); }} variant="outline" className="w-full mt-4">
                 Try Again
             </Button>
           </div>
@@ -181,7 +289,7 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={() => { setApiResponse(null); setError(null); }} variant="outline" className="w-full">
+             <Button onClick={() => { setApiResponse(null); setError(null); setSearchQuery(''); }} variant="outline" className="w-full">
               Start New Search
             </Button>
           </div>
