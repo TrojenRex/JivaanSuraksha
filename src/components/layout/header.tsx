@@ -1,7 +1,13 @@
-import { Droplets, MapPin } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const Header: FC = () => {
   return (
@@ -16,14 +22,44 @@ const Header: FC = () => {
               Jivaan Suraksha
             </span>
           </Link>
-          <nav>
+          <nav className="hidden md:flex">
             <Button asChild variant="outline">
+              <Link href="/symptom-checker" className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4" />
+                <span>Symptom Checker</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="ml-2">
               <Link href="/nearby-clinics" className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 <span>Nearby Clinics</span>
               </Link>
             </Button>
           </nav>
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/symptom-checker">
+                    <Stethoscope className="mr-2 h-4 w-4" />
+                    <span>Symptom Checker</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/nearby-clinics">
+                    <MapPin className="mr-2 h-4 w-4" />
+                    <span>Nearby Clinics</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>
