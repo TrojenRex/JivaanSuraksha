@@ -30,7 +30,7 @@ export default function SymptomChecker() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I am Jal, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies.",
+      content: "Hello! I am Anshu, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies.",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
