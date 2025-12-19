@@ -1,7 +1,6 @@
 'use client';
 
 import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home, Siren, Pill } from 'lucide-react';
-import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useLanguage } from '../language-provider';
 import { useTheme } from 'next-themes';
+import TransitionLink from '../transition-link';
 
 const Header: FC = () => {
   const { t, setLanguage } = useLanguage();
@@ -25,14 +25,14 @@ const Header: FC = () => {
     <header className="absolute top-0 left-0 w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/" className="flex items-center gap-2 text-primary-foreground">
+          <TransitionLink href="/" className="flex items-center gap-2 text-primary-foreground">
             <div className="bg-primary/80 backdrop-blur-sm p-2 rounded-lg shadow-md">
               <Droplets className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
               {t('appName')}
             </span>
-          </Link>
+          </TransitionLink>
           <nav className='flex items-center gap-1 sm:gap-2'>
              <Button asChild variant="destructive" className="animate-pulse px-2 sm:px-4">
                 <a href="tel:102">
@@ -49,28 +49,28 @@ const Header: FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/">
+                  <TransitionLink href="/">
                     <Home className="mr-2 h-4 w-4" />
                     <span>Home</span>
-                  </Link>
+                  </TransitionLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/symptom-checker">
+                  <TransitionLink href="/symptom-checker">
                     <Stethoscope className="mr-2 h-4 w-4" />
                     <span>{t('symptomChecker')}</span>
-                  </Link>
+                  </TransitionLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/medicine-checker">
+                  <TransitionLink href="/medicine-checker">
                     <Pill className="mr-2 h-4 w-4" />
                     <span>{t('medicineChecker')}</span>
-                  </Link>
+                  </TransitionLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/nearby-clinics">
+                  <TransitionLink href="/nearby-clinics">
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>{t('nearbyClinics')}</span>
-                  </Link>
+                  </TransitionLink>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

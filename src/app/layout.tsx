@@ -6,6 +6,9 @@ import PlusBackground from '@/components/plus-background';
 import { ThemeProvider } from '@/components/theme-provider';
 import { LanguageProvider } from '@/components/language-provider';
 import ScrollToTopButton from '@/components/scroll-to-top';
+import { TransitionProvider } from '@/components/transition-provider';
+import PageTransition from '@/components/page-transition';
+
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -33,10 +36,13 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <LanguageProvider>
-              <PlusBackground />
-              {children}
-              <Toaster />
-              <ScrollToTopButton />
+              <TransitionProvider>
+                <PlusBackground />
+                <PageTransition />
+                {children}
+                <Toaster />
+                <ScrollToTopButton />
+              </TransitionProvider>
             </LanguageProvider>
           </ThemeProvider>
       </body>

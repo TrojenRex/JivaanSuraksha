@@ -2,9 +2,9 @@
 
 import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
 import { Stethoscope, MapPin, Pill } from 'lucide-react';
 import { useLanguage } from './language-provider';
+import TransitionLink from './transition-link';
 
 const InteractiveCard = ({
   href,
@@ -58,9 +58,9 @@ const InteractiveCard = ({
         </CardHeader>
         <CardContent className="flex-1 flex flex-col items-center text-center">
           <p className="text-muted-foreground mb-6">{description}</p>
-          <Link href={href} className="btn-uiverse mt-auto">
+          <TransitionLink href={href} className="btn-uiverse mt-auto">
             {buttonText}
-          </Link>
+          </TransitionLink>
         </CardContent>
       </Card>
     </div>
