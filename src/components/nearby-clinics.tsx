@@ -101,7 +101,14 @@ export default function NearbyClinics() {
     try {
       const response = await fetch(`/api/places?location=${encodeURIComponent(finalQuery)}`);
       if (!response.ok) {
-        const errorData = await response.json();
+        // Try to parse as JSON, but fall back to text if that fails
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Failed to fetch clinics. The server returned an unexpected response.');
+        }
         throw new Error(errorData.error || 'Failed to fetch clinics.');
       }
       const data: ApiResponse = await response.json();
