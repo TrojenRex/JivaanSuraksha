@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 import PlusBackground from '@/components/plus-background';
 import { ThemeProvider } from '@/components/theme-provider';
 import { LanguageProvider } from '@/components/language-provider';
+import ScrollToTopButton from '@/components/scroll-to-top';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -35,6 +36,7 @@ export default function RootLayout({
               <PlusBackground />
               {children}
               <Toaster />
+              <ScrollToTopButton />
             </LanguageProvider>
           </ThemeProvider>
       </body>
