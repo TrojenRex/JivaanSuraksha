@@ -19,5 +19,5 @@
     "medicineCheckerDescription": "ব্যবহার, পার্শ্ব প্রতিক্রিয়া এবং ডোজ সম্পর্কে তথ্য পেতে একটি ঔষধের নাম লিখুন।",
     "useMyLocation": "আমার অবস্থান ব্যবহার করুন",
     "enterLocationPrompt": "অনুসন্ধান করতে নীচে একটি অবস্থান লিখুন।",
-    "locationPlaceholder": "যেমন, শহর, ঠিকানা বা জিপ কোড"
+    "locationPlaceholder": "যেমন, শহর, ঠিকানা বা পিন কোড"
 }

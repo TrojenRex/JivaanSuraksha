@@ -88,7 +88,7 @@ export default function NearbyClinics() {
   const findClinics = async (query?: string) => {
     const finalQuery = query || locationInput;
     if (!finalQuery.trim()) {
-        setError("Please enter a location, such as a city, address, or zip code.");
+        setError("Please enter a location, such as a city, address, or pin code.");
         return;
     }
     setLoading(true);

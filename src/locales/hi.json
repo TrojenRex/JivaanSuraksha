@@ -19,5 +19,5 @@
     "medicineCheckerDescription": "उपयोग, दुष्प्रभावों और खुराक के बारे में जानकारी प्राप्त करने के लिए दवा का नाम दर्ज करें।",
     "useMyLocation": "मेरे स्थान का उपयोग करें",
     "enterLocationPrompt": "खोज करने के लिए नीचे एक स्थान दर्ज करें।",
-    "locationPlaceholder": "जैसे, शहर, पता, या ज़िप कोड"
+    "locationPlaceholder": "जैसे, शहर, पता, या पिन कोड"
 }

@@ -19,5 +19,5 @@
     "medicineCheckerDescription": "Enter a medicine name to get information about its uses, side effects, and dosage.",
     "useMyLocation": "Use My Location",
     "enterLocationPrompt": "Enter a location below to search.",
-    "locationPlaceholder": "e.g., city, address, or zip code"
+    "locationPlaceholder": "e.g., city, address, or pin code"
 }
