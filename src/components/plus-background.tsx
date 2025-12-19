@@ -1,8 +1,15 @@
 'use client';
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
+
+type PlusSign = {
+  id: number;
+  style: React.CSSProperties;
+};
 
 const PlusBackground = () => {
-  const pluses = useMemo(() => {
+  const [pluses, setPluses] = useState<PlusSign[]>([]);
+
+  useEffect(() => {
     const plusSigns = [];
     for (let i = 0; i < 20; i++) {
       plusSigns.push({
@@ -15,7 +22,7 @@ const PlusBackground = () => {
         },
       });
     }
-    return plusSigns;
+    setPluses(plusSigns);
   }, []);
 
   return (
