@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, MapPin, Hospital, Phone } from 'lucide-react';
+import { Loader2, MapPin, Hospital, Phone, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import Image from 'next/image';
+import { Input } from './ui/input';
+import { Separator } from './ui/separator';
+import { useLanguage } from './language-provider';
 
 type GeolocationPosition = {
   coords: {
@@ -29,7 +32,9 @@ type ApiResponse = {
 }
 
 export default function NearbyClinics() {
+  const { t } = useLanguage();
   const [location, setLocation] = useState<GeolocationPosition['coords'] | null>(null);
+  const [pincode, setPincode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
@@ -52,7 +57,41 @@ export default function NearbyClinics() {
       setApiResponse(data);
     } catch (err: any) {
       if (err.message.includes('API configuration error') || err.message.includes('request was denied')) {
-        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" is enabled in the Google Cloud Console.');
+        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" and "Geocoding API" are enabled in the Google Cloud Console.');
+        setIsApiError(true);
+      } else {
+        setError(err.message);
+      }
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const fetchClinicsByPincode = async (pincode: string) => {
+    if (!pincode.trim()) {
+        setError("Please enter a valid pincode.");
+        return;
+    }
+    setLoading(true);
+    setError(null);
+    setIsApiError(false);
+    setApiResponse(null);
+    setLocation(null);
+    try {
+      const response = await fetch(`/api/places?pincode=${pincode}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch clinics by pincode.');
+      }
+      const data: ApiResponse = await response.json();
+       if (data.clinics.length === 0) {
+        setError("No clinics or hospitals found for the provided pincode. Please check the pincode and try again.")
+      }
+      setApiResponse(data);
+    } catch (err: any) {
+       if (err.message.includes('API configuration error') || err.message.includes('request was denied')) {
+        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" and "Geocoding API" are enabled in the Google Cloud Console.');
         setIsApiError(true);
       } else {
         setError(err.message);
@@ -63,11 +102,13 @@ export default function NearbyClinics() {
     }
   };
 
+
   const getLocation = () => {
     setLoading(true);
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
+    setPincode('');
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -91,40 +132,68 @@ export default function NearbyClinics() {
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Find Nearby Clinics</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center space-y-4">
-        {!location && !loading && clinics.length === 0 && !error && (
-          <>
-            <p className="text-center text-muted-foreground">
-              Click the button to use your current location to find nearby clinics and hospitals.
+      <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
+        {!loading && clinics.length === 0 && !error && (
+          <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4">
+             <p className="text-center text-muted-foreground">
+              Automatically find clinics near you or search by pincode.
             </p>
-            <Button onClick={getLocation} disabled={loading}>
+            <Button onClick={getLocation} disabled={loading} className="w-full">
               <MapPin className="mr-2 h-4 w-4" />
               Use My Location
             </Button>
-          </>
+            <div className="flex items-center w-full">
+              <Separator className="flex-1" />
+              <span className="px-4 text-sm text-muted-foreground">OR</span>
+              <Separator className="flex-1" />
+            </div>
+             <div className="flex w-full items-center space-x-2">
+                <Input 
+                    type="text" 
+                    placeholder="Enter Pincode" 
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          fetchClinicsByPincode(pincode);
+                        }
+                    }}
+                    disabled={loading}
+                />
+                <Button type="submit" onClick={() => fetchClinicsByPincode(pincode)} disabled={loading}>
+                    <Search className="h-4 w-4" />
+                    <span className="sr-only">Search</span>
+                </Button>
+            </div>
+          </div>
         )}
 
         {loading && (
           <div className="flex flex-col items-center space-y-2">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p>Fetching your location and nearby clinics...</p>
+            <p>Searching for clinics...</p>
           </div>
         )}
 
         {error && (
-          isApiError ? (
-             <Alert variant="destructive">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Configuration Error</AlertTitle>
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <p className="text-destructive text-sm text-center">{error}</p>
-          )
+          <div className="w-full">
+            {isApiError ? (
+              <Alert variant="destructive">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Configuration Error</AlertTitle>
+                <AlertDescription>
+                  {error}
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <p className="text-destructive text-sm text-center">{error}</p>
+            )}
+             <Button onClick={() => { setError(null); setApiResponse(null); }} variant="outline" className="w-full mt-4">
+                Try Again
+            </Button>
+          </div>
         )}
         
         {apiResponse && clinics.length > 0 && (
@@ -160,15 +229,8 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={getLocation} disabled={loading} variant="outline" className="w-full">
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Refreshing...
-                </>
-              ) : (
-                'Refresh Location'
-              )}
+             <Button onClick={() => { setApiResponse(null); setPincode(''); setLocation(null); }} variant="outline" className="w-full">
+              Start New Search
             </Button>
           </div>
         )}

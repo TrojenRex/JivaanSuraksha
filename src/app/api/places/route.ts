@@ -2,18 +2,38 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 
+async function getCoordsFromPincode(pincode: string, apiKey: string) {
+    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${pincode}&key=${apiKey}`;
+    try {
+        const response = await fetch(geocodeUrl);
+        const data = await response.json();
+        if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+            throw new Error(`Could not geocode pincode. Status: ${data.status}. ${data.error_message || ''}`);
+        }
+        const location = data.results[0].geometry.location;
+        const userLat = data.results[0].geometry.location.lat;
+        const userLon = data.results[0].geometry.location.lng;
+
+        // Check if the result is in India for pincodes
+        const isIndia = data.results[0].address_components.some((c: any) => c.short_name === 'IN');
+        if (!isIndia) {
+            throw new Error("Pincode does not appear to be in India. Please enter a valid Indian pincode.");
+        }
+
+        return { lat: location.lat, lon: location.lng, userLat, userLon };
+    } catch (error) {
+        console.error('Error in geocoding:', error);
+        throw new Error("Failed to convert pincode to location. Please check the pincode or try again.");
+    }
+}
+
+
 export async function GET(request: NextRequest) {
   const {searchParams} = new URL(request.url);
-  const lat = searchParams.get('lat');
-  const lon = searchParams.get('lon');
+  let lat = searchParams.get('lat');
+  let lon = searchParams.get('lon');
+  const pincode = searchParams.get('pincode');
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-
-  if (!lat || !lon) {
-    return NextResponse.json(
-      {error: 'Latitude and longitude are required.'},
-      {status: 400}
-    );
-  }
 
   if (!apiKey) {
     console.error('Google Maps API key is missing.');
@@ -23,9 +43,27 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=5000&type=hospital&key=${apiKey}`;
+  let userLat : number | null = lat ? Number(lat) : null;
+  let userLon : number | null = lon ? Number(lon) : null;
 
   try {
+     if (pincode) {
+        const coords = await getCoordsFromPincode(pincode, apiKey);
+        lat = coords.lat.toString();
+        lon = coords.lon.toString();
+        userLat = coords.userLat;
+        userLon = coords.userLon;
+    }
+
+    if (!lat || !lon || userLat === null || userLon === null) {
+        return NextResponse.json(
+        {error: 'Location (latitude and longitude or pincode) is required.'},
+        {status: 400}
+        );
+    }
+  
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=5000&type=hospital&key=${apiKey}`;
+
     const res = await fetch(url);
     const data = await res.json();
 
@@ -42,12 +80,9 @@ export async function GET(request: NextRequest) {
         {status: 500}
       );
     }
-    
-    const userLat = Number(lat);
-    const userLon = Number(lon);
 
     const places = data.results.map((place: any) => {
-        const distance = calculateDistance(userLat, userLon, place.geometry.location.lat, place.geometry.location.lng);
+        const distance = calculateDistance(userLat as number, userLon as number, place.geometry.location.lat, place.geometry.location.lng);
         return {
             id: place.place_id,
             name: place.name,
@@ -70,8 +105,12 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ clinics: nearbyPlaces, mapUrl });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching from Google Places API:', error);
+    // Return a more specific error message if it's one of our thrown errors
+     if (error.message.includes("pincode")) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       {error: 'An internal server error occurred.'},
       {status: 500}
