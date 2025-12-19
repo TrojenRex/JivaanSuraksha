@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, MapPin, Hospital, Phone } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Terminal } from "lucide-react"
 
 type GeolocationPosition = {
   coords: {
@@ -25,10 +27,12 @@ export default function NearbyClinics() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [isApiError, setIsApiError] = useState(false);
 
   const fetchClinics = async (coords: GeolocationPosition['coords']) => {
     setLoading(true);
     setError(null);
+    setIsApiError(false);
     try {
       const response = await fetch(`/api/places?lat=${coords.latitude}&lon=${coords.longitude}`);
       if (!response.ok) {
@@ -37,12 +41,13 @@ export default function NearbyClinics() {
       }
       const data: Clinic[] = await response.json();
       if (data.length === 0) {
-        setError("No clinics or hospitals found within a 5km radius. Please try refreshing if you believe this is an error.")
+        setError("No clinics or hospitals found within a 3-mile radius. Please try refreshing if you believe this is an error.")
       }
       setClinics(data);
     } catch (err: any) {
       if (err.message.includes('API configuration error')) {
-        setError('This feature is not configured correctly. The developer needs to provide a Google Maps API Key.');
+        setError('This feature is not configured. The developer needs to provide a Google Maps API Key in an .env.local file.');
+        setIsApiError(true);
       } else {
         setError(err.message);
       }
@@ -55,6 +60,7 @@ export default function NearbyClinics() {
   const getLocation = () => {
     setLoading(true);
     setError(null);
+    setIsApiError(false);
     setClinics([]);
 
     if (navigator.geolocation) {
@@ -80,7 +86,7 @@ export default function NearbyClinics() {
         <CardTitle className="text-2xl font-bold text-center">Find Nearby Clinics</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4">
-        {!location && !loading && clinics.length === 0 && (
+        {!location && !loading && clinics.length === 0 && !error && (
           <>
             <p className="text-center text-muted-foreground">
               Click the button to use your current location to find nearby clinics and hospitals.
@@ -99,8 +105,20 @@ export default function NearbyClinics() {
           </div>
         )}
 
-        {error && <p className="text-destructive text-sm text-center">{error}</p>}
-
+        {error && (
+          isApiError ? (
+             <Alert variant="destructive">
+              <Terminal className="h-4 w-4" />
+              <AlertTitle>Configuration Error</AlertTitle>
+              <AlertDescription>
+                {error}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <p className="text-destructive text-sm text-center">{error}</p>
+          )
+        )}
+        
         {clinics.length > 0 && (
           <div className="w-full space-y-4">
             <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>

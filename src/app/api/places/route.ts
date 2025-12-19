@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   if (!apiKey) {
     console.error('Google Maps API key is missing.');
     return NextResponse.json(
-      {error: 'API configuration error.'},
+      {error: 'API configuration error. A Google Maps API key is required.'},
       {status: 500}
     );
   }
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         const detailsResult = detailsData.result;
         
         // Calculate distance (simplified)
-        const distance = calculateDistance(lat, lon, detailsResult.geometry.location.lat, detailsResult.geometry.location.lng);
+        const distance = calculateDistance(Number(lat), Number(lon), detailsResult.geometry.location.lat, detailsResult.geometry.location.lng);
 
         return {
             id: place.place_id,
