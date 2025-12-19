@@ -17,15 +17,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 export async function GET(request: NextRequest) {
   const {searchParams} = new URL(request.url);
   const locationQuery = searchParams.get('location');
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey) {
-    console.error('Google Maps API key is missing.');
-    return NextResponse.json(
-      {error: 'API configuration error. A Google Maps API key is required.'},
-      {status: 500}
-    );
-  }
 
   if (!locationQuery) {
     return NextResponse.json(
@@ -35,59 +26,63 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 1. Geocode the user's location text to get coordinates
-    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationQuery)}&key=${apiKey}`;
-    const geocodeResponse = await fetch(geocodeUrl);
+    // 1. Geocode the user's location text to get coordinates using OpenStreetMap Nominatim
+    const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationQuery)}&format=json&limit=1`;
+    const geocodeResponse = await fetch(geocodeUrl, { 
+      headers: { 'User-Agent': 'JivaanSuraksha/1.0 (Firebase Studio App)' } 
+    });
     const geocodeData = await geocodeResponse.json();
 
-    if (geocodeData.status !== 'OK' || !geocodeData.results || geocodeData.results.length === 0) {
-      throw new Error(`Could not find a location for "${locationQuery}". Please try a more specific location. Status: ${geocodeData.status}. ${geocodeData.error_message || ''}`);
+    if (!geocodeData || geocodeData.length === 0) {
+      throw new Error(`Could not find a location for "${locationQuery}". Please try a more specific location.`);
     }
     
-    const location = geocodeData.results[0].geometry.location;
-    const userLat = location.lat;
-    const userLon = location.lng;
+    const location = geocodeData[0];
+    const userLat = parseFloat(location.lat);
+    const userLon = parseFloat(location.lon);
 
-    // 2. Use the coordinates to find nearby hospitals
-    const nearbySearchUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLat},${userLon}&radius=5000&type=hospital&key=${apiKey}`;
-    const placesResponse = await fetch(nearbySearchUrl);
+    // 2. Use the coordinates to find nearby hospitals using OpenStreetMap Overpass API
+    const radiusInMeters = 8046; // Approx 5 miles
+    const overpassQuery = `
+      [out:json][timeout:25];
+      (
+        node["amenity"="hospital"](around:${radiusInMeters},${userLat},${userLon});
+        way["amenity"="hospital"](around:${radiusInMeters},${userLat},${userLon});
+        relation["amenity"="hospital"](around:${radiusInMeters},${userLat},${userLon});
+        node["amenity"="clinic"](around:${radiusInMeters},${userLat},${userLon});
+        way["amenity"="clinic"](around:${radiusInMeters},${userLat},${userLon});
+        relation["amenity"="clinic"](around:${radiusInMeters},${userLat},${userLon});
+      );
+      out center;
+    `;
+    const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
+    const placesResponse = await fetch(overpassUrl);
     const placesData = await placesResponse.json();
 
-    if (placesData.status !== 'OK') {
-      if (placesData.status === 'REQUEST_DENIED') {
-        return NextResponse.json(
-            {error: 'The Google Places API request was denied. This is often because the "Places API" is not enabled in your Google Cloud project. Please ensure it is enabled.'},
-            {status: 403}
-        );
-      }
-      throw new Error(`Failed to fetch places: ${placesData.status}`);
-    }
 
     // 3. Process and sort the results
-    const places = placesData.results.map((place: any) => {
-        const distance = calculateDistance(userLat, userLon, place.geometry.location.lat, place.geometry.location.lng);
+    const places = placesData.elements.map((place: any) => {
+        const placeLat = place.lat || place.center?.lat;
+        const placeLon = place.lon || place.center?.lon;
+        const distance = calculateDistance(userLat, userLon, placeLat, placeLon);
+        
+        // Construct address from tags
+        const tags = place.tags || {};
+        const address = [tags['addr:housenumber'], tags['addr:street'], tags['addr:city'], tags['addr:postcode']].filter(Boolean).join(', ');
+
         return {
-            id: place.place_id,
-            name: place.name,
-            address: place.vicinity,
-            phone: 'N/A', // Details API would be needed for phone number
+            id: place.id,
+            name: tags.name || 'Unnamed Clinic/Hospital',
+            address: address || 'Address not available',
             distance: `${distance.toFixed(1)} miles`,
-            location: place.geometry.location,
+            location: { lat: placeLat, lon: placeLon },
         };
-    });
+    }).filter((place: any) => place.location.lat && place.location.lon);
 
     places.sort((a: any, b: any) => parseFloat(a.distance) - parseFloat(b.distance));
     const nearbyPlaces = places.slice(0, 10);
     
-    // 4. Generate the map URL
-    let mapUrl = null;
-    if (nearbyPlaces.length > 0) {
-      const markers = nearbyPlaces.map((p: any, index: number) => `markers=color:red|label:${index + 1}|${p.location.lat},${p.location.lng}`).join('&');
-      const userMarker = `markers=color:blue|label:U|${userLat},${userLon}`;
-      mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=600x400&maptype=roadmap&${userMarker}&${markers}&key=${apiKey}`;
-    }
-
-    return NextResponse.json({ clinics: nearbyPlaces, mapUrl });
+    return NextResponse.json({ clinics: nearbyPlaces });
   } catch (error: any) {
     console.error('Error in GET /api/places:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

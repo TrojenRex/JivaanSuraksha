@@ -3,24 +3,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Hospital, Search, LocateFixed } from 'lucide-react';
+import { Loader2, Hospital, Search, LocateFixed, Map } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
-import Image from 'next/image';
 import { Input } from './ui/input';
 import { useLanguage } from './language-provider';
+import Link from 'next/link';
 
 type Clinic = {
   id: string;
   name: string;
   address: string;
-  phone: string;
   distance: string;
+  location: {
+    lat: number;
+    lon: number;
+  }
 };
 
 type ApiResponse = {
   clinics: Clinic[];
-  mapUrl: string | null;
 }
 
 type AutocompletePrediction = {
@@ -245,25 +247,27 @@ export default function NearbyClinics() {
         
         {apiResponse && clinics.length > 0 && (
           <div className="w-full space-y-4">
-            {apiResponse.mapUrl && (
-              <div className="w-full aspect-[4/3] relative rounded-lg overflow-hidden border">
-                <Image src={apiResponse.mapUrl} alt="Map of nearby clinics" layout="fill" objectFit="cover" />
-              </div>
-            )}
             <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>
-            <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2">
-              {clinics.map((clinic, index) => (
+            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+              {clinics.map((clinic) => (
                 <div key={clinic.id} className="p-4 bg-muted/50 rounded-lg border">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1 flex-1">
                       <h4 className="font-bold flex items-center gap-2">
-                         <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">{index+1}</span>
-                        <Hospital className="h-5 w-5 text-primary" />
+                        <Hospital className="h-5 w-5 text-primary flex-shrink-0" />
                         {clinic.name}
                       </h4>
-                      <p className="text-sm text-muted-foreground pl-14">{clinic.address}</p>
+                      <p className="text-sm text-muted-foreground">{clinic.address}</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
+                      <Button asChild variant="secondary" size="sm">
+                          <Link href={`https://www.openstreetmap.org/?mlat=${clinic.location.lat}&mlon=${clinic.location.lon}#map=16/${clinic.location.lat}/${clinic.location.lon}`} target="_blank" rel="noopener noreferrer">
+                              <Map className="mr-2 h-4 w-4" />
+                              View Map
+                          </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
