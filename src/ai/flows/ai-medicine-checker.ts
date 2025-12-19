@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
 
   IMPORTANT: Start the dosage information with a clear disclaimer that the user must consult a healthcare professional for actual dosage and medical advice.
 
-  Medicine Name: {{{medicine}}}
+  {{#if medicine}}Medicine Name: {{{medicine}}}{{/if}}
   {{#if photoDataUri}}
   Photo: {{media url=photoDataUri}}
   {{/if}}
