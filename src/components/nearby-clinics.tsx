@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Hospital, Phone, Search } from 'lucide-react';
+import { Loader2, Hospital, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import Image from 'next/image';
@@ -23,6 +23,11 @@ type ApiResponse = {
   mapUrl: string | null;
 }
 
+type AutocompletePrediction = {
+  description: string;
+  place_id: string;
+};
+
 export default function NearbyClinics() {
   const { t } = useLanguage();
   const [locationInput, setLocationInput] = useState('');
@@ -30,9 +35,57 @@ export default function NearbyClinics() {
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [isApiError, setIsApiError] = useState(false);
+  const [suggestions, setSuggestions] = useState<AutocompletePrediction[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const findClinics = async () => {
-    if (!locationInput.trim()) {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [wrapperRef]);
+
+  useEffect(() => {
+    if (locationInput.length > 2) {
+      const fetchSuggestions = async () => {
+        try {
+          const response = await fetch(`/api/autocomplete?input=${encodeURIComponent(locationInput)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSuggestions(data.suggestions || []);
+            setShowSuggestions(true);
+          } else {
+            setSuggestions([]);
+          }
+        } catch (error) {
+          console.error('Failed to fetch suggestions', error);
+          setSuggestions([]);
+        }
+      };
+
+      const handler = setTimeout(() => {
+        fetchSuggestions();
+      }, 300); // Debounce API calls
+
+      return () => {
+        clearTimeout(handler);
+      };
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [locationInput]);
+
+
+  const findClinics = async (query?: string) => {
+    const finalQuery = query || locationInput;
+    if (!finalQuery.trim()) {
         setError("Please enter a location, such as a city, address, or zip code.");
         return;
     }
@@ -40,16 +93,18 @@ export default function NearbyClinics() {
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
+    setShowSuggestions(false);
+    setLocationInput(finalQuery);
 
     try {
-      const response = await fetch(`/api/places?location=${encodeURIComponent(locationInput)}`);
+      const response = await fetch(`/api/places?location=${encodeURIComponent(finalQuery)}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch clinics.');
       }
       const data: ApiResponse = await response.json();
        if (data.clinics.length === 0) {
-        setError(`No clinics or hospitals found near "${locationInput}". Please try a different or more specific location.`)
+        setError(`No clinics or hospitals found near "${finalQuery}". Please try a different or more specific location.`)
       }
       setApiResponse(data);
     } catch (err: any) {
@@ -64,6 +119,11 @@ export default function NearbyClinics() {
       setLoading(false);
     }
   };
+  
+  const handleSuggestionClick = (suggestion: AutocompletePrediction) => {
+    findClinics(suggestion.description);
+  };
+
 
   const clinics = apiResponse?.clinics || [];
 
@@ -78,23 +138,39 @@ export default function NearbyClinics() {
              <p className="text-center text-muted-foreground">
               Enter your location to find nearby hospitals and clinics.
             </p>
-             <div className="flex w-full items-center space-x-2">
-                <Input 
-                    type="text" 
-                    placeholder="e.g., city, address, or zip code" 
-                    value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          findClinics();
-                        }
-                    }}
-                    disabled={loading}
-                />
-                <Button type="submit" onClick={findClinics} disabled={loading}>
-                    <Search className="h-4 w-4" />
-                    <span className="sr-only">Search</span>
-                </Button>
+             <div className="relative w-full" ref={wrapperRef}>
+                <div className="flex w-full items-center space-x-2">
+                    <Input 
+                        type="text" 
+                        placeholder="e.g., city, address, or zip code" 
+                        value={locationInput}
+                        onChange={(e) => setLocationInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              findClinics();
+                            }
+                        }}
+                        onFocus={() => setShowSuggestions(locationInput.length > 2)}
+                        disabled={loading}
+                    />
+                    <Button type="submit" onClick={() => findClinics()} disabled={loading}>
+                        <Search className="h-4 w-4" />
+                        <span className="sr-only">Search</span>
+                    </Button>
+                </div>
+                {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg">
+                        {suggestions.map((suggestion) => (
+                            <div
+                                key={suggestion.place_id}
+                                className="p-2 hover:bg-accent cursor-pointer"
+                                onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                                {suggestion.description}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
           </div>
         )}
