@@ -13,8 +13,8 @@ export async function GET() {
     );
   }
 
-  // A different query could be used, for example `q=waterborne%20diseases` to be more specific
-  const url = `https://newsapi.org/v2/top-headlines?country=us&category=health&apiKey=${apiKey}`;
+  const query = 'medical OR health OR disease OR hospital OR waterborne';
+  const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
   try {
     const response = await fetch(url, {
