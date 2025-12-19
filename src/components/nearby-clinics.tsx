@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Hospital, Search } from 'lucide-react';
+import { Loader2, Hospital, Search, LocateFixed } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import Image from 'next/image';
@@ -123,6 +123,39 @@ export default function NearbyClinics() {
   const handleSuggestionClick = (suggestion: AutocompletePrediction) => {
     findClinics(suggestion.description);
   };
+  
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      setLoading(true);
+      setError(null);
+      setApiResponse(null);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          findClinics(`${latitude},${longitude}`);
+        },
+        (error) => {
+          setLoading(false);
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              setError("You denied the request for Geolocation. Please enable location services in your browser settings.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              setError("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              setError("The request to get user location timed out.");
+              break;
+            default:
+              setError("An unknown error occurred while getting your location.");
+              break;
+          }
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  };
 
 
   const clinics = apiResponse?.clinics || [];
@@ -135,14 +168,23 @@ export default function NearbyClinics() {
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
         {!loading && clinics.length === 0 && !error && (
           <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4">
+            <Button onClick={handleUseMyLocation} className="w-full" disabled={loading}>
+              <LocateFixed className="mr-2 h-4 w-4" />
+              {t('useMyLocation')}
+            </Button>
+            <div className="flex items-center w-full">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="flex-shrink mx-4 text-muted-foreground text-sm">OR</span>
+                <div className="flex-grow border-t border-gray-300"></div>
+            </div>
              <p className="text-center text-muted-foreground">
-              Enter your location to find nearby hospitals and clinics.
+              {t('enterLocationPrompt')}
             </p>
              <div className="relative w-full" ref={wrapperRef}>
                 <div className="flex w-full items-center space-x-2">
                     <Input 
                         type="text" 
-                        placeholder="e.g., city, address, or zip code" 
+                        placeholder={t('locationPlaceholder')}
                         value={locationInput}
                         onChange={(e) => setLocationInput(e.target.value)}
                         onKeyDown={(e) => {
@@ -223,14 +265,6 @@ export default function NearbyClinics() {
                     </div>
                     <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
                   </div>
-                   {clinic.phone !== 'N/A' && (
-                    <div className="flex items-center gap-2 pt-2 pl-14">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <a href={`tel:${clinic.phone}`} className="text-sm text-primary hover:underline">
-                        {clinic.phone}
-                        </a>
-                    </div>
-                   )}
                 </div>
               ))}
             </div>
