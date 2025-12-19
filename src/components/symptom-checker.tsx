@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bot, Loader2, Send, User } from 'lucide-react';
+import { Bot, Loader2, Send, User, Mic } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, {
@@ -26,15 +27,30 @@ type Message = {
   content: React.ReactNode;
 };
 
+// Define SpeechRecognition interface for cross-browser compatibility
+interface CustomSpeechRecognition extends SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+}
+
+// Check for SpeechRecognition API
+const SpeechRecognition =
+  (typeof window !== 'undefined' && (window.SpeechRecognition || (window as any).webkitSpeechRecognition)) || null;
+
+
 export default function SymptomChecker() {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I am Anshu, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies.",
+      content: "Hello! I am Anshu, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies. You can also use the microphone to speak your symptoms.",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,6 +58,56 @@ export default function SymptomChecker() {
       symptoms: '',
     },
   });
+  
+  useEffect(() => {
+    if (!SpeechRecognition) {
+      // API not supported, no need to initialize
+      return;
+    }
+
+    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        form.setValue('symptoms', form.getValues('symptoms') + finalTranscript);
+      }
+    };
+    
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        let errorMessage = 'An unknown error occurred during speech recognition.';
+        if (event.error === 'no-speech') {
+            errorMessage = 'No speech was detected. Please try again.';
+        } else if (event.error === 'audio-capture') {
+            errorMessage = 'Microphone is not available. Please check your microphone settings.';
+        } else if (event.error === 'not-allowed') {
+            errorMessage = 'Permission to use microphone was denied. Please allow microphone access in your browser settings.';
+        }
+        toast({
+            variant: 'destructive',
+            title: 'Voice Input Error',
+            description: errorMessage,
+        });
+        setIsListening(false);
+    };
+    
+    recognitionRef.current = recognition;
+
+  }, [form, toast]);
+
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -51,6 +117,29 @@ export default function SymptomChecker() {
       });
     }
   }, [messages]);
+  
+  const handleListen = () => {
+    if (!SpeechRecognition) {
+      toast({
+        variant: 'destructive',
+        title: 'Feature Not Supported',
+        description: 'Your browser does not support voice recognition.',
+      });
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch(e) {
+          console.error("Could not start recognition", e)
+      }
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -148,7 +237,7 @@ export default function SymptomChecker() {
                 <FormItem className="flex-1">
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., I have a high fever, headache, and a sore throat..."
+                      placeholder={isListening ? "Listening..." : "e.g., I have a high fever, headache, and a sore throat..."}
                       className="resize-none"
                       disabled={isLoading}
                       rows={1}
@@ -165,6 +254,16 @@ export default function SymptomChecker() {
                 </FormItem>
               )}
             />
+             <Button
+              type="button"
+              size="icon"
+              variant={isListening ? 'destructive' : 'outline'}
+              onClick={handleListen}
+              disabled={isLoading}
+            >
+              <Mic className="h-4 w-4" />
+              <span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span>
+            </Button>
             <Button type="submit" size="icon" disabled={isLoading}>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               <span className="sr-only">Send message</span>
