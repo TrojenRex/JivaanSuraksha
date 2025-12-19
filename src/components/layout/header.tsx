@@ -37,7 +37,7 @@ const Header: FC = () => {
              <Button asChild variant="destructive" className="animate-pulse">
                 <a href="tel:102">
                     <Siren className="mr-2 h-5 w-5" />
-                    BACHAOO
+                    EMERGENCY +
                 </a>
             </Button>
             <DropdownMenu>
