@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Jivaan Suraksha',
-  description: 'AI-powered symptom checker for water-borne diseases.',
+  description: 'An AI-powered symptom checker for all diseases.',
 };
 
 export default function RootLayout({
