@@ -1,6 +1,7 @@
-import { Droplets } from 'lucide-react';
+import { Droplets, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
+import { Button } from '@/components/ui/button';
 
 const Header: FC = () => {
   return (
@@ -16,7 +17,12 @@ const Header: FC = () => {
             </span>
           </Link>
           <nav>
-            {/* Navigation links can be added here in the future */}
+            <Button asChild variant="outline">
+              <Link href="/nearby-clinics" className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>Nearby Clinics</span>
+              </Link>
+            </Button>
           </nav>
         </div>
       </div>
