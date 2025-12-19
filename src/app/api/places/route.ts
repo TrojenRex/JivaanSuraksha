@@ -23,81 +23,55 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const url = 'https://places.googleapis.com/v1/places:searchNearby';
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Goog-Api-Key': apiKey,
-    'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.location,places.id',
-  };
-  
-  const body = {
-    includedTypes: ["hospital", "health_care_facility", "clinic", "doctor"],
-    maxResultCount: 10,
-    locationRestriction: {
-        "circle": {
-            "center": {
-                "latitude": Number(lat),
-                "longitude": Number(lon)
-            },
-            "radius": 5000.0 // 5km radius
-        }
-    }
-  };
+  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=5000&type=hospital&key=${apiKey}`;
 
   try {
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(body)
-    });
-    
+    const res = await fetch(url);
     const data = await res.json();
 
-    if (!res.ok || data.error) {
-        console.error('Google Places API (New) Error:', data.error);
-         if (data.error?.status === 'PERMISSION_DENIED') {
+    if (data.status !== 'OK') {
+      console.error('Google Places API Error:', data.status, data.error_message);
+       if (data.status === 'REQUEST_DENIED') {
             return NextResponse.json(
-                {error: 'The Google Places API request was denied. This is often because the "Places API (New)" is not enabled in your Google Cloud project. Please ensure it is enabled.'},
+                {error: 'The Google Places API request was denied. This is often because the "Places API" is not enabled in your Google Cloud project. Please ensure it is enabled.'},
                 {status: 403}
             );
         }
-        return NextResponse.json(
-            {error: `Failed to fetch places: ${data.error?.message || 'Unknown error'}`},
-            {status: res.status}
-        );
+      return NextResponse.json(
+        {error: `Failed to fetch places: ${data.status}`},
+        {status: 500}
+      );
     }
     
     const userLat = Number(lat);
     const userLon = Number(lon);
 
-    const places = (data.places || []).map((place: any) => {
-        const distance = calculateDistance(userLat, userLon, place.location.latitude, place.location.longitude);
+    const places = data.results.map((place: any) => {
+        const distance = calculateDistance(userLat, userLon, place.geometry.location.lat, place.geometry.location.lng);
         return {
-            id: place.id,
-            name: place.displayName?.text,
-            address: place.formattedAddress,
-            phone: place.nationalPhoneNumber || 'N/A',
+            id: place.place_id,
+            name: place.name,
+            address: place.vicinity,
+            phone: 'N/A', // Details API needed for phone number
             distance: `${distance.toFixed(1)} miles`,
-            location: {
-                lat: place.location.latitude,
-                lng: place.location.longitude
-            },
+            location: place.geometry.location,
         };
     });
 
     // Sort by distance
     places.sort((a:any, b:any) => parseFloat(a.distance) - parseFloat(b.distance));
+    const nearbyPlaces = places.slice(0, 10);
     
     let mapUrl = null;
-    if (places.length > 0) {
-      const markers = places.map((p:any, index:number) => `markers=color:red|label:${index+1}|${p.location.lat},${p.location.lng}`).join('&');
+    if (nearbyPlaces.length > 0) {
+      const markers = nearbyPlaces.map((p:any, index:number) => `markers=color:red|label:${index+1}|${p.location.lat},${p.location.lng}`).join('&');
       const userMarker = `markers=color:blue|label:U|${lat},${lon}`;
       mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=600x400&maptype=roadmap&${userMarker}&${markers}&key=${apiKey}`;
     }
 
-    return NextResponse.json({ clinics: places, mapUrl });
+    return NextResponse.json({ clinics: nearbyPlaces, mapUrl });
   } catch (error) {
-    console.error('Error fetching from Google Places API (New):', error);
+    console.error('Error fetching from Google Places API:', error);
     return NextResponse.json(
       {error: 'An internal server error occurred.'},
       {status: 500}
