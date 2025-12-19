@@ -3,20 +3,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, MapPin, Hospital, Phone, Search } from 'lucide-react';
+import { Loader2, Hospital, Phone, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import Image from 'next/image';
 import { Input } from './ui/input';
-import { Separator } from './ui/separator';
 import { useLanguage } from './language-provider';
-
-type GeolocationPosition = {
-  coords: {
-    latitude: number;
-    longitude: number;
-  };
-};
 
 type Clinic = {
   id: string;
@@ -33,60 +25,31 @@ type ApiResponse = {
 
 export default function NearbyClinics() {
   const { t } = useLanguage();
-  const [location, setLocation] = useState<GeolocationPosition['coords'] | null>(null);
-  const [pincode, setPincode] = useState('');
+  const [locationInput, setLocationInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [isApiError, setIsApiError] = useState(false);
 
-  const fetchClinics = async (coords: GeolocationPosition['coords']) => {
-    setLoading(true);
-    setError(null);
-    setIsApiError(false);
-    try {
-      const response = await fetch(`/api/places?lat=${coords.latitude}&lon=${coords.longitude}`);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch clinics.');
-      }
-      const data: ApiResponse = await response.json();
-      if (data.clinics.length === 0) {
-        setError("No clinics or hospitals found within a 3-mile radius. Please try refreshing if you believe this is an error.")
-      }
-      setApiResponse(data);
-    } catch (err: any) {
-      if (err.message.includes('API configuration error') || err.message.includes('request was denied')) {
-        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" and "Geocoding API" are enabled in the Google Cloud Console.');
-        setIsApiError(true);
-      } else {
-        setError(err.message);
-      }
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const fetchClinicsByPincode = async (pincode: string) => {
-    if (!pincode.trim()) {
-        setError("Please enter a valid pincode.");
+  const findClinics = async () => {
+    if (!locationInput.trim()) {
+        setError("Please enter a location, such as a city, address, or zip code.");
         return;
     }
     setLoading(true);
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
-    setLocation(null);
+
     try {
-      const response = await fetch(`/api/places?pincode=${pincode}`);
+      const response = await fetch(`/api/places?location=${encodeURIComponent(locationInput)}`);
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch clinics by pincode.');
+        throw new Error(errorData.error || 'Failed to fetch clinics.');
       }
       const data: ApiResponse = await response.json();
        if (data.clinics.length === 0) {
-        setError("No clinics or hospitals found for the provided pincode. Please check the pincode and try again.")
+        setError(`No clinics or hospitals found near "${locationInput}". Please try a different or more specific location.`)
       }
       setApiResponse(data);
     } catch (err: any) {
@@ -102,31 +65,6 @@ export default function NearbyClinics() {
     }
   };
 
-
-  const getLocation = () => {
-    setLoading(true);
-    setError(null);
-    setIsApiError(false);
-    setApiResponse(null);
-    setPincode('');
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          setLocation(position.coords);
-          fetchClinics(position.coords);
-        },
-        (error) => {
-          setError(`Error getting location: ${error.message}`);
-          setLoading(false);
-        }
-      );
-    } else {
-      setError('Geolocation is not supported by this browser.');
-      setLoading(false);
-    }
-  };
-
   const clinics = apiResponse?.clinics || [];
 
   return (
@@ -138,31 +76,22 @@ export default function NearbyClinics() {
         {!loading && clinics.length === 0 && !error && (
           <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4">
              <p className="text-center text-muted-foreground">
-              Automatically find clinics near you or search by pincode.
+              Enter your location to find nearby hospitals and clinics.
             </p>
-            <Button onClick={getLocation} disabled={loading} className="w-full">
-              <MapPin className="mr-2 h-4 w-4" />
-              Use My Location
-            </Button>
-            <div className="flex items-center w-full">
-              <Separator className="flex-1" />
-              <span className="px-4 text-sm text-muted-foreground">OR</span>
-              <Separator className="flex-1" />
-            </div>
              <div className="flex w-full items-center space-x-2">
                 <Input 
                     type="text" 
-                    placeholder="Enter Pincode" 
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
+                    placeholder="e.g., city, address, or zip code" 
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          fetchClinicsByPincode(pincode);
+                          findClinics();
                         }
                     }}
                     disabled={loading}
                 />
-                <Button type="submit" onClick={() => fetchClinicsByPincode(pincode)} disabled={loading}>
+                <Button type="submit" onClick={findClinics} disabled={loading}>
                     <Search className="h-4 w-4" />
                     <span className="sr-only">Search</span>
                 </Button>
@@ -229,7 +158,7 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={() => { setApiResponse(null); setPincode(''); setLocation(null); }} variant="outline" className="w-full">
+             <Button onClick={() => { setApiResponse(null); setLocationInput(''); }} variant="outline" className="w-full">
               Start New Search
             </Button>
           </div>
