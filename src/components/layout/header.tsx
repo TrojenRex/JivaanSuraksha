@@ -25,19 +25,19 @@ const Header: FC = () => {
     <header className="absolute top-0 left-0 w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/" className="flex items-center gap-3 text-primary-foreground">
+          <Link href="/" className="flex items-center gap-2 text-primary-foreground">
             <div className="bg-primary/80 backdrop-blur-sm p-2 rounded-lg shadow-md">
-              <Droplets className="h-6 w-6 text-primary-foreground" />
+              <Droplets className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
-            <span className="text-xl md:text-2xl font-bold text-foreground">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
               {t('appName')}
             </span>
           </Link>
-          <nav className='flex items-center gap-2'>
-             <Button asChild variant="destructive" className="animate-pulse">
+          <nav className='flex items-center gap-1 sm:gap-2'>
+             <Button asChild variant="destructive" className="animate-pulse px-2 sm:px-4">
                 <a href="tel:102">
-                    <Siren className="mr-2 h-5 w-5" />
-                    {t('emergency')}
+                    <Siren className="mr-0 sm:mr-2 h-5 w-5" />
+                    <span className="hidden sm:inline">{t('emergency')}</span>
                 </a>
             </Button>
             <DropdownMenu>

@@ -208,16 +208,16 @@ export default function SymptomChecker() {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
       <CardHeader>
-        <h2 className="text-2xl font-bold text-center">AI Symptom Checker</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-center">AI Symptom Checker</h2>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[400px] w-full pr-4" ref={scrollAreaRef}>
+        <ScrollArea className="h-[50vh] sm:h-[400px] w-full pr-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={cn(
-                  'flex items-start gap-4',
+                  'flex items-start gap-2 sm:gap-4',
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 )}
               >

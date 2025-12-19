@@ -17,9 +17,9 @@ export default function Home() {
       <main 
         className="flex-1 flex flex-col items-center justify-center p-4 pt-24 md:pt-28"
       >
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t('welcomeMessage')}</h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">{t('welcomeMessage')}</h1>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             {t('appDescription')}
           </p>
         </div>
