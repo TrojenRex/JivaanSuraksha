@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const placesPromises = data.results.map(async (place: any) => {
+    const placesPromises = data.results.slice(0, 10).map(async (place: any) => {
         const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=name,formatted_address,formatted_phone_number,geometry&key=${apiKey}`;
         const detailsRes = await fetch(detailsUrl);
         const detailsData = await detailsRes.json();
@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
             address: detailsResult.formatted_address,
             phone: detailsResult.formatted_phone_number || 'N/A',
             distance: `${distance.toFixed(1)} miles`,
+            location: detailsResult.geometry.location,
         };
     });
 
@@ -64,8 +65,15 @@ export async function GET(request: NextRequest) {
 
     // Sort by distance
     placesWithDetails.sort((a,b) => parseFloat(a!.distance) - parseFloat(b!.distance));
+    
+    let mapUrl = null;
+    if (placesWithDetails.length > 0) {
+      const markers = placesWithDetails.map((p, index) => `markers=color:red|label:${index+1}|${p!.location.lat},${p!.location.lng}`).join('&');
+      const userMarker = `markers=color:blue|label:U|${lat},${lon}`;
+      mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=600x400&maptype=roadmap&${userMarker}&${markers}&key=${apiKey}`;
+    }
 
-    return NextResponse.json(placesWithDetails);
+    return NextResponse.json({ clinics: placesWithDetails, mapUrl });
   } catch (error) {
     console.error('Error fetching from Google Places API:', error);
     return NextResponse.json(

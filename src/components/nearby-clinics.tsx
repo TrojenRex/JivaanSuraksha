@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, MapPin, Hospital, Phone } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
+import Image from 'next/image';
 
 type GeolocationPosition = {
   coords: {
@@ -22,11 +23,16 @@ type Clinic = {
   distance: string;
 };
 
+type ApiResponse = {
+  clinics: Clinic[];
+  mapUrl: string | null;
+}
+
 export default function NearbyClinics() {
   const [location, setLocation] = useState<GeolocationPosition['coords'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [isApiError, setIsApiError] = useState(false);
 
   const fetchClinics = async (coords: GeolocationPosition['coords']) => {
@@ -39,14 +45,14 @@ export default function NearbyClinics() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch clinics.');
       }
-      const data: Clinic[] = await response.json();
-      if (data.length === 0) {
+      const data: ApiResponse = await response.json();
+      if (data.clinics.length === 0) {
         setError("No clinics or hospitals found within a 3-mile radius. Please try refreshing if you believe this is an error.")
       }
-      setClinics(data);
+      setApiResponse(data);
     } catch (err: any) {
       if (err.message.includes('API configuration error')) {
-        setError('This feature is not configured. The developer needs to provide a Google Maps API Key in an .env.local file.');
+        setError('This feature is not configured. The developer needs to provide a Google Maps API Key in an .env file.');
         setIsApiError(true);
       } else {
         setError(err.message);
@@ -61,7 +67,7 @@ export default function NearbyClinics() {
     setLoading(true);
     setError(null);
     setIsApiError(false);
-    setClinics([]);
+    setApiResponse(null);
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -80,8 +86,10 @@ export default function NearbyClinics() {
     }
   };
 
+  const clinics = apiResponse?.clinics || [];
+
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Find Nearby Clinics</CardTitle>
       </CardHeader>
@@ -119,24 +127,30 @@ export default function NearbyClinics() {
           )
         )}
         
-        {clinics.length > 0 && (
+        {apiResponse && clinics.length > 0 && (
           <div className="w-full space-y-4">
+            {apiResponse.mapUrl && (
+              <div className="w-full aspect-[4/3] relative rounded-lg overflow-hidden border">
+                <Image src={apiResponse.mapUrl} alt="Map of nearby clinics" layout="fill" objectFit="cover" />
+              </div>
+            )}
             <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>
-            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-              {clinics.map((clinic) => (
+            <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2">
+              {clinics.map((clinic, index) => (
                 <div key={clinic.id} className="p-4 bg-muted/50 rounded-lg border">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <h4 className="font-bold flex items-center gap-2">
+                         <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">{index+1}</span>
                         <Hospital className="h-5 w-5 text-primary" />
                         {clinic.name}
                       </h4>
-                      <p className="text-sm text-muted-foreground pl-7">{clinic.address}</p>
+                      <p className="text-sm text-muted-foreground pl-14">{clinic.address}</p>
                     </div>
                     <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
                   </div>
                    {clinic.phone !== 'N/A' && (
-                    <div className="flex items-center gap-2 pt-2 pl-7">
+                    <div className="flex items-center gap-2 pt-2 pl-14">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <a href={`tel:${clinic.phone}`} className="text-sm text-primary hover:underline">
                         {clinic.phone}
