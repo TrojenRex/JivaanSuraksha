@@ -84,8 +84,11 @@ export default function NearbyClinics() {
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
-    setSuggestions([]);
-    setShowSuggestions(false);
+    
+    if (typeof location === 'string') {
+        setShowSuggestions(false);
+        setSearchQuery(location);
+    }
 
     const query = typeof location === 'string' ? location : `${location.latitude},${location.longitude}`;
 
@@ -109,7 +112,7 @@ export default function NearbyClinics() {
       const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {
-        setError(`No clinics or hospitals found near "${query}". Please try a different search.`)
+        setError(`No clinics or hospitals found near your location. Please try a different search.`)
       }
       setApiResponse(data);
     } catch (err: any) {
@@ -133,6 +136,7 @@ export default function NearbyClinics() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          setSearchQuery('My Current Location');
           findClinics({latitude, longitude});
         },
         (error) => {
@@ -160,7 +164,7 @@ export default function NearbyClinics() {
 
   const handleManualSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim()) {
+    if (!searchQuery.trim() || searchQuery === 'My Current Location') {
         setError("Please enter a location to search.");
         return;
     }
@@ -168,11 +172,18 @@ export default function NearbyClinics() {
   };
   
   const handleSuggestionClick = (suggestion: Suggestion) => {
-    setSearchQuery(suggestion.description);
     findClinics(suggestion.description);
   };
 
   const clinics = apiResponse?.clinics || [];
+  
+  const resetSearch = () => {
+    setApiResponse(null); 
+    setError(null); 
+    setSearchQuery('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
@@ -180,71 +191,69 @@ export default function NearbyClinics() {
         <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
-        {!apiResponse && !loading && !error && (
-            <div className="w-full max-w-md mx-auto flex flex-col items-center gap-4 text-center">
-                <p className="text-muted-foreground">
-                    Find medical facilities by using your current location or by searching manually.
-                </p>
-                <Button onClick={handleUseMyLocation} className="w-full" disabled={loading}>
-                    <LocateFixed className="mr-2 h-4 w-4" />
-                    {t('useMyLocation')}
-                </Button>
-
-                <div className="w-full flex items-center gap-2">
-                    <hr className="flex-grow border-t" />
-                    <span className="text-muted-foreground text-xs">OR</span>
-                    <hr className="flex-grow border-t" />
-                </div>
-                
-                <form onSubmit={handleManualSearch} className="w-full space-y-2" ref={searchContainerRef}>
-                    <p className="text-muted-foreground text-sm">{t('enterLocationPrompt')}</p>
-                    <div className='relative w-full'>
-                        <div className="flex w-full gap-2">
-                            <Input 
+        <div className="w-full max-w-md mx-auto" ref={searchContainerRef}>
+            <form onSubmit={handleManualSearch} className="w-full space-y-2">
+                <div className='relative w-full'>
+                    <div className="flex w-full gap-2">
+                        <div className="relative flex-1">
+                             <Input 
                                 type="text"
                                 placeholder={t('locationPlaceholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 disabled={loading}
                                 onFocus={() => setShowSuggestions(true)}
+                                className="pr-10"
                             />
-                            <Button type="submit" disabled={loading || !searchQuery}>
-                                <Search className="mr-2 h-4 w-4" />
-                                Search
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon" 
+                                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                                onClick={handleUseMyLocation}
+                                disabled={loading}
+                                aria-label="Use my location"
+                            >
+                                <LocateFixed className="h-4 w-4" />
                             </Button>
                         </div>
-                        {showSuggestions && suggestions.length > 0 && (
-                            <Card className="absolute top-full mt-2 w-full z-10 shadow-lg">
-                                <CardContent className="p-2">
-                                    <ul className="space-y-1">
-                                        {suggestions.map((suggestion) => (
-                                            <li key={suggestion.place_id}>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    className="w-full justify-start h-auto py-2 text-left"
-                                                    onClick={() => handleSuggestionClick(suggestion)}>
-                                                    {suggestion.description}
-                                                </Button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        )}
+
+                        <Button type="submit" disabled={loading || !searchQuery}>
+                            <Search className="mr-2 h-4 w-4" />
+                            Search
+                        </Button>
                     </div>
-                </form>
-            </div>
-        )}
+                    {showSuggestions && suggestions.length > 0 && (
+                        <Card className="absolute top-full mt-2 w-full z-10 shadow-lg">
+                            <CardContent className="p-2">
+                                <ul className="space-y-1">
+                                    {suggestions.map((suggestion) => (
+                                        <li key={suggestion.place_id}>
+                                            <Button 
+                                                variant="ghost" 
+                                                className="w-full justify-start h-auto py-2 text-left"
+                                                onClick={() => handleSuggestionClick(suggestion)}>
+                                                {suggestion.description}
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+            </form>
+        </div>
 
         {loading && (
-          <div className="flex flex-col items-center space-y-2">
+          <div className="flex flex-col items-center space-y-2 pt-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p>Searching for clinics...</p>
           </div>
         )}
 
         {error && (
-          <div className="w-full">
+          <div className="w-full pt-4">
             {isApiError ? (
               <Alert variant="destructive">
                 <Terminal className="h-4 w-4" />
@@ -256,14 +265,14 @@ export default function NearbyClinics() {
             ) : (
               <p className="text-destructive text-sm text-center">{error}</p>
             )}
-             <Button onClick={() => { setError(null); setApiResponse(null); setSearchQuery(''); }} variant="outline" className="w-full mt-4">
+             <Button onClick={resetSearch} variant="outline" className="w-full mt-4">
                 Try Again
             </Button>
           </div>
         )}
         
         {apiResponse && clinics.length > 0 && (
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-4 pt-4">
             <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
               {clinics.map((clinic) => (
@@ -289,7 +298,7 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={() => { setApiResponse(null); setError(null); setSearchQuery(''); }} variant="outline" className="w-full">
+             <Button onClick={resetSearch} variant="outline" className="w-full">
               Start New Search
             </Button>
           </div>
