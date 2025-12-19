@@ -53,7 +53,7 @@ export default function NearbyClinics() {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.length > 2) {
+    if (searchQuery.length > 2 && searchQuery !== 'My Current Location') {
       const fetchSuggestions = async () => {
         try {
           const response = await fetch(`/api/autocomplete?input=${searchQuery}`);
@@ -191,34 +191,19 @@ export default function NearbyClinics() {
         <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
-        <div className="w-full max-w-md mx-auto" ref={searchContainerRef}>
+        <div className="w-full max-w-md mx-auto space-y-4" ref={searchContainerRef}>
             <form onSubmit={handleManualSearch} className="w-full space-y-2">
                 <div className='relative w-full'>
                     <div className="flex w-full gap-2">
-                        <div className="relative flex-1">
-                             <Input 
-                                type="text"
-                                placeholder={t('locationPlaceholder')}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                disabled={loading}
-                                onFocus={() => setShowSuggestions(true)}
-                                className="pr-10"
-                            />
-                            <Button 
-                                type="button" 
-                                variant="ghost" 
-                                size="icon" 
-                                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                                onClick={handleUseMyLocation}
-                                disabled={loading}
-                                aria-label="Use my location"
-                            >
-                                <LocateFixed className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        <Button type="submit" disabled={loading || !searchQuery}>
+                         <Input 
+                            type="text"
+                            placeholder={t('locationPlaceholder')}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            disabled={loading}
+                            onFocus={() => setShowSuggestions(true)}
+                        />
+                        <Button type="submit" disabled={loading || !searchQuery || searchQuery === 'My Current Location'}>
                             <Search className="mr-2 h-4 w-4" />
                             Search
                         </Button>
@@ -243,6 +228,19 @@ export default function NearbyClinics() {
                     )}
                 </div>
             </form>
+             <div className="relative flex items-center justify-center">
+                <span className="absolute left-0 w-full h-px bg-border"></span>
+                <span className="relative bg-card px-2 text-sm text-muted-foreground">OR</span>
+            </div>
+            <Button 
+                onClick={handleUseMyLocation} 
+                disabled={loading}
+                variant="outline"
+                className="w-full"
+            >
+                <LocateFixed className="mr-2 h-4 w-4" />
+                {t('useMyLocation')}
+            </Button>
         </div>
 
         {loading && (
