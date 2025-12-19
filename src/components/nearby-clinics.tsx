@@ -51,8 +51,8 @@ export default function NearbyClinics() {
       }
       setApiResponse(data);
     } catch (err: any) {
-      if (err.message.includes('API configuration error')) {
-        setError('This feature is not configured. The developer needs to provide a Google Maps API Key in an .env file.');
+      if (err.message.includes('API configuration error') || err.message.includes('request was denied')) {
+        setError('This feature is not configured correctly. The developer needs to ensure the Google Maps API Key is valid and that the "Places API" and "Maps Static API" are enabled in the Google Cloud Console.');
         setIsApiError(true);
       } else {
         setError(err.message);
