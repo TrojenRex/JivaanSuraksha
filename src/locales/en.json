@@ -14,5 +14,7 @@
     "light": "Light",
     "dark": "Dark",
     "language": "Language",
-    "emergency": "EMERGENCY +"
+    "emergency": "EMERGENCY +",
+    "medicineChecker": "Medicine Checker",
+    "medicineCheckerDescription": "Enter a medicine name to get information about its uses, side effects, and dosage."
 }

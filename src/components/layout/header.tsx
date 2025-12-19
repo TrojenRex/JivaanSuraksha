@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home, Siren } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home, Siren, Pill } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -58,6 +58,12 @@ const Header: FC = () => {
                   <Link href="/symptom-checker">
                     <Stethoscope className="mr-2 h-4 w-4" />
                     <span>{t('symptomChecker')}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/medicine-checker">
+                    <Pill className="mr-2 h-4 w-4" />
+                    <span>{t('medicineChecker')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
