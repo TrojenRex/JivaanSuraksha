@@ -35,7 +35,7 @@ const Header: FC = () => {
           </Link>
           <nav className='flex items-center gap-2'>
              <Button asChild variant="destructive" className="animate-pulse">
-                <a href="tel:101">
+                <a href="tel:112">
                     <Siren className="mr-2 h-5 w-5" />
                     BACHAOO
                 </a>
