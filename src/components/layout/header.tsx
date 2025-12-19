@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home } from 'lucide-react';
+import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home, Siren } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,12 @@ const Header: FC = () => {
             </span>
           </Link>
           <nav className='flex items-center gap-2'>
+             <Button asChild variant="destructive" className="animate-pulse">
+                <a href="tel:101">
+                    <Siren className="mr-2 h-5 w-5" />
+                    BACHAOO
+                </a>
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
