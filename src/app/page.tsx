@@ -1,7 +1,6 @@
 import Header from '@/components/layout/header';
 import WaveBackground from '@/components/wave-background';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Stethoscope, MapPin } from 'lucide-react';
 
@@ -45,9 +44,9 @@ export default function Home() {
               <p className="text-muted-foreground mb-6">
                 Use your location to find the nearest clinics and hospitals for professional medical assistance.
               </p>
-              <Button asChild size="lg" className="mt-auto w-full max-w-xs">
-                <Link href="/nearby-clinics">Find Clinics</Link>
-              </Button>
+              <Link href="/nearby-clinics" className="btn-uiverse mt-auto">
+                Find Clinics
+              </Link>
             </CardContent>
           </Card>
         </div>
