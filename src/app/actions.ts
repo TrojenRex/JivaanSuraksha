@@ -1,7 +1,7 @@
 'use server';
 
 import { aiSymptomDetection } from '@/ai/flows/ai-symptom-detection';
-import type { AISymptomDetectionOutput } from '@/ai/flows/ai-symptom-detection';
+import type { AISymptomDetectionInput, AISymptomDetectionOutput } from '@/ai/flows/ai-symptom-detection';
 import { aiMedicineChecker } from '@/ai/flows/ai-medicine-checker';
 import type { AIMedicineCheckerInput, AIMedicineCheckerOutput } from '@/ai/flows/ai-medicine-checker';
 import { textToSpeech } from '@/ai/flows/ai-text-to-speech';
@@ -14,16 +14,16 @@ type AISymptomActionResult = {
   error?: string;
 };
 
-export async function getAiResponse(symptoms: string): Promise<AISymptomActionResult> {
-  if (!symptoms || symptoms.trim().length < 10) {
+export async function getAiResponse(input: AISymptomDetectionInput): Promise<AISymptomActionResult> {
+  if (!input.symptoms && !input.photoDataUri) {
     return {
       success: false,
-      error: 'Please provide a more detailed description of your symptoms.',
+      error: 'Please provide a more detailed description of your symptoms or an image.',
     };
   }
 
   try {
-    const result = await aiSymptomDetection({ symptoms });
+    const result = await aiSymptomDetection(input);
     return { success: true, data: result };
   } catch (error) {
     console.error('AI symptom detection failed:', error);
