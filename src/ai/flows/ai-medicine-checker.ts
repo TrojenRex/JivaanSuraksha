@@ -14,9 +14,12 @@ import {z} from 'genkit';
 const AIMedicineCheckerInputSchema = z.object({
   medicine: z
     .string()
-    .describe(
-      'The name of the medicine.'
-    ),
+    .optional()
+    .describe('The name of the medicine.'),
+  photoDataUri: z
+    .string()
+    .optional()
+    .describe("A photo of the medicine, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 export type AIMedicineCheckerInput = z.infer<typeof AIMedicineCheckerInputSchema>;
 
@@ -35,11 +38,18 @@ const prompt = ai.definePrompt({
   name: 'aiMedicineCheckerPrompt',
   input: {schema: AIMedicineCheckerInputSchema},
   output: {schema: AIMedicineCheckerOutputSchema},
-  prompt: `You are an AI medical assistant. A user has asked for information about a specific medicine. Provide a concise summary of its uses, common side effects, and general dosage information.
+  prompt: `You are an AI medical assistant. A user has asked for information about a specific medicine.
+  
+  You will be provided with either a name, a photo of the medicine, or both. Your task is to first identify the medicine. If you are given a photo, identify the medicine from the image. If you are given a name, use that. If you are given both, prioritize the name but use the photo for confirmation if possible.
+
+  Once the medicine is identified, provide a concise summary of its uses, common side effects, and general dosage information.
 
   IMPORTANT: Start the dosage information with a clear disclaimer that the user must consult a healthcare professional for actual dosage and medical advice.
 
   Medicine Name: {{{medicine}}}
+  {{#if photoDataUri}}
+  Photo: {{media url=photoDataUri}}
+  {{/if}}
   `,
 });
 
@@ -50,6 +60,9 @@ const aiMedicineCheckerFlow = ai.defineFlow(
     outputSchema: AIMedicineCheckerOutputSchema,
   },
   async input => {
+    if (!input.medicine && !input.photoDataUri) {
+        throw new Error('Either a medicine name or a photo must be provided.');
+    }
     const {output} = await prompt(input);
     return output!;
   }

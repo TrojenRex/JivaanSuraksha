@@ -3,7 +3,7 @@
 import { aiSymptomDetection } from '@/ai/flows/ai-symptom-detection';
 import type { AISymptomDetectionOutput } from '@/ai/flows/ai-symptom-detection';
 import { aiMedicineChecker } from '@/ai/flows/ai-medicine-checker';
-import type { AIMedicineCheckerOutput } from '@/ai/flows/ai-medicine-checker';
+import type { AIMedicineCheckerInput, AIMedicineCheckerOutput } from '@/ai/flows/ai-medicine-checker';
 
 
 type AISymptomActionResult = {
@@ -38,16 +38,16 @@ type AIMedicineActionResult = {
   error?: string;
 };
 
-export async function getMedicineInfo(medicine: string): Promise<AIMedicineActionResult> {
-  if (!medicine || medicine.trim().length < 2) {
+export async function getMedicineInfo(input: AIMedicineCheckerInput): Promise<AIMedicineActionResult> {
+  if (!input.medicine && !input.photoDataUri) {
     return {
       success: false,
-      error: 'Please provide a valid medicine name.',
+      error: 'Please provide a medicine name or a photo.',
     };
   }
 
   try {
-    const result = await aiMedicineChecker({ medicine });
+    const result = await aiMedicineChecker(input);
     return { success: true, data: result };
   } catch (error) {
     console.error('AI medicine checker failed:', error);
