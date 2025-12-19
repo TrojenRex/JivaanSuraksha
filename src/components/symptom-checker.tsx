@@ -1,12 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bot, Loader2, Send, User, Mic } from 'lucide-react';
+import { Bot, Loader2, Send, User, Mic, Volume2, VolumeX } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { getAiResponse } from '@/app/actions';
+import { getAiResponse, getAudioFromText } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -25,6 +25,7 @@ const formSchema = z.object({
 type Message = {
   role: 'user' | 'assistant';
   content: React.ReactNode;
+  textContent: string;
 };
 
 // Define SpeechRecognition interface for cross-browser compatibility
@@ -45,12 +46,16 @@ export default function SymptomChecker() {
     {
       role: 'assistant',
       content: "Hello! I am Anshu, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies. You can also use the microphone to speak your symptoms.",
+      textContent: "Hello! I am Anshu, your AI health assistant. Please describe your symptoms, and I'll try to identify possible issues and suggest remedies. You can also use the microphone to speak your symptoms.",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
+  const [playingMessage, setPlayingMessage] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -141,14 +146,44 @@ export default function SymptomChecker() {
     }
   };
 
+    const handlePlayAudio = async (text: string, messageId: string) => {
+    if (playingMessage === messageId) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingMessage(null);
+      return;
+    }
+
+    setPlayingMessage(messageId);
+    const result = await getAudioFromText(text);
+
+    if (result.success && result.data) {
+      const audio = new Audio(result.data.audioDataUri);
+      audioRef.current = audio;
+      audio.play();
+      audio.onended = () => {
+        setPlayingMessage(null);
+        audioRef.current = null;
+      };
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Audio Playback Error',
+        description: result.error || 'Failed to generate audio.',
+      });
+      setPlayingMessage(null);
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setMessages(prev => [...prev, { role: 'user', content: values.symptoms }]);
+    setMessages(prev => [...prev, { role: 'user', content: values.symptoms, textContent: values.symptoms }]);
 
     const result = await getAiResponse(values.symptoms);
 
     if (result.success && result.data) {
       const { possibleDiseases, suggestedCures } = result.data;
+      const textContent = `Possible Conditions: ${possibleDiseases}. Suggested Actions: ${suggestedCures}.`;
       const aiContent = (
         <div>
           <h3 className="font-bold text-lg mb-2">Possible Conditions:</h3>
@@ -160,9 +195,10 @@ export default function SymptomChecker() {
           </p>
         </div>
       );
-      setMessages(prev => [...prev, { role: 'assistant', content: aiContent }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: aiContent, textContent }]);
     } else {
-      setMessages(prev => [...prev, { role: 'assistant', content: result.error || 'An unknown error occurred.' }]);
+      const errorContent = result.error || 'An unknown error occurred.';
+      setMessages(prev => [...prev, { role: 'assistant', content: errorContent, textContent: errorContent }]);
     }
 
     form.reset();
@@ -194,13 +230,29 @@ export default function SymptomChecker() {
                 )}
                 <div
                   className={cn(
-                    'max-w-[85%] rounded-lg p-3 text-sm shadow',
+                    'max-w-[85%] rounded-lg p-3 text-sm shadow relative group',
                     message.role === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted'
                   )}
                 >
                   {message.content}
+                   {message.role === 'assistant' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute -right-10 top-1/2 -translate-y-1/2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handlePlayAudio(message.textContent, `msg-${index}`)}
+                      disabled={playingMessage !== null && playingMessage !== `msg-${index}`}
+                    >
+                      {playingMessage === `msg-${index}` ? (
+                        <VolumeX className="h-4 w-4 animate-pulse" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Speak</span>
+                    </Button>
+                  )}
                 </div>
                 {message.role === 'user' && (
                   <Avatar className="h-8 w-8">

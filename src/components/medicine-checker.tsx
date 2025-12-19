@@ -1,13 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bot, Loader2, Send, User, Camera, Video, AlertCircle } from 'lucide-react';
+import { Bot, Loader2, Send, User, Camera, Video, AlertCircle, Volume2, VolumeX } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 
-import { getMedicineInfo } from '@/app/actions';
+import { getMedicineInfo, getAudioFromText } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -27,6 +27,7 @@ const formSchema = z.object({
 type Message = {
   role: 'user' | 'assistant';
   content: React.ReactNode;
+  textContent: string;
 };
 
 export default function MedicineChecker() {
@@ -35,11 +36,14 @@ export default function MedicineChecker() {
     {
       role: 'assistant',
       content: "Hello! I am Anshu. Enter the name of a medicine, or use the camera to take a picture of it. I'll provide you with information about its uses, side effects, and general dosage.",
+      textContent: "Hello! I am Anshu. Enter the name of a medicine, or use the camera to take a picture of it. I'll provide you with information about its uses, side effects, and general dosage.",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [playingMessage, setPlayingMessage] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -102,15 +106,46 @@ export default function MedicineChecker() {
     }
   };
 
+  const handlePlayAudio = async (text: string, messageId: string) => {
+    if (playingMessage === messageId) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingMessage(null);
+      return;
+    }
+
+    setPlayingMessage(messageId);
+    const result = await getAudioFromText(text);
+
+    if (result.success && result.data) {
+      const audio = new Audio(result.data.audioDataUri);
+      audioRef.current = audio;
+      audio.play();
+      audio.onended = () => {
+        setPlayingMessage(null);
+        audioRef.current = null;
+      };
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Audio Playback Error',
+        description: result.error || 'Failed to generate audio.',
+      });
+      setPlayingMessage(null);
+    }
+  };
+
+
   const processRequest = async (input: { medicine?: string, photoDataUri?: string }) => {
     setIsLoading(true);
     const userMessage = input.medicine || 'Image of a medicine';
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setMessages(prev => [...prev, { role: 'user', content: userMessage, textContent: userMessage }]);
 
     const result = await getMedicineInfo(input);
 
     if (result.success && result.data) {
       const { uses, sideEffects, dosage } = result.data;
+      const textContent = `Uses: ${uses}. Side Effects: ${sideEffects}. Dosage: ${dosage}.`;
       const aiContent = (
         <div>
           <h3 className="font-bold text-lg mb-2">Uses:</h3>
@@ -124,9 +159,10 @@ export default function MedicineChecker() {
           </p>
         </div>
       );
-      setMessages(prev => [...prev, { role: 'assistant', content: aiContent }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: aiContent, textContent }]);
     } else {
-      setMessages(prev => [...prev, { role: 'assistant', content: result.error || 'An unknown error occurred.' }]);
+      const errorContent = result.error || 'An unknown error occurred.';
+      setMessages(prev => [...prev, { role: 'assistant', content: errorContent, textContent: errorContent }]);
     }
 
     form.reset();
@@ -183,13 +219,29 @@ export default function MedicineChecker() {
                   )}
                   <div
                     className={cn(
-                      'max-w-[85%] rounded-lg p-3 text-sm shadow',
+                      'max-w-[85%] rounded-lg p-3 text-sm shadow relative group',
                       message.role === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
                     )}
                   >
                     {message.content}
+                    {message.role === 'assistant' && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute -right-10 top-1/2 -translate-y-1/2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handlePlayAudio(message.textContent, `msg-${index}`)}
+                        disabled={playingMessage !== null && playingMessage !== `msg-${index}`}
+                      >
+                        {playingMessage === `msg-${index}` ? (
+                          <VolumeX className="h-4 w-4 animate-pulse" />
+                        ) : (
+                          <Volume2 className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">Speak</span>
+                      </Button>
+                    )}
                   </div>
                   {message.role === 'user' && (
                     <Avatar className="h-8 w-8">
