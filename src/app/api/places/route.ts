@@ -31,6 +31,12 @@ export async function GET(request: NextRequest) {
 
     if (data.status !== 'OK') {
       console.error('Google Places API Error:', data.error_message || data.status);
+      if (data.status === 'REQUEST_DENIED') {
+        return NextResponse.json(
+            {error: 'The Google Places API request was denied. This is often because the "Places API" is not enabled in your Google Cloud project. Please ensure it is enabled.'},
+            {status: 500}
+        );
+      }
       return NextResponse.json(
         {error: `Failed to fetch places: ${data.status}`},
         {status: 500}
