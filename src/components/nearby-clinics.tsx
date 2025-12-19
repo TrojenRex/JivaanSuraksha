@@ -100,13 +100,22 @@ export default function NearbyClinics() {
 
     try {
       const response = await fetch(`/api/places?location=${encodeURIComponent(finalQuery)}`);
+      
       if (!response.ok) {
-        // The response is not ok. Read it as text to avoid JSON parsing errors.
         const errorText = await response.text();
-        throw new Error(errorText || `Failed to fetch clinics. The server returned a status of ${response.status}.`);
+        let errorMessage = errorText;
+        try {
+          // Check if the error is JSON, if so, use its message
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.error) {
+            errorMessage = errorJson.error;
+          }
+        } catch (e) {
+          // Not JSON, use the raw text, which is fine
+        }
+        throw new Error(errorMessage);
       }
       
-      // Only try to parse as JSON if the response was ok.
       const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {

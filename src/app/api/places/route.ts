@@ -33,8 +33,11 @@ export async function GET(request: NextRequest) {
     });
     const geocodeData = await geocodeResponse.json();
 
-    if (!geocodeData || geocodeData.length === 0) {
-      throw new Error(`Could not find a location for "${locationQuery}". Please try a more specific location.`);
+    if (!geocodeResponse.ok || !geocodeData || geocodeData.length === 0) {
+      return NextResponse.json(
+        {error: `Could not find a location for "${locationQuery}". Please try a more specific location.`},
+        {status: 404}
+      );
     }
     
     const location = geocodeData[0];
@@ -57,6 +60,13 @@ export async function GET(request: NextRequest) {
     `;
     const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
     const placesResponse = await fetch(overpassUrl);
+    
+    if (!placesResponse.ok) {
+        const errorText = await placesResponse.text();
+        console.error('Overpass API error:', errorText);
+        return NextResponse.json({ error: 'Failed to fetch nearby places from OpenStreetMap.' }, { status: placesResponse.status });
+    }
+
     const placesData = await placesResponse.json();
 
 
