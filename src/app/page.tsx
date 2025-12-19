@@ -29,8 +29,8 @@ export default function Home() {
               <p className="text-muted-foreground mb-6">
                 Describe your symptoms and get instant AI-powered insights into possible conditions related to water contamination.
               </p>
-              <Link href="/symptom-checker" className="btn-cssbuttons mt-auto">
-                <span>Start Checking</span>
+              <Link href="/symptom-checker" className="btn-uiverse mt-auto">
+                Start Checking
               </Link>
             </CardContent>
           </Card>
