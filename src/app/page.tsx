@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Header from '@/components/layout/header';
 import WaveBackground from '@/components/wave-background';
 import InteractiveCards from '@/components/interactive-cards';
 import { useLanguage } from '@/components/language-provider';
-import { cn } from '@/lib/utils';
 
 export default function Home() {
   const { t } = useLanguage();

@@ -2,7 +2,7 @@
 
 import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Stethoscope, MapPin, Pill } from 'lucide-react';
+import { Stethoscope, MapPin, Pill, Scan, Utensils, Brain, LifeBuoy, Newspaper, Siren } from 'lucide-react';
 import { useLanguage } from './language-provider';
 import TransitionLink from './transition-link';
 
@@ -57,7 +57,7 @@ const InteractiveCard = ({
           <CardTitle className="text-2xl font-bold">{title}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col items-center text-center">
-          <p className="text-muted-foreground mb-6">{description}</p>
+          <p className="text-muted-foreground mb-6 flex-1">{description}</p>
           <TransitionLink href={href} className="btn-uiverse mt-auto">
             {buttonText}
           </TransitionLink>
@@ -70,7 +70,7 @@ const InteractiveCard = ({
 export default function InteractiveCards() {
   const { t } = useLanguage();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl">
       <InteractiveCard
         href="/symptom-checker"
         icon={Stethoscope}
@@ -83,7 +83,7 @@ export default function InteractiveCards() {
         icon={Pill}
         title={t('medicineChecker')}
         description={t('medicineCheckerDescription')}
-        buttonText={t('startChecking')}
+        buttonText={t('getInfo')}
       />
       <InteractiveCard
         href="/nearby-clinics"
@@ -91,6 +91,48 @@ export default function InteractiveCards() {
         title={t('nearbyClinics')}
         description={t('nearbyClinicsDescription')}
         buttonText={t('findClinics')}
+      />
+      <InteractiveCard
+        href="/skin-analyzer"
+        icon={Scan}
+        title={t('skinAnalyzer')}
+        description={t('skinAnalyzerDescription')}
+        buttonText={t('analyzeSkin')}
+      />
+      <InteractiveCard
+        href="/diet-planner"
+        icon={Utensils}
+        title={t('dietPlanner')}
+        description={t('dietPlannerDescription')}
+        buttonText={t('createPlan')}
+      />
+      <InteractiveCard
+        href="/mental-health"
+        icon={Brain}
+        title={t('mentalHealthCompanion')}
+        description={t('mentalHealthCompanionDescription')}
+        buttonText={t('startChatting')}
+      />
+      <InteractiveCard
+        href="/first-aid"
+        icon={LifeBuoy}
+        title={t('firstAidGuide')}
+        description={t('firstAidGuideDescription')}
+        buttonText={t('getHelp')}
+      />
+       <InteractiveCard
+        href="/health-articles"
+        icon={Newspaper}
+        title={t('healthArticles')}
+        description={t('healthArticlesDescription')}
+        buttonText={t('readArticles')}
+      />
+       <InteractiveCard
+        href="/emergency-sos"
+        icon={Siren}
+        title={t('emergencySOS')}
+        description={t('emergencySOSDescription')}
+        buttonText={t('openSOS')}
       />
     </div>
   );

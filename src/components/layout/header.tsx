@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, Brain, LifeBuoy, Newspaper } from 'lucide-react';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +12,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { useLanguage } from '../language-provider';
 import { useTheme } from 'next-themes';
@@ -53,6 +54,7 @@ const Header: FC = () => {
                     <span>Home</span>
                   </TransitionLink>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <TransitionLink href="/symptom-checker">
                     <Stethoscope className="mr-2 h-4 w-4" />
@@ -69,6 +71,42 @@ const Header: FC = () => {
                   <TransitionLink href="/nearby-clinics">
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>{t('nearbyClinics')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/skin-analyzer">
+                    <Scan className="mr-2 h-4 w-4" />
+                    <span>{t('skinAnalyzer')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/diet-planner">
+                    <Utensils className="mr-2 h-4 w-4" />
+                    <span>{t('dietPlanner')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/mental-health">
+                    <Brain className="mr-2 h-4 w-4" />
+                    <span>{t('mentalHealthCompanion')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/first-aid">
+                    <LifeBuoy className="mr-2 h-4 w-4" />
+                    <span>{t('firstAidGuide')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/health-articles">
+                    <Newspaper className="mr-2 h-4 w-4" />
+                    <span>{t('healthArticles')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/emergency-sos">
+                    <Siren className="mr-2 h-4 w-4" />
+                    <span>{t('emergencySOS')}</span>
                   </TransitionLink>
                 </DropdownMenuItem>
               </DropdownMenuContent>
