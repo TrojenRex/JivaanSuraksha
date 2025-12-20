@@ -16,11 +16,17 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from './language-provider';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
 
 const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
   weight: z.coerce.number().min(1, 'Weight must be a positive number.'),
-  heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8),
+  weightUnit: z.enum(['kg', 'lb']),
+  height: z.coerce.number().min(1, 'Height must be a positive number.'),
+  heightCm: z.coerce.number().optional(),
+  heightUnit: z.enum(['cm', 'ft']),
+  heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8).optional(),
   heightIn: z.coerce.number().min(0, 'Inches must be a positive number.').max(11).optional(),
   gender: z.enum(['male', 'female']),
   activityLevel: z.enum(['sedentary', 'light', 'moderate', 'active', 'very_active']),
@@ -32,6 +38,7 @@ export default function DietPlanner() {
   const { t } = useLanguage();
   const [dietPlan, setDietPlan] = useState<AIDietPlannerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,25 +48,40 @@ export default function DietPlanner() {
       activityLevel: 'light',
       goal: 'maintenance',
       dietaryPreference: 'none',
+      weightUnit: 'kg',
+      heightUnit: 'cm',
     },
   });
 
-  const { watch } = form;
+  const { watch, setValue } = form;
   const weight = watch('weight');
+  const weightUnit = watch('weightUnit');
+  const height = watch('height');
+  const heightUnit = watch('heightUnit');
   const heightFt = watch('heightFt');
   const heightIn = watch('heightIn');
 
   const bmi = useMemo(() => {
-    if (weight > 0 && heightFt > 0) {
-      const totalInches = (heightFt || 0) * 12 + (heightIn || 0);
-      if (totalInches === 0) return null;
-      const heightInCm = totalInches * 2.54;
-      const heightInMeters = heightInCm / 100;
-      const bmiValue = weight / (heightInMeters * heightInMeters);
+    const isMetric = unitSystem === 'metric';
+    const weightVal = weight || 0;
+    const heightVal = height || 0;
+    const heightFtVal = heightFt || 0;
+    const heightInVal = heightIn || 0;
+
+    if (weightVal <= 0) return null;
+
+    if (isMetric) {
+      if (heightVal <= 0) return null;
+      const heightInMeters = heightVal / 100;
+      const bmiValue = weightVal / (heightInMeters * heightInMeters);
+      return bmiValue.toFixed(1);
+    } else { // Imperial
+      const totalInches = (heightFtVal * 12) + heightInVal;
+      if (totalInches <= 0) return null;
+      const bmiValue = (weightVal / (totalInches * totalInches)) * 703;
       return bmiValue.toFixed(1);
     }
-    return null;
-  }, [weight, heightFt, heightIn]);
+  }, [unitSystem, weight, height, heightFt, heightIn]);
 
   const bmiCategory = useMemo(() => {
     if (!bmi) return null;
@@ -70,18 +92,42 @@ export default function DietPlanner() {
     return 'Obese';
   }, [bmi]);
 
+  const handleUnitChange = (value: 'metric' | 'imperial') => {
+    setUnitSystem(value);
+    if (value === 'metric') {
+      setValue('weightUnit', 'kg');
+      setValue('heightUnit', 'cm');
+    } else {
+      setValue('weightUnit', 'lb');
+      setValue('heightUnit', 'ft');
+    }
+    // Reset values to avoid confusion
+    setValue('weight', 0);
+    setValue('height', 0);
+    setValue('heightFt', 0);
+    setValue('heightIn', 0);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setDietPlan(null);
 
-    const totalInches = (values.heightFt * 12) + (values.heightIn || 0);
-    const heightInCm = Math.round(totalInches * 2.54);
+    let weightInKg: number;
+    let heightInCm: number;
+
+    if (unitSystem === 'metric') {
+        weightInKg = values.weight;
+        heightInCm = values.height;
+    } else {
+        weightInKg = (values.weight || 0) * 0.453592;
+        const totalInches = ((values.heightFt || 0) * 12) + (values.heightIn || 0);
+        heightInCm = totalInches * 2.54;
+    }
 
     const input = {
       ...values,
-      weight: `${values.weight}kg`,
-      height: `${heightInCm}cm`,
+      weight: `${Math.round(weightInKg)}kg`,
+      height: `${Math.round(heightInCm)}cm`,
     };
 
     const result = await getDietPlan(input);
@@ -142,6 +188,23 @@ export default function DietPlanner() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-2">
+                <FormLabel>Units</FormLabel>
+                <RadioGroup
+                    defaultValue="metric"
+                    onValueChange={(value: 'metric' | 'imperial') => handleUnitChange(value)}
+                    className="flex space-x-4"
+                >
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="metric" id="metric" />
+                        <Label htmlFor="metric">Metric (kg, cm)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="imperial" id="imperial" />
+                        <Label htmlFor="imperial">Imperial (lb, ft/in)</Label>
+                    </div>
+                </RadioGroup>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -180,48 +243,63 @@ export default function DietPlanner() {
                 name="weight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Weight (kg)</FormLabel>
+                    <FormLabel>Weight ({unitSystem === 'metric' ? 'kg' : 'lb'})</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 70" {...field} />
+                      <Input type="number" placeholder={unitSystem === 'metric' ? "e.g., 70" : "e.g., 154"} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
                <div>
-                <FormLabel>Height</FormLabel>
-                <div className="grid grid-cols-2 gap-2">
-                    <FormField
-                    control={form.control}
-                    name="heightFt"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormControl>
-                            <Input type="number" placeholder="ft" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="heightIn"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormControl>
-                            <Input type="number" placeholder="in" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
+                <FormLabel>Height ({unitSystem === 'metric' ? 'cm' : 'ft/in'})</FormLabel>
+                {unitSystem === 'metric' ? (
+                     <FormField
+                        control={form.control}
+                        name="height"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormControl>
+                                <Input type="number" placeholder="e.g., 175" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                        <FormField
+                        control={form.control}
+                        name="heightFt"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormControl>
+                                <Input type="number" placeholder="ft" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="heightIn"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormControl>
+                                <Input type="number" placeholder="in" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </div>
+                )}
               </div>
             </div>
             {bmi && (
                 <Card className="bg-muted/50 border-dashed">
                     <CardContent className="p-4 text-center">
-                        <p className="font-bold">Your BMI is: <span className="text-primary">{bmi}</span> ({bmiCategory})</p>
+                        <p className="font-bold">Your approximate BMI is: <span className="text-primary">{bmi}</span> ({bmiCategory})</p>
                     </CardContent>
                 </Card>
             )}
@@ -307,3 +385,5 @@ export default function DietPlanner() {
     </Card>
   );
 }
+
+    
