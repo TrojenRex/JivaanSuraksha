@@ -1,7 +1,6 @@
 
 'use client';
 
-import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTransition } from './transition-provider';
 
@@ -15,7 +14,12 @@ const PageTransition = () => {
         loading ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
-      <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      <div className="loading-wave">
+        <div className="loading-bar"></div>
+        <div className="loading-bar"></div>
+        <div className="loading-bar"></div>
+        <div className="loading-bar"></div>
+      </div>
     </div>
   );
 };
