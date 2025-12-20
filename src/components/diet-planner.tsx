@@ -20,7 +20,8 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
   weight: z.coerce.number().min(1, 'Weight must be a positive number.'),
-  height: z.coerce.number().min(1, 'Height must be a positive number.'),
+  heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8),
+  heightIn: z.coerce.number().min(0, 'Inches must be a positive number.').max(11).optional(),
   gender: z.enum(['male', 'female']),
   activityLevel: z.enum(['sedentary', 'light', 'moderate', 'active', 'very_active']),
   goal: z.enum(['weight_loss', 'muscle_gain', 'maintenance']),
@@ -45,17 +46,20 @@ export default function DietPlanner() {
 
   const { watch } = form;
   const weight = watch('weight');
-  const height = watch('height');
+  const heightFt = watch('heightFt');
+  const heightIn = watch('heightIn');
 
   const bmi = useMemo(() => {
-    if (weight > 0 && height > 0) {
-      const heightInCm = height * 2.54;
+    if (weight > 0 && heightFt > 0) {
+      const totalInches = (heightFt || 0) * 12 + (heightIn || 0);
+      if (totalInches === 0) return null;
+      const heightInCm = totalInches * 2.54;
       const heightInMeters = heightInCm / 100;
       const bmiValue = weight / (heightInMeters * heightInMeters);
       return bmiValue.toFixed(1);
     }
     return null;
-  }, [weight, height]);
+  }, [weight, heightFt, heightIn]);
 
   const bmiCategory = useMemo(() => {
     if (!bmi) return null;
@@ -71,10 +75,13 @@ export default function DietPlanner() {
     setIsLoading(true);
     setDietPlan(null);
 
+    const totalInches = (values.heightFt * 12) + (values.heightIn || 0);
+    const heightInCm = Math.round(totalInches * 2.54);
+
     const input = {
       ...values,
       weight: `${values.weight}kg`,
-      height: `${Math.round(values.height * 2.54)}cm`,
+      height: `${heightInCm}cm`,
     };
 
     const result = await getDietPlan(input);
@@ -168,7 +175,7 @@ export default function DietPlanner() {
                   </FormItem>
                 )}
               />
-              <FormField
+               <FormField
                 control={form.control}
                 name="weight"
                 render={({ field }) => (
@@ -181,19 +188,35 @@ export default function DietPlanner() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Height (in)</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="e.g., 69" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+               <div>
+                <FormLabel>Height</FormLabel>
+                <div className="grid grid-cols-2 gap-2">
+                    <FormField
+                    control={form.control}
+                    name="heightFt"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                            <Input type="number" placeholder="ft" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="heightIn"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                            <Input type="number" placeholder="in" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+              </div>
             </div>
             {bmi && (
                 <Card className="bg-muted/50 border-dashed">
