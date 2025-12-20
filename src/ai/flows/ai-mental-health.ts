@@ -32,6 +32,7 @@ const prompt = ai.definePrompt({
   input: {schema: AIMentalHealthInputSchema},
   output: {schema: AIMentalHealthOutputSchema},
   tools: [gho],
+  model: 'googleai/gemini-2.5-pro',
   system: `You are Anshu, a caring, empathetic, and non-judgmental AI companion for mental wellness. Your purpose is to be a safe space for users to express their thoughts and feelings.
 
 Your Core Principles:
