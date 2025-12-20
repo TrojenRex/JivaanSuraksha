@@ -17,8 +17,8 @@ const AIFirstAidGuideInputSchema = z.object({
 export type AIFirstAidGuideInput = z.infer<typeof AIFirstAidGuideInputSchema>;
 
 const AIFirstAidGuideOutputSchema = z.object({
-  steps: z.string().describe('A clear, numbered, step-by-step guide for what to do. Use simple language.'),
-  whenToSeeDoctor: z.string().describe('A list of symptoms or situations that indicate when to seek professional medical help.'),
+  steps: z.string().describe('A clear, step-by-step guide for what to do, formatted as a numbered list. Use simple language.'),
+  whenToSeeDoctor: z.string().describe('A bulleted list of symptoms or situations that indicate when to seek professional medical help.'),
 });
 export type AIFirstAidGuideOutput = z.infer<typeof AIFirstAidGuideOutputSchema>;
 
@@ -30,15 +30,14 @@ const prompt = ai.definePrompt({
   name: 'aiFirstAidGuidePrompt',
   input: {schema: AIFirstAidGuideInputSchema},
   output: {schema: AIFirstAidGuideOutputSchema},
-  prompt: `You are an AI first-aid assistant. A user needs immediate instructions for a specific situation.
+  prompt: `You are an AI first-aid assistant. A user needs immediate instructions for the following emergency: {{{emergency}}}.
 
-  Emergency: {{{emergency}}}
+  Your task is to provide two things:
+  1. A clear, numbered, step-by-step guide on how to handle this situation.
+  2. A bulleted list explaining when it is crucial to see a doctor.
   
-  Provide a simple, clear, step-by-step guide on how to handle this situation. Also, provide a section explaining when it's crucial to see a doctor.
-  
-  Structure your response clearly. Start with the immediate steps.
-  
-  CRITICAL: Begin the entire response with a disclaimer: "DISCLAIMER: This is for informational purposes only. For severe injuries or emergencies, call your local emergency number immediately. This is not a substitute for professional medical advice."`,
+  IMPORTANT: Start the entire response with a disclaimer: "DISCLAIMER: This is for informational purposes only. For severe injuries or emergencies, call your local emergency number immediately. This is not a substitute for professional medical advice."
+  `,
 });
 
 const aiFirstAidGuideFlow = ai.defineFlow(
