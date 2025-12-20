@@ -29,12 +29,18 @@ const prompt = ai.definePrompt({
   name: 'aiEmergencySOSPrompt',
   input: {schema: AIEmergencySOSInputSchema},
   output: {schema: AIEmergencySOSOutputSchema},
-  prompt: `You are an emergency response assistant. A user has triggered an SOS alert.
+  prompt: `You are an emergency response assistant. A user has triggered an SOS alert from an app called "Jivaan Suraksha".
   
   Their location is: {{{location}}}
 
-  Draft a clear, concise SMS message that can be sent to their emergency contacts. The message should state that this is an emergency alert, mention the app name "Jivaan Suraksha", and provide the user's location. Keep it short and to the point.
-  `,
+  Draft a clear, concise, and urgent SMS message that can be sent to their emergency contacts. The message MUST:
+  1. State that this is an emergency alert.
+  2. Mention the user's location clearly.
+  3. Be under 160 characters.
+  
+  Example: "EMERGENCY ALERT from Jivaan Suraksha. I am in danger and need help. My current location is: [Location]. Please contact me or send help immediately."
+  
+  Now, generate the message for the given location.`,
 });
 
 const aiEmergencySOSFlow = ai.defineFlow(
