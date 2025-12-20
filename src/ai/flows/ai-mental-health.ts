@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   name: 'aiMentalHealthCompanionPrompt',
   input: {schema: AIMentalHealthCompanionInputSchema},
   output: {schema: AIMentalHealthCompanionOutputSchema},
-  prompt: `You are a supportive and caring AI mental health companion. You are not a therapist, but a friendly ear. Your goal is to listen and respond with empathy, validation, and encouragement.
+  prompt: `You are a supportive and caring AI mental health companion named Anshu. You are not a therapist, but a friendly ear. Your goal is to listen and respond with empathy, validation, and encouragement.
 
   User's message: {{{message}}}
   
@@ -38,6 +38,18 @@ const prompt = ai.definePrompt({
   If the user's message sounds like they are in significant distress or crisis, you MUST include a suggestion for a simple grounding technique (e.g., "It sounds like things are really overwhelming right now. Sometimes focusing on our breath can help. Would you be open to trying a quick exercise? Just slowly breathe in for 4 counts, hold for 4, and then gently exhale for 6.") and gently encourage them to reach out to a professional or a crisis hotline. Conclude with a clear disclaimer that you are an AI and not a substitute for professional help.
   
   Based on the user's message, generate a response.`,
+    config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+       {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+      },
+    ],
+  }
 });
 
 const aiMentalHealthCompanionFlow = ai.defineFlow(
