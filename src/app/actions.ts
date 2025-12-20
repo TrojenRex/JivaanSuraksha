@@ -10,8 +10,6 @@ import { aiSkinAnalyzer } from '@/ai/flows/ai-skin-analyzer';
 import type { AISkinAnalyzerInput, AISkinAnalyzerOutput } from '@/ai/flows/ai-skin-analyzer';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
 import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
-import { aiMentalHealthCompanion } from '@/ai/flows/ai-mental-health';
-import type { AIMentalHealthCompanionInput, AIMentalHealthCompanionOutput } from '@/ai/flows/ai-mental-health';
 import { aiHealthArticle } from '@/ai/flows/ai-health-articles';
 import type { AIHealthArticleInput, AIHealthArticleOutput } from '@/ai/flows/ai-health-articles';
 import { aiEmergencySOS } from '@/ai/flows/ai-emergency-sos';
@@ -110,19 +108,6 @@ export async function getDietPlan(input: AIDietPlannerInput): Promise<ActionResu
   } catch (error) {
     console.error('AI diet planner failed:', error);
     return { success: false, error: 'Failed to generate diet plan.' };
-  }
-}
-
-export async function getMentalHealthResponse(input: AIMentalHealthCompanionInput): Promise<ActionResult<AIMentalHealthCompanionOutput>> {
-  if (!input.message) {
-    return { success: false, error: 'Please enter a message.' };
-  }
-  try {
-    const result = await aiMentalHealthCompanion(input);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('AI mental health companion failed:', error);
-    return { success: false, error: 'Failed to get a response.' };
   }
 }
 

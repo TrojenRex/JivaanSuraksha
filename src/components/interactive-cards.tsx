@@ -107,13 +107,6 @@ export default function InteractiveCards() {
         buttonText={t('createPlan')}
       />
       <InteractiveCard
-        href="/mental-health"
-        icon={Brain}
-        title={t('mentalHealthCompanion')}
-        description={t('mentalHealthCompanionDescription')}
-        buttonText={t('startChatting')}
-      />
-      <InteractiveCard
         href="/first-aid"
         icon={LifeBuoy}
         title={t('firstAidGuide')}
