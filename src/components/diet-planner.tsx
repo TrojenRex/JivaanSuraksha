@@ -23,7 +23,7 @@ const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
   weight: z.coerce.number().min(1, 'Weight must be a positive number.'),
   weightUnit: z.enum(['kg', 'lb']),
-  height: z.coerce.number().min(1, 'Height must be a positive number.'),
+  height: z.coerce.number().min(1, 'Height must be a positive number.').optional(),
   heightCm: z.coerce.number().optional(),
   heightUnit: z.enum(['cm', 'ft']),
   heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8).optional(),
@@ -55,9 +55,7 @@ export default function DietPlanner() {
 
   const { watch, setValue } = form;
   const weight = watch('weight');
-  const weightUnit = watch('weightUnit');
   const height = watch('height');
-  const heightUnit = watch('heightUnit');
   const heightFt = watch('heightFt');
   const heightIn = watch('heightIn');
 
@@ -102,10 +100,10 @@ export default function DietPlanner() {
       setValue('heightUnit', 'ft');
     }
     // Reset values to avoid confusion
-    setValue('weight', 0);
-    setValue('height', 0);
-    setValue('heightFt', 0);
-    setValue('heightIn', 0);
+    setValue('weight', undefined);
+    setValue('height', undefined);
+    setValue('heightFt', undefined);
+    setValue('heightIn', undefined);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -116,8 +114,8 @@ export default function DietPlanner() {
     let heightInCm: number;
 
     if (unitSystem === 'metric') {
-        weightInKg = values.weight;
-        heightInCm = values.height;
+        weightInKg = values.weight!;
+        heightInCm = values.height!;
     } else {
         weightInKg = (values.weight || 0) * 0.453592;
         const totalInches = ((values.heightFt || 0) * 12) + (values.heightIn || 0);
@@ -385,5 +383,3 @@ export default function DietPlanner() {
     </Card>
   );
 }
-
-    
