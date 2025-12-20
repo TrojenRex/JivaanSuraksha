@@ -18,6 +18,9 @@ import { aiHealthArticle } from '@/ai/flows/ai-health-articles';
 import type { AIHealthArticleInput, AIHealthArticleOutput } from '@/ai/flows/ai-health-articles';
 import { aiEmergencySOS } from '@/ai/flows/ai-emergency-sos';
 import type { AIEmergencySOSInput, AIEmergencySOSOutput } from '@/ai/flows/ai-emergency-sos';
+import { aiHealthTopics } from '@/ai/flows/ai-health-topics';
+import type { AIHealthTopicsOutput } from '@/ai/flows/ai-health-topics';
+
 
 // Generic Action Result type
 type ActionResult<T> = {
@@ -148,6 +151,16 @@ export async function getHealthArticle(input: AIHealthArticleInput): Promise<Act
   } catch (error) {
     console.error('AI health article failed:', error);
     return { success: false, error: 'Failed to generate article.' };
+  }
+}
+
+export async function getHealthTopics(): Promise<ActionResult<AIHealthTopicsOutput>> {
+  try {
+    const result = await aiHealthTopics();
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('AI health topics failed:', error);
+    return { success: false, error: 'Failed to generate topics.' };
   }
 }
 

@@ -10,3 +10,4 @@ import '@/ai/flows/ai-first-aid-guide.ts';
 import '@/ai/flows/ai-mental-health.ts';
 import '@/ai/flows/ai-health-articles.ts';
 import '@/ai/flows/ai-emergency-sos.ts';
+import '@/ai/flows/ai-health-topics.ts';
