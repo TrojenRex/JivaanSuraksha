@@ -44,6 +44,11 @@ export default function DietPlanner() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      age: undefined,
+      weight: undefined,
+      height: undefined,
+      heightFt: undefined,
+      heightIn: undefined,
       gender: 'male',
       activityLevel: 'light',
       goal: 'maintenance',
@@ -211,7 +216,7 @@ export default function DietPlanner() {
                   <FormItem>
                     <FormLabel>Age</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 25" {...field} />
+                      <Input type="number" placeholder="e.g., 25" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -243,7 +248,7 @@ export default function DietPlanner() {
                   <FormItem>
                     <FormLabel>Weight ({unitSystem === 'metric' ? 'kg' : 'lb'})</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder={unitSystem === 'metric' ? "e.g., 70" : "e.g., 154"} {...field} />
+                      <Input type="number" placeholder={unitSystem === 'metric' ? "e.g., 70" : "e.g., 154"} {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -258,7 +263,7 @@ export default function DietPlanner() {
                         render={({ field }) => (
                             <FormItem>
                             <FormControl>
-                                <Input type="number" placeholder="e.g., 175" {...field} />
+                                <Input type="number" placeholder="e.g., 175" {...field} value={field.value ?? ''} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -272,7 +277,7 @@ export default function DietPlanner() {
                         render={({ field }) => (
                             <FormItem>
                             <FormControl>
-                                <Input type="number" placeholder="ft" {...field} />
+                                <Input type="number" placeholder="ft" {...field} value={field.value ?? ''} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -284,7 +289,7 @@ export default function DietPlanner() {
                         render={({ field }) => (
                             <FormItem>
                             <FormControl>
-                                <Input type="number" placeholder="in" {...field} />
+                                <Input type="number" placeholder="in" {...field} value={field.value ?? ''} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
