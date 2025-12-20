@@ -100,7 +100,7 @@
   }
 
   .wave4 {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="hsl(210 90% 55% / 0.4)" d="M0,96L48,117.3C96,139,192,181,288,176C384,171,480,117,576,112C672,107,768,149,864,165.3C960,181,1056,171,1152,154.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://wwws.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="hsl(210 90% 55% / 0.4)" d="M0,96L48,117.3C96,139,192,181,288,176C384,171,480,117,576,112C672,107,768,149,864,165.3C960,181,1056,171,1152,154.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
     animation: wave-flow 18s linear infinite;
     z-index: 2;
     animation-delay: -2s;
@@ -279,5 +279,67 @@
     opacity: 1;
     bottom: unset;
     transition-duration: 0.3s;
+  }
+
+  /* Splash Screen Animations */
+  .splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .splash-panel {
+    position: absolute;
+    background-color: hsl(var(--background));
+    animation-fill-mode: forwards;
+    animation-duration: 1.2s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    animation-delay: 0.3s;
+  }
+
+  .splash-screen.finished .splash-panel {
+    animation-name: splash-out;
+  }
+  
+  .splash-panel-1 {
+    top: 0;
+    left: 0;
+    width: 51%;
+    height: 51%;
+    transform-origin: top left;
+  }
+
+  .splash-panel-2 {
+    top: 0;
+    right: 0;
+    width: 51%;
+    height: 51%;
+    transform-origin: top right;
+  }
+
+  .splash-panel-3 {
+    bottom: 0;
+    left: 0;
+    width: 51%;
+    height: 51%;
+    transform-origin: bottom left;
+  }
+
+  .splash-panel-4 {
+    bottom: 0;
+    right: 0;
+    width: 51%;
+    height: 51%;
+    transform-origin: bottom right;
+  }
+
+  @keyframes splash-out {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0);
+    }
   }
 }
