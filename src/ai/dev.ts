@@ -1,3 +1,4 @@
+
 import { config } from 'dotenv';
 config();
 
@@ -9,3 +10,4 @@ import '@/ai/flows/ai-diet-planner.ts';
 import '@/ai/flows/ai-health-articles.ts';
 import '@/ai/flows/ai-emergency-sos.ts';
 import '@/ai/flows/ai-health-topics.ts';
+import '@/ai/flows/ai-mental-health.ts';

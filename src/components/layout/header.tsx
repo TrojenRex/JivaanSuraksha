@@ -1,6 +1,7 @@
+
 'use client';
 
-import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, LifeBuoy, Newspaper, ArrowLeft } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, LifeBuoy, Newspaper, ArrowLeft, Sparkle } from 'lucide-react';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -97,6 +98,12 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                   <TransitionLink href="/diet-planner">
                     <Utensils className="mr-2 h-4 w-4" />
                     <span>{t('dietPlanner')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <TransitionLink href="/mental-health">
+                    <Sparkle className="mr-2 h-4 w-4" />
+                    <span>{t('mentalHealthCompanion')}</span>
                   </TransitionLink>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>

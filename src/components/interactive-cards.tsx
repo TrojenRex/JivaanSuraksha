@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Stethoscope, MapPin, Pill, Scan, Utensils, LifeBuoy, Newspaper, Siren } from 'lucide-react';
+import { Stethoscope, MapPin, Pill, Scan, Utensils, LifeBuoy, Newspaper, Siren, Sparkle } from 'lucide-react';
 import { useLanguage } from './language-provider';
 import TransitionLink from './transition-link';
 
@@ -105,6 +106,13 @@ export default function InteractiveCards() {
         title={t('dietPlanner')}
         description={t('dietPlannerDescription')}
         buttonText={t('createPlan')}
+      />
+       <InteractiveCard
+        href="/mental-health"
+        icon={Sparkle}
+        title={t('mentalHealthCompanion')}
+        description={t('mentalHealthCompanionDescription')}
+        buttonText={t('startChatting')}
       />
       <InteractiveCard
         href="/first-aid"

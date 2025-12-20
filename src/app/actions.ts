@@ -1,3 +1,4 @@
+
 'use server';
 
 import { aiSymptomDetection } from '@/ai/flows/ai-symptom-detection';
@@ -16,6 +17,8 @@ import { aiEmergencySOS } from '@/ai/flows/ai-emergency-sos';
 import type { AIEmergencySOSInput, AIEmergencySOSOutput } from '@/ai/flows/ai-emergency-sos';
 import { aiHealthTopics } from '@/ai/flows/ai-health-topics';
 import type { AIHealthTopicsOutput } from '@/ai/flows/ai-health-topics';
+import { aiMentalHealth } from '@/ai/flows/ai-mental-health';
+import type { AIMentalHealthInput, AIMentalHealthOutput } from '@/ai/flows/ai-mental-health';
 
 
 // Generic Action Result type
@@ -144,5 +147,18 @@ export async function getEmergencySOSMessage(input: AIEmergencySOSInput): Promis
   } catch (error) {
     console.error('AI emergency SOS failed:', error);
     return { success: false, error: 'Failed to generate SOS message.' };
+  }
+}
+
+export async function getMentalHealthResponse(input: AIMentalHealthInput): Promise<ActionResult<AIMentalHealthOutput>> {
+  if (!input.message) {
+    return { success: false, error: 'Message cannot be empty.' };
+  }
+  try {
+    const result = await aiMentalHealth(input);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('AI mental health companion failed:', error);
+    return { success: false, error: 'Failed to get a response.' };
   }
 }
