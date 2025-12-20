@@ -49,7 +49,8 @@ export default function DietPlanner() {
 
   const bmi = useMemo(() => {
     if (weight > 0 && height > 0) {
-      const heightInMeters = height / 100;
+      const heightInCm = height * 2.54;
+      const heightInMeters = heightInCm / 100;
       const bmiValue = weight / (heightInMeters * heightInMeters);
       return bmiValue.toFixed(1);
     }
@@ -73,7 +74,7 @@ export default function DietPlanner() {
     const input = {
       ...values,
       weight: `${values.weight}kg`,
-      height: `${values.height}cm`,
+      height: `${Math.round(values.height * 2.54)}cm`,
     };
 
     const result = await getDietPlan(input);
@@ -185,9 +186,9 @@ export default function DietPlanner() {
                 name="height"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Height (cm)</FormLabel>
+                    <FormLabel>Height (in)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 175" {...field} />
+                      <Input type="number" placeholder="e.g., 69" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
