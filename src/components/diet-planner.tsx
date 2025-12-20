@@ -23,7 +23,7 @@ const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
   weight: z.coerce.number().min(1, 'Weight must be a positive number.'),
   weightUnit: z.enum(['kg', 'lb']),
-  height: z.coerce.number().min(1, 'Height must be a positive number.'),
+  height: z.coerce.number().min(1, 'Height must be a positive number.').optional(),
   heightCm: z.coerce.number().optional(),
   heightUnit: z.enum(['cm', 'ft']),
   heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8).optional(),
@@ -32,6 +32,22 @@ const formSchema = z.object({
   activityLevel: z.enum(['sedentary', 'light', 'moderate', 'active', 'very_active']),
   goal: z.enum(['weight_loss', 'muscle_gain', 'maintenance']),
   dietaryPreference: z.enum(['none', 'vegetarian', 'vegan', 'pescatarian', 'non_vegetarian']),
+}).refine(data => {
+    if (data.heightUnit === 'cm') {
+        return !!data.height;
+    }
+    return true;
+}, {
+    message: "Height is required",
+    path: ["height"],
+}).refine(data => {
+    if (data.heightUnit === 'ft') {
+        return !!data.heightFt;
+    }
+    return true;
+}, {
+    message: "Height (ft) is required",
+    path: ["heightFt"],
 });
 
 export default function DietPlanner() {
@@ -97,6 +113,7 @@ export default function DietPlanner() {
 
   const handleUnitChange = (value: 'metric' | 'imperial') => {
     setUnitSystem(value);
+    form.clearErrors();
     if (value === 'metric') {
       setValue('weightUnit', 'kg');
       setValue('heightUnit', 'cm');
@@ -128,7 +145,11 @@ export default function DietPlanner() {
     }
 
     const input = {
-      ...values,
+      age: values.age,
+      gender: values.gender,
+      activityLevel: values.activityLevel,
+      goal: values.goal,
+      dietaryPreference: values.dietaryPreference,
       weight: `${Math.round(weightInKg)}kg`,
       height: `${Math.round(heightInCm)}cm`,
     };
