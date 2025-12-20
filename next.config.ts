@@ -40,6 +40,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack(config, { isServer }) {
+    if (process.env.NODE_ENV === 'development' && !isServer) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        // Don't watch the genkit dev file.
+        // This is only used for the genkit dev server.
+        // This prevents the nextjs dev server from restarting when the genkit dev server starts.
+        ignored: ['**/src/ai/dev.ts'],
+      };
+    }
+    return config;
+  }
 };
 
 export default nextConfig;
