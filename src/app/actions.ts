@@ -9,7 +9,7 @@ import type { TextToSpeechOutput } from '@/ai/flows/ai-text-to-speech';
 import { aiSkinAnalyzer } from '@/ai/flows/ai-skin-analyzer';
 import type { AISkinAnalyzerInput, AISkinAnalyzerOutput } from '@/ai/flows/ai-skin-analyzer';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
-import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
+import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flowsai-diet-planner';
 import { aiFirstAidGuide } from '@/ai/flows/ai-first-aid-guide';
 import type { AIFirstAidGuideInput, AIFirstAidGuideOutput } from '@/ai/flows/ai-first-aid-guide';
 import { aiMentalHealthCompanion } from '@/ai/flows/ai-mental-health';

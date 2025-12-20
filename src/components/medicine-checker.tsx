@@ -108,8 +108,10 @@ export default function MedicineChecker() {
 
   const handlePlayAudio = async (text: string, messageId: string) => {
     if (playingMessage === messageId) {
-      audioRef.current?.pause();
-      audioRef.current = null;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
       setPlayingMessage(null);
       return;
     }
