@@ -18,7 +18,7 @@ const AIDietPlannerInputSchema = z.object({
     gender: z.string().describe('The gender of the user (e.g., "male", "female").'),
     activityLevel: z.string().describe('The user\'s activity level (e.g., "sedentary", "light", "moderate", "active", "very_active").'),
     goal: z.string().describe('The primary health goal (e.g., "weight_loss", "muscle_gain", "maintenance").'),
-    dietaryPreference: z.string().describe('Dietary preference (e.g., "vegetarian", "vegan", "pescatarian", "none").'),
+    dietaryPreference: z.string().describe('Dietary preference (e.g., "vegetarian", "vegan", "pescatarian", "non_vegetarian", "none").'),
 });
 export type AIDietPlannerInput = z.infer<typeof AIDietPlannerInputSchema>;
 

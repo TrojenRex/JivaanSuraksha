@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from './language-provider';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
@@ -23,7 +24,7 @@ const formSchema = z.object({
   gender: z.enum(['male', 'female']),
   activityLevel: z.enum(['sedentary', 'light', 'moderate', 'active', 'very_active']),
   goal: z.enum(['weight_loss', 'muscle_gain', 'maintenance']),
-  dietaryPreference: z.enum(['none', 'vegetarian', 'vegan', 'pescatarian']),
+  dietaryPreference: z.enum(['none', 'vegetarian', 'vegan', 'pescatarian', 'non_vegetarian']),
 });
 
 export default function DietPlanner() {
@@ -255,6 +256,7 @@ export default function DietPlanner() {
                         </FormControl>
                         <SelectContent>
                             <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="non_vegetarian">Non-Vegetarian</SelectItem>
                             <SelectItem value="vegetarian">Vegetarian</SelectItem>
                             <SelectItem value="vegan">Vegan</SelectItem>
                             <SelectItem value="pescatarian">Pescatarian</SelectItem>
