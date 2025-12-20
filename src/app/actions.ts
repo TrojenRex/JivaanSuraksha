@@ -9,9 +9,7 @@ import type { TextToSpeechOutput } from '@/ai/flows/ai-text-to-speech';
 import { aiSkinAnalyzer } from '@/ai/flows/ai-skin-analyzer';
 import type { AISkinAnalyzerInput, AISkinAnalyzerOutput } from '@/ai/flows/ai-skin-analyzer';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
-import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flowsai-diet-planner';
-import { aiFirstAidGuide } from '@/ai/flows/ai-first-aid-guide';
-import type { AIFirstAidGuideInput, AIFirstAidGuideOutput } from '@/ai/flows/ai-first-aid-guide';
+import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
 import { aiMentalHealthCompanion } from '@/ai/flows/ai-mental-health';
 import type { AIMentalHealthCompanionInput, AIMentalHealthCompanionOutput } from '@/ai/flows/ai-mental-health';
 import { aiHealthArticle } from '@/ai/flows/ai-health-articles';
@@ -112,19 +110,6 @@ export async function getDietPlan(input: AIDietPlannerInput): Promise<ActionResu
   } catch (error) {
     console.error('AI diet planner failed:', error);
     return { success: false, error: 'Failed to generate diet plan.' };
-  }
-}
-
-export async function getFirstAidInstructions(input: AIFirstAidGuideInput): Promise<ActionResult<AIFirstAidGuideOutput>> {
-  if (!input.emergency) {
-    return { success: false, error: 'Please specify the emergency.' };
-  }
-  try {
-    const result = await aiFirstAidGuide(input);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('AI first aid guide failed:', error);
-    return { success: false, error: 'Failed to get first aid instructions.' };
   }
 }
 
