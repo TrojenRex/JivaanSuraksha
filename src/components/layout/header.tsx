@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, Brain, LifeBuoy, Newspaper } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, Brain, LifeBuoy, Newspaper, ArrowLeft } from 'lucide-react';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,7 +19,11 @@ import { useTheme } from 'next-themes';
 import TransitionLink from '../transition-link';
 import Logo from '../logo';
 
-const Header: FC = () => {
+type HeaderProps = {
+  showBackButton?: boolean;
+}
+
+const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
   const { t, setLanguage } = useLanguage();
   const { setTheme } = useTheme();
 
@@ -27,12 +31,22 @@ const Header: FC = () => {
     <header className="absolute top-0 left-0 w-full z-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <TransitionLink href="/" className="flex items-center gap-2 text-primary-foreground">
-            <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
-              {t('appName')}
-            </span>
-          </TransitionLink>
+          <div className="flex items-center gap-2">
+            {showBackButton && (
+                <TransitionLink href="/">
+                    <Button variant="outline" size="icon" className="mr-2">
+                        <ArrowLeft className="h-6 w-6" />
+                        <span className="sr-only">Back to Home</span>
+                    </Button>
+                </TransitionLink>
+            )}
+            <TransitionLink href="/" className="flex items-center gap-2 text-primary-foreground">
+              <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
+              <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
+                {t('appName')}
+              </span>
+            </TransitionLink>
+          </div>
           <nav className='flex items-center gap-1 sm:gap-2'>
              <Button asChild variant="destructive" className="animate-pulse px-2 sm:px-4">
                 <a href="tel:102">
