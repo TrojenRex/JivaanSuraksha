@@ -1,6 +1,6 @@
 'use client';
 
-import { Droplets, Menu, Stethoscope, MapPin, Settings, Sun, Moon, Languages, Home, Siren, Pill } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin } from 'lucide-react';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +16,7 @@ import {
 import { useLanguage } from '../language-provider';
 import { useTheme } from 'next-themes';
 import TransitionLink from '../transition-link';
+import Logo from '../logo';
 
 const Header: FC = () => {
   const { t, setLanguage } = useLanguage();
@@ -26,9 +27,7 @@ const Header: FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <TransitionLink href="/" className="flex items-center gap-2 text-primary-foreground">
-            <div className="bg-primary/80 backdrop-blur-sm p-2 rounded-lg shadow-md">
-              <Droplets className="h-5 w-5 sm:h-6 sm:w-6" />
-            </div>
+            <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
               {t('appName')}
             </span>
