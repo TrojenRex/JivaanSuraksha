@@ -6,7 +6,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { getAiResponse, getAudioFromText } from '@/app/actions';
+import { getAiSymptomResponse, getAudioFromText } from '@/app/actions';
 import type { AISymptomDetectionInput } from '@/ai/flows/ai-symptom-detection';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -147,7 +147,7 @@ export default function SymptomChecker() {
       setMessages(prev => [...prev, { role: 'user', content: userMessage, textContent: userMessage }]);
     }
 
-    const result = await getAiResponse(input);
+    const result = await getAiSymptomResponse(input);
 
     if (result.success && result.data) {
       const { possibleDiseases, suggestedCures } = result.data;
