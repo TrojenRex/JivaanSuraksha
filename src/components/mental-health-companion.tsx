@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bot, Loader2, Send, User, Volume2, VolumeX, Brain } from 'lucide-react';
+import { Bot, Loader2, Send, User, Volume2, VolumeX, Brain, Mic } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,6 +27,16 @@ type Message = {
   textContent: string;
 };
 
+interface CustomSpeechRecognition extends SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+}
+
+const SpeechRecognition =
+  (typeof window !== 'undefined' && (window.SpeechRecognition || (window as any).webkitSpeechRecognition)) || null;
+
+
 export default function MentalHealthCompanion() {
   const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
@@ -37,8 +47,10 @@ export default function MentalHealthCompanion() {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [playingMessage, setPlayingMessage] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -51,6 +63,40 @@ export default function MentalHealthCompanion() {
   });
 
   useEffect(() => {
+    if (!SpeechRecognition) {
+      return;
+    }
+    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        form.setValue('message', form.getValues('message') + finalTranscript);
+      }
+    };
+    
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        let errorMessage = 'An unknown error occurred.';
+        if (event.error === 'no-speech') errorMessage = 'No speech was detected. Please try again.';
+        else if (event.error === 'audio-capture') errorMessage = 'Microphone is not available.';
+        else if (event.error === 'not-allowed') errorMessage = 'Microphone permission denied.';
+        toast({ variant: 'destructive', title: 'Voice Input Error', description: errorMessage });
+        setIsListening(false);
+    };
+    recognitionRef.current = recognition;
+  }, [form, toast]);
+
+  useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
         top: scrollAreaRef.current.scrollHeight,
@@ -58,6 +104,21 @@ export default function MentalHealthCompanion() {
       });
     }
   }, [messages]);
+
+  const handleListen = () => {
+    if (!SpeechRecognition) {
+      toast({ variant: 'destructive', title: 'Feature Not Supported', description: 'Your browser does not support voice recognition.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch(e) { console.error("Could not start recognition", e) }
+    }
+  };
 
   const handlePlayAudio = async (text: string, messageId: string) => {
     if (playingMessage === messageId) {
@@ -204,7 +265,7 @@ export default function MentalHealthCompanion() {
                 <FormItem className="flex-1">
                 <FormControl>
                     <Textarea
-                    placeholder="Type your message here..."
+                    placeholder={isListening ? "Listening..." : "Type your message here, or use the mic..."}
                     className="resize-none"
                     disabled={isLoading}
                     rows={1}
@@ -221,6 +282,15 @@ export default function MentalHealthCompanion() {
                 </FormItem>
             )}
             />
+            <Button 
+              type="button" 
+              size="icon" 
+              variant={isListening ? 'destructive' : 'outline'} 
+              onClick={handleListen} 
+              disabled={isLoading}>
+              <Mic className="h-4 w-4" />
+              <span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span>
+            </Button>
             <Button type="submit" size="icon" disabled={isLoading || !form.getValues('message')}>
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             <span className="sr-only">Send message</span>
