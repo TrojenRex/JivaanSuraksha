@@ -58,7 +58,7 @@ const prompt = ai.definePrompt({
   **Dinner:** [Dish Name]. E.g., Baked salmon with roasted vegetables and quinoa.
   **Snacks:** [Option 1], [Option 2]. E.g., Greek yogurt, an apple with peanut butter.
   
-  IMPORTANT: Make sure the generated `plan` and `tips` fields do not contain any disclaimers. The disclaimer is handled by the application's UI.`,
+  IMPORTANT: Make sure the generated \`plan\` and \`tips\` fields do not contain any disclaimers. The disclaimer is handled by the application's UI.`,
 });
 
 const aiDietPlannerFlow = ai.defineFlow(
