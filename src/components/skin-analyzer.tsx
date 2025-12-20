@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bot, Loader2, User, Camera, Video, AlertCircle, Scan, Upload, Sparkles } from 'lucide-react';
+import { Loader2, Camera, Video, AlertCircle, Scan, Upload, Sparkles } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogC
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { cn } from '@/lib/utils';
 import { useLanguage } from './language-provider';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const formSchema = z.object({
   image: z.string().optional(),
@@ -137,7 +138,7 @@ export default function SkinAnalyzer() {
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+      <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
         <CardHeader className="items-center text-center">
             <Scan className="h-12 w-12 text-primary mb-4" />
             <CardTitle className="text-3xl font-bold">{t('skinAnalyzer')}</CardTitle>
@@ -176,7 +177,7 @@ export default function SkinAnalyzer() {
 
           {imagePreview && !isLoading && (
             <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     <div className='space-y-4'>
                         <h3 className="font-bold text-lg text-left">Your Image</h3>
                         <div className="relative aspect-square w-full max-w-sm mx-auto">
@@ -192,20 +193,26 @@ export default function SkinAnalyzer() {
                     <div className='space-y-4 text-left'>
                         <h3 className="font-bold text-lg flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Analysis</h3>
                         {analysisResult ? (
-                            <div className="space-y-4 text-sm bg-muted/50 p-4 rounded-lg border">
-                                <div className="space-y-1">
-                                    <h4 className="font-semibold">Possible Conditions</h4>
-                                    <p className="text-muted-foreground">{analysisResult.possibleConditions}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <h4 className="font-semibold">Detailed Analysis</h4>
-                                    <p className="text-muted-foreground">{analysisResult.analysis}</p>
-                                </div>
-                                 <div className="space-y-1">
-                                    <h4 className="font-semibold">Recommendations</h4>
-                                    <p className="text-muted-foreground">{analysisResult.recommendations}</p>
-                                </div>
-                            </div>
+                           <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
+                              <AccordionItem value="item-1">
+                                <AccordionTrigger>Possible Conditions</AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground">
+                                 {analysisResult.possibleConditions}
+                                </AccordionContent>
+                              </AccordionItem>
+                              <AccordionItem value="item-2">
+                                <AccordionTrigger>Detailed Analysis</AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground">
+                                   {analysisResult.analysis}
+                                </AccordionContent>
+                              </AccordionItem>
+                              <AccordionItem value="item-3">
+                                <AccordionTrigger>Recommendations</AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground">
+                                  {analysisResult.recommendations}
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
                         ) : (
                              <p className="text-muted-foreground">No analysis available.</p>
                         )}
@@ -216,7 +223,7 @@ export default function SkinAnalyzer() {
 
         </CardContent>
         {imagePreview && !isLoading && (
-            <CardFooter className="justify-center">
+            <CardFooter className="justify-center pt-6">
                  <Button onClick={handleReset} variant="outline">Analyze Another Image</Button>
             </CardFooter>
         )}
