@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 type EmergencyData = {
   title: string;
