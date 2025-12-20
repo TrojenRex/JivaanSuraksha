@@ -23,7 +23,7 @@ const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
   weight: z.coerce.number().min(1, 'Weight must be a positive number.'),
   weightUnit: z.enum(['kg', 'lb']),
-  height: z.coerce.number().min(1, 'Height must be a positive number.').optional(),
+  height: z.coerce.number().min(1, 'Height must be a positive number.'),
   heightCm: z.coerce.number().optional(),
   heightUnit: z.enum(['cm', 'ft']),
   heightFt: z.coerce.number().min(1, 'Feet must be a positive number.').max(8).optional(),
@@ -394,3 +394,5 @@ export default function DietPlanner() {
     </Card>
   );
 }
+
+    
