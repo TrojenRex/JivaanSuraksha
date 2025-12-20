@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, Brain, LifeBuoy, Newspaper, ArrowLeft } from 'lucide-react';
+import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, LifeBuoy, Newspaper, ArrowLeft } from 'lucide-react';
 import type { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import {

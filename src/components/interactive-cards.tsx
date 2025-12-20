@@ -2,7 +2,7 @@
 
 import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Stethoscope, MapPin, Pill, Scan, Utensils, Brain, LifeBuoy, Newspaper, Siren } from 'lucide-react';
+import { Stethoscope, MapPin, Pill, Scan, Utensils, LifeBuoy, Newspaper, Siren } from 'lucide-react';
 import { useLanguage } from './language-provider';
 import TransitionLink from './transition-link';
 

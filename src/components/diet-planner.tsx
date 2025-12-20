@@ -148,7 +148,13 @@ export default function DietPlanner() {
   }
 
   const handleReset = () => {
-    form.reset();
+    form.reset({
+      age: undefined,
+      weight: undefined,
+      height: undefined,
+      heightFt: undefined,
+      heightIn: undefined,
+    });
     setDietPlan(null);
   }
 
