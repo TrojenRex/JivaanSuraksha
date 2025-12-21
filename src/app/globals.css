@@ -70,7 +70,7 @@
   }
 
   .wave {
-    background: rgba(255, 255, 255, 0.25);
+    background: linear-gradient(to right, hsla(221, 83%, 53%, 0.5), hsla(175, 56%, 75%, 0.5));
     border-radius: 1000% 1000% 0 0;
     position: fixed;
     width: 200%;
