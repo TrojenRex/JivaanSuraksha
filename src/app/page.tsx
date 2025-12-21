@@ -17,7 +17,10 @@ export default function Home() {
       >
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">{t('welcomeMessage')}</h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p 
+            className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
+            style={{ color: 'black' }}
+          >
             {t('appDescription')}
           </p>
         </div>
