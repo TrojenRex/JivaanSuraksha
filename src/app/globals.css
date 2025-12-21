@@ -64,9 +64,7 @@
     height: 100vh;
     width: 100vw;
     z-index: -1;
-    background: linear-gradient(to right, #001233, #002244, #003366);
-    background-size: 400% 400%;
-    animation: wave-bg 15s ease-in-out infinite;
+    background: #001233;
   }
 
   .wave {
