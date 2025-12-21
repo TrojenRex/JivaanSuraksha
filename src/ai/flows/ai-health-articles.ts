@@ -30,6 +30,7 @@ const prompt = ai.definePrompt({
   name: 'aiHealthArticlePrompt',
   input: {schema: AIHealthArticleInputSchema},
   output: {schema: AIHealthArticleOutputSchema},
+  model: 'googleai/gemini-2.5-flash',
   prompt: `You are an AI health writer. Your task is to generate a short, informative, and engaging article on a given health topic.
 
   Topic: {{{topic}}}
