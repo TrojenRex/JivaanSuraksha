@@ -58,11 +58,11 @@
   }
   
   .ocean {
-    height: 100vh;
-    width: 100vw;
     position: fixed;
     top: 0;
     left: 0;
+    height: 100vh;
+    width: 100vw;
     z-index: -1;
     background: linear-gradient(to right, #6e45e2, #88d3ce, #f9a8d4, #ffce7b, #fdc089);
     background-size: 400% 400%;
@@ -120,38 +120,6 @@
       0%{background-position:0% 50%}
       50%{background-position:100% 50%}
       100%{background-position:0% 50%}
-  }
-
-  .plus-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    z-index: -1;
-  }
-
-  .plus {
-    position: absolute;
-    color: hsl(var(--primary) / 0.1);
-    font-weight: bold;
-    animation: float-plus 12s infinite ease-in-out;
-  }
-
-  @keyframes float-plus {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    50% {
-      opacity: 1;
-      transform: translateY(-20px);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
   }
 
   .btn-uiverse {
