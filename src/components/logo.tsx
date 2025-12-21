@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
@@ -49,6 +50,8 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
         fontSize="14"
         fontWeight="bold"
         letterSpacing="1"
+        stroke="black"
+        strokeWidth="0.2"
       >
         <textPath href="#topTextPath" startOffset="50%" textAnchor="middle">
           JIVAN SURAKSHA
