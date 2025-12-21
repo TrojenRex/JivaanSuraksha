@@ -9,8 +9,8 @@ const Logo = ({ className }: { className?: string }) => {
         >
             <defs>
                 <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#00008B', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#0000CD', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#00BFFF', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#20C2C2', stopOpacity: 1 }} />
                 </linearGradient>
             </defs>
 
