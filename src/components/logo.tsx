@@ -1,88 +1,118 @@
-import React from "react";
+import React from 'react';
 
-interface LogoProps {
-  size?: number; // controls overall size
-}
-
-const JivanSurakshaLogo: React.FC<LogoProps> = ({ size = 90 }) => {
+const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 260 260"
+      viewBox="0 0 200 200"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ display: "block" }}
+      className={className}
+      style={{ display: 'block' }}
     >
       <defs>
-        <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="logoGradient" x1="0.5" y1="0" x2="0.5" y2="1">
           <stop offset="0%" stopColor="#22E6D6" />
           <stop offset="100%" stopColor="#4A6CF7" />
         </linearGradient>
-
         <path
           id="topTextPath"
-          d="M 30 130 A 100 100 0 0 1 230 130"
+          d="M 50,100 A 50,50 0 1,1 150,100"
+          fill="none"
         />
         <path
           id="bottomTextPath"
-          d="M 30 130 A 100 100 0 0 0 230 130"
+          d="M 50,100 A 50,50 0 0,0 150,100"
+          fill="none"
         />
       </defs>
 
-      {/* Transparent background for header usage */}
+      {/* Rings */}
       <circle
-        cx="130"
-        cy="130"
-        r="110"
-        stroke="url(#ringGradient)"
-        strokeWidth="6"
+        cx="100"
+        cy="100"
+        r="68"
+        stroke="url(#logoGradient)"
+        strokeWidth="2.5"
         fill="none"
       />
       <circle
-        cx="130"
-        cy="130"
-        r="96"
-        stroke="#4A6CF7"
-        strokeWidth="2"
+        cx="100"
+        cy="100"
+        r="78"
+        stroke="url(#logoGradient)"
+        strokeWidth="2.5"
         fill="none"
       />
 
+      {/* Text */}
       <text
-        fill="#EAF6FF"
-        fontSize="15"
-        fontWeight="600"
-        letterSpacing="1.5"
+        fill="url(#logoGradient)"
+        fontSize="14"
+        fontWeight="bold"
+        letterSpacing="1"
       >
         <textPath href="#topTextPath" startOffset="50%" textAnchor="middle">
           JIVAN SURAKSHA
         </textPath>
       </text>
-
       <text
-        fill="#AFC6FF"
-        fontSize="11"
-        letterSpacing="1.5"
+        fill="url(#logoGradient)"
+        fontSize="9"
+        fontWeight="bold"
+        letterSpacing="0.5"
       >
         <textPath href="#bottomTextPath" startOffset="50%" textAnchor="middle">
           YOUR AI DOCTOR
         </textPath>
       </text>
 
-      {/* Simplified Caduceus for small size clarity */}
-      <g
-        transform="translate(130 130)"
-        stroke="url(#ringGradient)"
-        strokeWidth="3"
-        fill="none"
-        strokeLinecap="round"
-      >
-        <line x1="0" y1="-36" x2="0" y2="36" />
-        <path d="M -26 -26 C -12 -40 -4 -40 0 -26" />
-        <path d="M 26 -26 C 12 -40 4 -40 0 -26" />
-        <path d="M -7 -8 C -18 4 -18 18 -7 28" />
-        <path d="M 7 -8 C 18 4 18 18 7 28" />
-        <circle cx="0" cy="-42" r="3.5" fill="url(#ringGradient)" />
+      {/* Central Caduceus */}
+      <g transform="translate(100, 100) scale(0.6)">
+        <path
+          d="M 0,-45 L 0,45"
+          stroke="url(#logoGradient)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* Wings */}
+        <path
+          d="M 0,-30 C 10,-45 25,-45 35,-35"
+          stroke="url(#logoGradient)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 0,-30 C -10,-45 -25,-45 -35,-35"
+          stroke="url(#logoGradient)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* Snakes */}
+        <path
+          d="M 15,45 C 35,25 35,-15 15,-35 S -15,-55 0,-30 C 15,-5 15,25 0,45 C -15,25 -15,-5 0,-30"
+          stroke="url(#logoGradient)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+         <path
+          d="M -15,45 C -35,25 -35,-15 -15,-35 S 15,-55 0,-30 C -15,-5 -15,25 0,45 C 15,25 15,-5 0,-30"
+          stroke="url(#logoGradient)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
       </g>
+      
+      {/* Decorative Swirls */}
+       <g transform="translate(36, 100) scale(0.25)">
+          <path d="M-10,0 C30,-50 30,50 -10,0 Z" fill="url(#logoGradient)"/>
+       </g>
+        <g transform="translate(164, 100) scale(-0.25, 0.25)">
+          <path d="M-10,0 C30,-50 30,50 -10,0 Z" fill="url(#logoGradient)"/>
+       </g>
     </svg>
   );
 };
