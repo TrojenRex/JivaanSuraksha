@@ -9,6 +9,7 @@ import { TransitionProvider } from '@/components/transition-provider';
 import PageTransition from '@/components/page-transition';
 import SplashScreen from '@/components/splash-screen';
 import PlusBackground from '@/components/plus-background';
+import WaveBackground from '@/components/wave-background';
 
 
 const inter = Inter({ 
@@ -29,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`} suppressHydrationWarning>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased bg-background">
         <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -38,7 +39,8 @@ export default function RootLayout({
           >
             <LanguageProvider>
               <TransitionProvider>
-                <div className="ocean" />
+                <div className="fixed top-0 left-0 w-full h-full bg-blue-950 -z-10" />
+                <WaveBackground />
                 <PlusBackground />
                 <SplashScreen />
                 <PageTransition />
