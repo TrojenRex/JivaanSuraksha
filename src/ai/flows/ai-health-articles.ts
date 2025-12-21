@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   
   Write a brief article (3-4 paragraphs) that is easy for a general audience to understand. Start with a catchy title.
   
-  IMPORTANT: End the article with a disclaimer: "This article is for informational purposes only and does not constitute medical advice. Consult with a healthcare professional for any health concerns."`,
+  IMPORTANT: The generated 'article' field should not contain any disclaimers. The application UI will handle any necessary disclaimers. Focus only on the title and article content.`,
 });
 
 const aiHealthArticleFlow = ai.defineFlow(
