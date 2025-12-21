@@ -4,8 +4,9 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame } from 'lucide-react';
+import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from './ui/input';
 
 
 type EmergencyData = {
@@ -80,6 +81,7 @@ const emergencies = [
 
 export default function FirstAidGuide() {
   const [selectedEmergency, setSelectedEmergency] = useState<EmergencyData | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSelectEmergency = (emergencyValue: string) => {
     setSelectedEmergency(firstAidData[emergencyValue] || null);
@@ -88,6 +90,10 @@ export default function FirstAidGuide() {
   const handleReset = () => {
     setSelectedEmergency(null);
   }
+
+  const filteredEmergencies = emergencies.filter((emergency) => 
+    emergency.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
   if (selectedEmergency) {
@@ -126,10 +132,20 @@ export default function FirstAidGuide() {
       <CardHeader className="items-center text-center">
         <LifeBuoy className="h-12 w-12 text-white text-outline mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>
-        <CardDescription>Select a common emergency to get instant guidance.</CardDescription>
+        <CardDescription>Select a common emergency or search to get instant guidance.</CardDescription>
+        <div className="relative w-full max-w-sm pt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+                type="text"
+                placeholder="Search emergencies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+            />
+        </div>
       </CardHeader>
       <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {emergencies.map((emergency) => {
+        {filteredEmergencies.map((emergency) => {
             const Icon = emergency.icon;
             return (
                 <Button 
@@ -143,6 +159,11 @@ export default function FirstAidGuide() {
                 </Button>
             )
         })}
+        {filteredEmergencies.length === 0 && (
+            <div className="col-span-full text-center text-muted-foreground">
+                No emergencies found matching your search.
+            </div>
+        )}
       </CardContent>
     </Card>
   );
