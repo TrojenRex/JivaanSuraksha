@@ -3,6 +3,7 @@
 
 import { Menu, Settings, Sun, Moon, Languages, Home, Siren, Pill, Stethoscope, MapPin, Scan, Utensils, LifeBuoy, Newspaper, ArrowLeft, Sparkle } from 'lucide-react';
 import type { FC } from 'react';
+import JivanSurakshaLogo from "./JivanSurakshaLogo";
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
