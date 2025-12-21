@@ -53,7 +53,7 @@ const InteractiveCard = ({
       <Card className="shadow-2xl backdrop-blur-sm bg-card/80 border-2 flex flex-col h-full">
         <CardHeader className="items-center text-center">
           <div className="p-4 bg-primary/10 rounded-full mb-4">
-            <Icon className="h-10 w-10 text-primary" />
+            <Icon className="h-10 w-10 text-white text-outline" />
           </div>
           <CardTitle className="text-2xl font-bold">{title}</CardTitle>
         </CardHeader>

@@ -305,4 +305,8 @@
       transform: scale(0);
     }
   }
+
+  .text-outline {
+    text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+  }
 }

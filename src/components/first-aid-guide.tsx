@@ -124,7 +124,7 @@ export default function FirstAidGuide() {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
       <CardHeader className="items-center text-center">
-        <LifeBuoy className="h-12 w-12 text-primary mb-4" />
+        <LifeBuoy className="h-12 w-12 text-white text-outline mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>
         <CardDescription>Select a common emergency to get instant guidance.</CardDescription>
       </CardHeader>
@@ -138,7 +138,7 @@ export default function FirstAidGuide() {
                     className="h-24 flex-col gap-2 text-base"
                     onClick={() => handleSelectEmergency(emergency.value)}
                 >
-                    <Icon className="h-8 w-8 text-primary" />
+                    <Icon className="h-8 w-8 text-white text-outline" />
                     <span>{emergency.name}</span>
                 </Button>
             )
