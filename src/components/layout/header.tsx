@@ -101,12 +101,6 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                   </TransitionLink>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                  <TransitionLink href="/mental-health">
-                    <Sparkle className="mr-2 h-4 w-4" />
-                    <span>{t('mentalHealthCompanion')}</span>
-                  </TransitionLink>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
                   <TransitionLink href="/first-aid">
                     <LifeBuoy className="mr-2 h-4 w-4" />
                     <span>{t('firstAidGuide')}</span>
