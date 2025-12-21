@@ -11,6 +11,8 @@ import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
 import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
 import { aiFirstAid } from '@/ai/flows/ai-first-aid';
 import type { AIFirstAidInput, AIFirstAidOutput } from '@/ai/flows/ai-first-aid';
+import { aiFirstAidImageGenerator } from '@/ai/flows/ai-first-aid-image-generator';
+import type { AIFirstAidImageGeneratorInput, AIFirstAidImageGeneratorOutput } from '@/ai/flows/ai-first-aid-image-generator';
 
 
 // Generic Action Result type
@@ -107,4 +109,23 @@ export async function getFirstAidInstructions(input: AIFirstAidInput): Promise<A
       error: 'Sorry, I was unable to process your request. Please try again later.',
     };
   }
+}
+
+export async function getFirstAidImage(input: AIFirstAidImageGeneratorInput): Promise<ActionResult<AIFirstAidImageGeneratorOutput>> {
+    if (!input.step) {
+        return {
+        success: false,
+        error: 'Please provide a step to generate an image for.',
+        };
+    }
+    try {
+        const result = await aiFirstAidImageGenerator(input);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error('AI first aid image generation failed:', error);
+        return {
+        success: false,
+        error: 'Sorry, I was unable to generate an image for your request. Please try again later.',
+        };
+    }
 }

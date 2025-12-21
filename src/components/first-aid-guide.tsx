@@ -2,26 +2,33 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search, Sparkles, Loader2 } from 'lucide-react';
+import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from './ui/input';
 import { getFirstAidInstructions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import { Separator } from './ui/separator';
+import { Skeleton } from './ui/skeleton';
 
+
+type EmergencyStep = {
+  text: string;
+  imageUrl?: string;
+};
 
 type EmergencyData = {
   title: string;
-  steps: string;
+  steps: EmergencyStep[];
   whenToSeeDoctor: string;
 };
 
-const firstAidData: Record<string, EmergencyData> = {
+const firstAidData: Record<string, Omit<EmergencyData, 'steps'> & {steps: string}> = {
     'minor_burn': {
         title: 'Minor Burns (1st Degree)',
-        steps: `A minor burn is typically red and painful but does not have large blisters.
-1. **Cool the burn**: Hold the area under cool (not cold) running water for at least 10 to 20 minutes. If running water isn't available, use a cool, wet compress.
+        steps: `1. **Cool the burn**: Hold the area under cool (not cold) running water for at least 10 to 20 minutes. If running water isn't available, use a cool, wet compress.
 2. **Remove jewelry**: Gently remove rings or tight items from the burned area before it begins to swell.
 3. **Protect the area**: Apply a thin layer of aloe vera gel or a moisturizing lotion. Do not use butter, oils, or toothpaste, as these trap heat and can cause infection.
 4. **Bandage loosely**: Cover the burn with a sterile gauze bandage. Avoid fluffy cotton that might stick to the wound.
@@ -81,6 +88,10 @@ const emergencies = [
   { name: 'Choking', icon: Wind, value: 'choking' },
 ];
 
+const parseSteps = (steps: string): EmergencyStep[] => {
+    return steps.split('\n').filter(s => s.trim()).map(text => ({ text }));
+};
+
 export default function FirstAidGuide() {
   const [selectedEmergency, setSelectedEmergency] = useState<EmergencyData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,7 +99,14 @@ export default function FirstAidGuide() {
   const { toast } = useToast();
 
   const handleSelectEmergency = (emergencyValue: string) => {
-    setSelectedEmergency(firstAidData[emergencyValue] || null);
+    const data = firstAidData[emergencyValue];
+    if (data) {
+        setSelectedEmergency({
+            title: data.title,
+            steps: parseSteps(data.steps),
+            whenToSeeDoctor: data.whenToSeeDoctor,
+        });
+    }
   };
   
   const handleReset = () => {
@@ -132,22 +150,43 @@ export default function FirstAidGuide() {
                 <CardTitle className="text-3xl font-bold text-center">{selectedEmergency.title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 text-left">
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <Alert variant="destructive">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Disclaimer</AlertTitle>
-                        <AlertDescription>
-                            This is for informational purposes only. For severe injuries or emergencies, call your local emergency number immediately.
-                        </AlertDescription>
-                    </Alert>
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Disclaimer</AlertTitle>
+                    <AlertDescription>
+                        This is for informational purposes only. For severe injuries or emergencies, call your local emergency number immediately.
+                    </AlertDescription>
+                </Alert>
 
-                    <h3 className="font-bold text-lg mt-4">Immediate Steps:</h3>
-                    <div className="whitespace-pre-wrap">{selectedEmergency.steps}</div>
-                    
-                    <h3 className="font-bold text-lg mt-4">When to See a Doctor:</h3>
-                    <div className="whitespace-pre-wrap">{selectedEmergency.whenToSeeDoctor}</div>
+                <div>
+                    <h3 className="font-bold text-lg mb-4">Immediate Steps:</h3>
+                    <div className="space-y-6">
+                        {selectedEmergency.steps.map((step, index) => (
+                            <div key={index}>
+                                <div className="flex items-start gap-4">
+                                    <div className="flex-shrink-0 h-16 w-16 bg-muted rounded-md flex items-center justify-center border">
+                                        {step.imageUrl ? (
+                                            <Image src={step.imageUrl} alt={`Step ${index + 1}`} width={64} height={64} className="rounded-md object-contain" />
+                                        ) : (
+                                           <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                    <p className="flex-1 text-base">{step.text}</p>
+                                </div>
+                                {index < selectedEmergency.steps.length - 1 && <Separator className="mt-6" />}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 className="font-bold text-lg mt-6">When to See a Doctor:</h3>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{selectedEmergency.whenToSeeDoctor}</p>
                 </div>
             </CardContent>
+            <CardFooter>
+                 <Button onClick={handleReset} variant="outline" className='w-full'>Start New Search</Button>
+            </CardFooter>
         </Card>
     )
   }
@@ -172,9 +211,17 @@ export default function FirstAidGuide() {
       </CardHeader>
       <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {isLoading ? (
-             <div className="col-span-full flex justify-center items-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin" />
-             </div>
+            <div className="col-span-full flex flex-col justify-center items-center p-8 space-y-4">
+                <div className="space-y-2 text-center">
+                     <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+                     <p className='text-muted-foreground'>Our AI is generating your guide and drawing illustrations... this may take a moment.</p>
+                </div>
+                <div className='w-full max-w-sm space-y-4'>
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                </div>
+            </div>
         ) : filteredEmergencies.length > 0 ? (
             filteredEmergencies.map((emergency) => {
                 const Icon = emergency.icon;
