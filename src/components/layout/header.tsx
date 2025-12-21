@@ -89,12 +89,6 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                   </TransitionLink>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                  <TransitionLink href="/skin-analyzer">
-                    <Scan className="mr-2 h-4 w-4" />
-                    <span>{t('skinAnalyzer')}</span>
-                  </TransitionLink>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
                   <TransitionLink href="/diet-planner">
                     <Utensils className="mr-2 h-4 w-4" />
                     <span>{t('dietPlanner')}</span>

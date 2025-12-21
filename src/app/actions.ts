@@ -7,8 +7,6 @@ import { aiMedicineChecker } from '@/ai/flows/ai-medicine-checker';
 import type { AIMedicineCheckerInput, AIMedicineCheckerOutput } from '@/ai/flows/ai-medicine-checker';
 import { textToSpeech } from '@/ai/flows/ai-text-to-speech';
 import type { TextToSpeechOutput } from '@/ai/flows/ai-text-to-speech';
-import { aiSkinAnalyzer } from '@/ai/flows/ai-skin-analyzer';
-import type { AISkinAnalyzerInput, AISkinAnalyzerOutput } from '@/ai/flows/ai-skin-analyzer';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
 import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
 
@@ -77,22 +75,6 @@ export async function getAudioFromText(text: string): Promise<ActionResult<TextT
       success: false,
       error: 'Sorry, I was unable to convert the text to speech. Please try again later.',
     };
-  }
-}
-
-export async function getSkinAnalysis(input: AISkinAnalyzerInput): Promise<ActionResult<AISkinAnalyzerOutput>> {
-  if (!input.photoDataUri) {
-    return {
-      success: false,
-      error: 'Please provide a photo for analysis.',
-    };
-  }
-  try {
-    const result = await aiSkinAnalyzer(input);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('AI skin analyzer failed:', error);
-    return { success: false, error: 'Failed to analyze skin condition.' };
   }
 }
 

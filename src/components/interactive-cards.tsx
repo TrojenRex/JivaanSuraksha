@@ -94,13 +94,6 @@ export default function InteractiveCards() {
         buttonText={t('findClinics')}
       />
       <InteractiveCard
-        href="/skin-analyzer"
-        icon={Scan}
-        title={t('skinAnalyzer')}
-        description={t('skinAnalyzerDescription')}
-        buttonText={t('analyzeSkin')}
-      />
-      <InteractiveCard
         href="/diet-planner"
         icon={Utensils}
         title={t('dietPlanner')}
