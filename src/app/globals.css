@@ -64,13 +64,13 @@
     height: 100vh;
     width: 100vw;
     z-index: -1;
-    background: linear-gradient(to right, #4A6CF7, #1E40AF, #88d3ce);
+    background: linear-gradient(to right, #001233, #002244, #003366);
     background-size: 400% 400%;
     animation: wave-bg 15s ease-in-out infinite;
   }
 
   .wave {
-    background: linear-gradient(to right, hsla(221, 83%, 53%, 0.5), hsla(175, 56%, 75%, 0.5));
+    background: linear-gradient(to right, hsla(210, 100%, 10%, 0.7), hsla(210, 100%, 20%, 0.5));
     border-radius: 1000% 1000% 0 0;
     position: fixed;
     width: 200%;
