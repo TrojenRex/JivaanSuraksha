@@ -11,8 +11,8 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
     >
       <defs>
         <linearGradient id="logoGradient" x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor="#22E6D6" />
-          <stop offset="100%" stopColor="#4A6CF7" />
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#FFFFFF" />
         </linearGradient>
         <path
           id="topTextPath"
