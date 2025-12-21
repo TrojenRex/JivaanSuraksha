@@ -41,7 +41,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                     </Button>
                 </TransitionLink>
             )}
-            <TransitionLink href="/" className="flex items-center gap-2 text-primary-foreground">
+            <TransitionLink href="/" className="flex items-center gap-2 text-white">
               <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
               <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                 {t('appName')}
