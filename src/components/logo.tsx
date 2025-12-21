@@ -9,13 +9,13 @@ const Logo = ({ className }: { className?: string }) => {
         >
             <defs>
                 <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#00008B', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#0000CD', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#00E0FF', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#4A00E0', stopOpacity: 1 }} />
                 </linearGradient>
             </defs>
 
-            {/* Opaque Background */}
-            <circle cx="50" cy="50" r="50" fill="white" />
+            {/* Opaque Background - Set to transparent */}
+            <circle cx="50" cy="50" r="50" fill="none" />
 
             {/* Outer Circle */}
             <circle cx="50" cy="50" r="48" fill="none" stroke="url(#logo-gradient)" strokeWidth="2.5" />
@@ -41,6 +41,12 @@ const Logo = ({ className }: { className?: string }) => {
                     JIVAN SURAKSHA
                 </textPath>
             </text>
+
+            {/* Decorative Swirls */}
+            <g fill="none" stroke="url(#logo-gradient)" strokeWidth="2.5">
+                <path d="M 18,50 a 5,5 0 1,0 -10,0 a 5,5 0 1,0 10,0" />
+                <path d="M 92,50 a 5,5 0 1,0 -10,0 a 5,5 0 1,0 10,0" />
+            </g>
 
             {/* Bottom Text - YOUR AI DOCTOR */}
             <path id="text-path-bottom" d="M 28,50 a 22,22 0 1,0 44,0" fill="none" />
