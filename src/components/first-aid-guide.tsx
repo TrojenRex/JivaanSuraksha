@@ -4,9 +4,11 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search } from 'lucide-react';
+import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search, Sparkles, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from './ui/input';
+import { getFirstAidInstructions } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 
 type EmergencyData = {
@@ -82,6 +84,8 @@ const emergencies = [
 export default function FirstAidGuide() {
   const [selectedEmergency, setSelectedEmergency] = useState<EmergencyData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSelectEmergency = (emergencyValue: string) => {
     setSelectedEmergency(firstAidData[emergencyValue] || null);
@@ -89,6 +93,27 @@ export default function FirstAidGuide() {
   
   const handleReset = () => {
     setSelectedEmergency(null);
+    setSearchTerm('');
+  }
+
+  const handleSearchWithAI = async () => {
+    if (!searchTerm) return;
+    setIsLoading(true);
+    setSelectedEmergency(null);
+    
+    const result = await getFirstAidInstructions({ query: searchTerm });
+    
+    if (result.success && result.data) {
+        setSelectedEmergency(result.data);
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'AI Search Failed',
+            description: result.error || 'Could not fetch first-aid information.',
+        });
+    }
+
+    setIsLoading(false);
   }
 
   const filteredEmergencies = emergencies.filter((emergency) => 
@@ -108,7 +133,7 @@ export default function FirstAidGuide() {
             </CardHeader>
             <CardContent className="space-y-6 text-left">
                 <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <Alert variant="default" className='mb-4'>
+                    <Alert variant="destructive">
                         <AlertTriangle className="h-4 w-4" />
                         <AlertTitle>Disclaimer</AlertTitle>
                         <AlertDescription>
@@ -116,7 +141,7 @@ export default function FirstAidGuide() {
                         </AlertDescription>
                     </Alert>
 
-                    <h3 className="font-bold text-lg">Immediate Steps:</h3>
+                    <h3 className="font-bold text-lg mt-4">Immediate Steps:</h3>
                     <div className="whitespace-pre-wrap">{selectedEmergency.steps}</div>
                     
                     <h3 className="font-bold text-lg mt-4">When to See a Doctor:</h3>
@@ -137,31 +162,41 @@ export default function FirstAidGuide() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
                 type="text"
-                placeholder="Search emergencies..."
+                placeholder="Search for an emergency..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
+                disabled={isLoading}
             />
         </div>
       </CardHeader>
       <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredEmergencies.map((emergency) => {
-            const Icon = emergency.icon;
-            return (
-                <Button 
-                    key={emergency.value} 
-                    variant="outline"
-                    className="h-24 flex-col gap-2 text-base"
-                    onClick={() => handleSelectEmergency(emergency.value)}
-                >
-                    <Icon className="h-8 w-8 text-white text-outline" />
-                    <span>{emergency.name}</span>
+        {isLoading ? (
+             <div className="col-span-full flex justify-center items-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+             </div>
+        ) : filteredEmergencies.length > 0 ? (
+            filteredEmergencies.map((emergency) => {
+                const Icon = emergency.icon;
+                return (
+                    <Button 
+                        key={emergency.value} 
+                        variant="outline"
+                        className="h-24 flex-col gap-2 text-base"
+                        onClick={() => handleSelectEmergency(emergency.value)}
+                    >
+                        <Icon className="h-8 w-8 text-white text-outline" />
+                        <span>{emergency.name}</span>
+                    </Button>
+                )
+            })
+        ) : (
+            <div className="col-span-full text-center text-muted-foreground p-4 flex flex-col items-center gap-4">
+                <p>No pre-defined guides found for "{searchTerm}".</p>
+                <Button onClick={handleSearchWithAI} disabled={!searchTerm || isLoading}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Search with AI
                 </Button>
-            )
-        })}
-        {filteredEmergencies.length === 0 && (
-            <div className="col-span-full text-center text-muted-foreground">
-                No emergencies found matching your search.
             </div>
         )}
       </CardContent>

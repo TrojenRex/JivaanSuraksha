@@ -9,6 +9,8 @@ import { textToSpeech } from '@/ai/flows/ai-text-to-speech';
 import type { TextToSpeechOutput } from '@/ai/flows/ai-text-to-speech';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
 import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
+import { aiFirstAid } from '@/ai/flows/ai-first-aid';
+import type { AIFirstAidInput, AIFirstAidOutput } from '@/ai/flows/ai-first-aid';
 
 
 // Generic Action Result type
@@ -85,5 +87,24 @@ export async function getDietPlan(input: AIDietPlannerInput): Promise<ActionResu
   } catch (error) {
     console.error('AI diet planner failed:', error);
     return { success: false, error: 'Failed to generate diet plan.' };
+  }
+}
+
+export async function getFirstAidInstructions(input: AIFirstAidInput): Promise<ActionResult<AIFirstAidOutput>> {
+  if (!input.query) {
+    return {
+      success: false,
+      error: 'Please provide an emergency to search for.',
+    };
+  }
+  try {
+    const result = await aiFirstAid(input);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('AI first aid failed:', error);
+    return {
+      success: false,
+      error: 'Sorry, I was unable to process your request. Please try again later.',
+    };
   }
 }
