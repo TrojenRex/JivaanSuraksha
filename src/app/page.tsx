@@ -1,7 +1,6 @@
 'use client';
 
 import Header from '@/components/layout/header';
-import WaveBackground from '@/components/wave-background';
 import InteractiveCards from '@/components/interactive-cards';
 import { useLanguage } from '@/components/language-provider';
 
@@ -10,16 +9,14 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col min-h-screen w-full">
-      <WaveBackground />
       <Header />
       <main 
         className="flex-1 flex flex-col items-center justify-center p-4 pt-24 md:pt-28"
       >
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">{t('welcomeMessage')}</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-outline">{t('welcomeMessage')}</h1>
           <p 
-            className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
-            style={{ color: 'black' }}
+            className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto text-white text-outline"
           >
             {t('appDescription')}
           </p>
