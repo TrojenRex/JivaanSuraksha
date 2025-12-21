@@ -12,7 +12,7 @@ const SplashScreen = () => {
     setIsMounted(true);
     const finishTimer = setTimeout(() => {
       setIsFinished(true);
-    }, 1500); // Start the exit animation
+    }, 1200); // Animation duration is now 0.8s + 0.3s delay = 1.1s
 
     return () => {
       clearTimeout(finishTimer);
@@ -25,10 +25,8 @@ const SplashScreen = () => {
 
   return (
     <div className={cn("splash-screen", isFinished && "finished")}>
-       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className={cn("transition-opacity duration-500", isFinished ? "opacity-0" : "opacity-100")}>
-            <Logo className="h-40 w-40 text-primary" />
-        </div>
+       <div className={cn("absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300", isFinished ? "opacity-0" : "opacity-100 delay-200")}>
+          <Logo className="h-40 w-40 text-primary" />
       </div>
       <div className="splash-panel splash-panel-1" />
       <div className="splash-panel splash-panel-2" />

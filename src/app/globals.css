@@ -175,14 +175,14 @@
     justify-content: center;
     box-shadow: 0px 0px 0px 4px hsl(var(--primary) / 0.25);
     cursor: pointer;
-    transition-duration: 0.3s;
+    transition: all 0.3s ease-in-out;
     overflow: hidden;
     position: relative;
   }
   
   .scroll-to-top-button .svgIcon {
     width: 12px;
-    transition-duration: 0.3s;
+    transition: transform 0.3s ease-in-out;
   }
   
   .scroll-to-top-button .svgIcon path {
@@ -190,15 +190,11 @@
   }
   
   .scroll-to-top-button:hover {
-    width: 140px;
-    border-radius: 50px;
-    transition-duration: 0.3s;
+    transform: scale(1.1);
     background-color: hsl(var(--primary) / 0.9);
-    align-items: center;
   }
   
   .scroll-to-top-button:hover .svgIcon {
-    transition-duration: 0.3s;
     transform: translateY(-200%);
   }
   
@@ -208,13 +204,15 @@
     content: "Back to Top";
     color: white;
     font-size: 0px;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
   }
   
   .scroll-to-top-button:hover::before {
     font-size: 13px;
     opacity: 1;
-    bottom: unset;
-    transition-duration: 0.3s;
+    bottom: 50%;
+    transform: translateY(50%);
   }
 
   /* Splash Screen Animations */
@@ -229,13 +227,13 @@
     position: absolute;
     background-color: hsl(var(--background));
     animation-fill-mode: forwards;
-    animation-duration: 1.2s;
-    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
-    animation-delay: 0.3s;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
   }
 
   .splash-screen.finished .splash-panel {
     animation-name: splash-out;
+    animation-delay: 0.3s;
   }
   
   .splash-panel-1 {
@@ -295,9 +293,10 @@
     height: 2px;
     background-color: hsl(var(--foreground));
     animation-name: line-anim;
-    animation-duration: 1.5s;
+    animation-duration: 1.2s;
     animation-fill-mode: forwards;
     animation-timing-function: cubic-bezier(0.2, 1, 0.2, 1);
+    animation-delay: 0.5s;
     opacity: 0;
   }
 
@@ -310,7 +309,7 @@
       transform: scaleX(1);
       opacity: 1;
     }
-    70% {
+    80% {
       opacity: 1;
     }
     100% {
@@ -321,7 +320,7 @@
 
   .animated-app-name-text {
     opacity: 0;
-    animation: text-fade-in 0.1s 1s forwards;
+    animation: text-fade-in 0.2s 1.2s forwards;
   }
 
   @keyframes text-fade-in {
