@@ -30,8 +30,5 @@
     "createPlan": "Create Plan",
     "firstAidGuide": "First-Aid Guide",
     "firstAidGuideDescription": "Get instant, step-by-step AI guidance for common first-aid emergencies.",
-    "getHelp": "Get Help",
-    "emergencySOS": "Emergency SOS",
-    "emergencySOSDescription": "Alert your emergency contacts with your location in a critical situation.",
-    "openSOS": "Open SOS"
+    "getHelp": "Get Help"
 }

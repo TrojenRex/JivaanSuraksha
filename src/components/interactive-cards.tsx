@@ -114,13 +114,6 @@ export default function InteractiveCards() {
         description={t('firstAidGuideDescription')}
         buttonText={t('getHelp')}
       />
-       <InteractiveCard
-        href="/emergency-sos"
-        icon={Siren}
-        title={t('emergencySOS')}
-        description={t('emergencySOSDescription')}
-        buttonText={t('openSOS')}
-      />
     </div>
   );
 }

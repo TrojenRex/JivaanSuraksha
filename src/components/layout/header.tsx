@@ -106,12 +106,6 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                     <span>{t('firstAidGuide')}</span>
                   </TransitionLink>
                 </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <TransitionLink href="/emergency-sos">
-                    <Siren className="mr-2 h-4 w-4" />
-                    <span>{t('emergencySOS')}</span>
-                  </TransitionLink>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
