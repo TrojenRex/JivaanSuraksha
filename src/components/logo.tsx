@@ -65,42 +65,12 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
         </textPath>
       </text>
 
-      {/* Central Caduceus */}
+      {/* Central Plus Sign */}
       <g transform="translate(100, 100) scale(0.6)">
         <path
-          d="M 0,-45 L 0,45"
+          d="M -25,0 L 25,0 M 0,-25 L 0,25"
           stroke="url(#logoGradient)"
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-        />
-        {/* Wings */}
-        <path
-          d="M 0,-30 C 10,-45 25,-45 35,-35"
-          stroke="url(#logoGradient)"
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 0,-30 C -10,-45 -25,-45 -35,-35"
-          stroke="url(#logoGradient)"
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-        />
-        {/* Snakes */}
-        <path
-          d="M 15,45 C 35,25 35,-15 15,-35 S -15,-55 0,-30 C 15,-5 15,25 0,45 C -15,25 -15,-5 0,-30"
-          stroke="url(#logoGradient)"
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-        />
-         <path
-          d="M -15,45 C -35,25 -35,-15 -15,-35 S 15,-55 0,-30 C -15,-5 -15,25 0,45 C 15,25 15,-5 0,-30"
-          stroke="url(#logoGradient)"
-          strokeWidth="3"
+          strokeWidth="8"
           fill="none"
           strokeLinecap="round"
         />
