@@ -68,9 +68,9 @@
   .wave {
     background: radial-gradient(
       ellipse at center,
-      hsla(200, 15%, 85%, 0.1) 0%, /* Light blue-grey */
-      hsla(0, 0%, 100%, 0.15) 30%, /* White */
-      hsla(0, 0%, 80%, 0.1) 60%, /* Light Grey */
+      hsla(200, 15%, 85%, 0.2) 0%,
+      hsla(0, 0%, 100%, 0.3) 30%,
+      hsla(0, 0%, 80%, 0.2) 60%,
       hsla(0, 0%, 100%, 0) 80%
     );
     border-radius: 100%;
@@ -83,19 +83,19 @@
 
   .wave.one {
     top: 0;
-    opacity: 0.8;
+    opacity: 0.9;
   }
 
   .wave.two {
     top: 5%;
     animation-delay: -3s;
-    opacity: 0.6;
+    opacity: 0.7;
   }
   
   .wave.three {
     top: 10%;
     animation-delay: -6s;
-    opacity: 0.4;
+    opacity: 0.5;
   }
 
   @keyframes wave {
@@ -124,7 +124,7 @@
 
   .plus {
     position: absolute;
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.4);
     animation: float 12s infinite linear;
     font-weight: bold;
   }
