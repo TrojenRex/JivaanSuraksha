@@ -1,62 +1,90 @@
-import { cn } from '@/lib/utils';
+import React from "react";
 
-const Logo = ({ className }: { className?: string }) => {
-    return (
-        <svg
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-            className={cn(className)}
-        >
-            <defs>
-                <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#00E0FF', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#4A00E0', stopOpacity: 1 }} />
-                </linearGradient>
-            </defs>
+interface LogoProps {
+  size?: number; // controls overall size
+}
 
-            {/* Opaque Background - Set to transparent */}
-            <circle cx="50" cy="50" r="50" fill="none" />
+const JivanSurakshaLogo: React.FC<LogoProps> = ({ size = 90 }) => {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 260 260"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ display: "block" }}
+    >
+      <defs>
+        <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#22E6D6" />
+          <stop offset="100%" stopColor="#4A6CF7" />
+        </linearGradient>
 
-            {/* Outer Circle */}
-            <circle cx="50" cy="50" r="48" fill="none" stroke="url(#logo-gradient)" strokeWidth="2.5" />
-            
-            {/* Inner Circle */}
-            <circle cx="50" cy="50" r="42" fill="none" stroke="url(#logo-gradient)" strokeWidth="1" strokeOpacity="0.7" />
+        <path
+          id="topTextPath"
+          d="M 30 130 A 100 100 0 0 1 230 130"
+        />
+        <path
+          id="bottomTextPath"
+          d="M 30 130 A 100 100 0 0 0 230 130"
+        />
+      </defs>
 
-            {/* Caduceus Symbol */}
-            <g transform="translate(50, 50) scale(0.45)" stroke="url(#logo-gradient)" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                {/* Staff */}
-                <path d="M 0,-25 V 25" />
-                {/* Wings */}
-                <path d="M -20, -18 C -15,-28 15,-28 20,-18" />
-                {/* Snakes */}
-                <path d="M 10,25 C 20,15 20,-15 10,-25" />
-                <path d="M -10,25 C -20,15 -20,-15 -10,-25" />
-            </g>
+      {/* Transparent background for header usage */}
+      <circle
+        cx="130"
+        cy="130"
+        r="110"
+        stroke="url(#ringGradient)"
+        strokeWidth="6"
+        fill="none"
+      />
+      <circle
+        cx="130"
+        cy="130"
+        r="96"
+        stroke="#4A6CF7"
+        strokeWidth="2"
+        fill="none"
+      />
 
-            {/* Top Text - JIVAN SURAKSHA */}
-            <path id="text-path-top" d="M 15,52 a 35,35 0 1,1 70,0" fill="none" />
-            <text fill="url(#logo-gradient)" style={{ fontSize: '11px', fontFamily: 'sans-serif', fontWeight: 'bold', letterSpacing: '0.1em' }}>
-                <textPath href="#text-path-top" startOffset="50%" textAnchor="middle">
-                    JIVAN SURAKSHA
-                </textPath>
-            </text>
+      <text
+        fill="#EAF6FF"
+        fontSize="15"
+        fontWeight="600"
+        letterSpacing="1.5"
+      >
+        <textPath href="#topTextPath" startOffset="50%" textAnchor="middle">
+          JIVAN SURAKSHA
+        </textPath>
+      </text>
 
-            {/* Decorative Swirls */}
-            <g fill="none" stroke="url(#logo-gradient)" strokeWidth="2.5">
-                <path d="M 18,50 a 5,5 0 1,0 -10,0 a 5,5 0 1,0 10,0" />
-                <path d="M 92,50 a 5,5 0 1,0 -10,0 a 5,5 0 1,0 10,0" />
-            </g>
+      <text
+        fill="#AFC6FF"
+        fontSize="11"
+        letterSpacing="1.5"
+      >
+        <textPath href="#bottomTextPath" startOffset="50%" textAnchor="middle">
+          YOUR AI DOCTOR
+        </textPath>
+      </text>
 
-            {/* Bottom Text - YOUR AI DOCTOR */}
-            <path id="text-path-bottom" d="M 28,50 a 22,22 0 1,0 44,0" fill="none" />
-             <text fill="url(#logo-gradient)" style={{ fontSize: '7px', fontFamily: 'sans-serif', fontWeight: '600', letterSpacing: '0.15em' }}>
-                <textPath href="#text-path-bottom" startOffset="50%" textAnchor="middle">
-                    YOUR AI DOCTOR
-                </textPath>
-            </text>
-        </svg>
-    );
+      {/* Simplified Caduceus for small size clarity */}
+      <g
+        transform="translate(130 130)"
+        stroke="url(#ringGradient)"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      >
+        <line x1="0" y1="-36" x2="0" y2="36" />
+        <path d="M -26 -26 C -12 -40 -4 -40 0 -26" />
+        <path d="M 26 -26 C 12 -40 4 -40 0 -26" />
+        <path d="M -7 -8 C -18 4 -18 18 -7 28" />
+        <path d="M 7 -8 C 18 4 18 18 7 28" />
+        <circle cx="0" cy="-42" r="3.5" fill="url(#ringGradient)" />
+      </g>
+    </svg>
+  );
 };
 
-export default Logo;
+export default JivanSurakshaLogo;
