@@ -9,13 +9,13 @@ const Logo = ({ className }: { className?: string }) => {
         >
             <defs>
                 <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#00BFFF', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#20C2C2', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#00008B', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#0000CD', stopOpacity: 1 }} />
                 </linearGradient>
             </defs>
 
             {/* Opaque Background */}
-            <circle cx="50" cy="50" r="50" fill="rgba(255, 255, 255, 0.9)" />
+            <circle cx="50" cy="50" r="50" fill="white" />
 
             {/* Outer Circle */}
             <circle cx="50" cy="50" r="48" fill="none" stroke="url(#logo-gradient)" strokeWidth="2.5" />
