@@ -23,7 +23,6 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221 83% 53%;
-    --radius: 0.5rem;
   }
 
   .dark {
@@ -282,5 +281,51 @@
 
   .text-outline {
     text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+  }
+
+  /* Animated App Name */
+  .animated-app-name {
+    position: relative;
+    display: inline-block;
+  }
+
+  .animated-app-name-line {
+    position: absolute;
+    left: 0;
+    height: 2px;
+    background-color: hsl(var(--foreground));
+    animation-name: line-anim;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.2, 1, 0.2, 1);
+    opacity: 0;
+  }
+
+  @keyframes line-anim {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    30% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 0;
+    }
+  }
+
+  .animated-app-name-text {
+    opacity: 0;
+    animation: text-fade-in 0.1s 1s forwards;
+  }
+
+  @keyframes text-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }

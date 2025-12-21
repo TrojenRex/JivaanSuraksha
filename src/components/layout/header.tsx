@@ -19,6 +19,7 @@ import { useLanguage } from '../language-provider';
 import { useTheme } from 'next-themes';
 import TransitionLink from '../transition-link';
 import Logo from '../logo';
+import AnimatedAppName from '../animated-app-name';
 
 type HeaderProps = {
   showBackButton?: boolean;
@@ -43,9 +44,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
             )}
             <TransitionLink href="/" className="flex items-center gap-2 text-white">
               <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
-              <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground text-outline">
-                {t('appName')}
-              </span>
+              <AnimatedAppName text={t('appName')} />
             </TransitionLink>
           </div>
           <nav className='flex items-center gap-1 sm:gap-2'>
