@@ -147,7 +147,7 @@
       opacity: 1;
     }
     100% {
-      transform: translateY(-10vh) rotate(720deg) scale(2);
+      transform: translateY(-10vh) rotate(360deg) scale(2);
       opacity: 0;
     }
   }
@@ -340,5 +340,3 @@
     text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
   }
 }
-
-    
