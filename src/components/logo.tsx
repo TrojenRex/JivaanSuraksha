@@ -70,7 +70,7 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
         <path
           d="M -25,0 L 25,0 M 0,-25 L 0,25"
           stroke="url(#logoGradient)"
-          strokeWidth="8"
+          strokeWidth="16"
           fill="none"
           strokeLinecap="round"
         />
