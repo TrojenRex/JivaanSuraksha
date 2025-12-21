@@ -18,6 +18,7 @@ import { useLanguage } from './language-provider';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { Separator } from './ui/separator';
 
 const formSchema = z.object({
   age: z.coerce.number().min(1, 'Age must be a positive number.').max(120),
@@ -185,14 +186,36 @@ export default function DietPlanner() {
             <CardHeader className="items-center text-center">
                 <Sparkles className="h-12 w-12 text-white text-outline mb-4" />
                 <CardTitle className="text-3xl font-bold">Your Personalized Plan</CardTitle>
+                <CardDescription>A one-day sample meal plan to get you started.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 text-left">
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <h3 className="font-bold text-lg">One-Day Sample Meal Plan</h3>
-                    <p>{dietPlan.plan}</p>
-                    <h3 className="font-bold text-lg mt-4">Helpful Tips</h3>
-                    <p>{dietPlan.tips}</p>
+                <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
+                  <div>
+                    <h4 className="font-bold text-base">Breakfast</h4>
+                    <p className="text-muted-foreground">{dietPlan.plan.breakfast}</p>
+                  </div>
+                  <Separator />
+                   <div>
+                    <h4 className="font-bold text-base">Lunch</h4>
+                    <p className="text-muted-foreground">{dietPlan.plan.lunch}</p>
+                  </div>
+                  <Separator />
+                   <div>
+                    <h4 className="font-bold text-base">Dinner</h4>
+                    <p className="text-muted-foreground">{dietPlan.plan.dinner}</p>
+                  </div>
+                  <Separator />
+                   <div>
+                    <h4 className="font-bold text-base">Snacks</h4>
+                    <p className="text-muted-foreground">{dietPlan.plan.snacks}</p>
+                  </div>
                 </div>
+
+                <div>
+                    <h3 className="font-bold text-lg mb-2">Helpful Tips</h3>
+                    <p className="text-sm text-muted-foreground">{dietPlan.tips}</p>
+                </div>
+
                  <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Disclaimer</AlertTitle>
@@ -415,5 +438,3 @@ export default function DietPlanner() {
     </Card>
   );
 }
-
-    

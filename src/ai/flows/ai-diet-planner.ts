@@ -22,8 +22,15 @@ const AIDietPlannerInputSchema = z.object({
 });
 export type AIDietPlannerInput = z.infer<typeof AIDietPlannerInputSchema>;
 
+const MealPlanSchema = z.object({
+  breakfast: z.string().describe("A simple, healthy, and balanced breakfast option. Be specific with portion sizes where appropriate (e.g., '1 cup of yogurt')."),
+  lunch: z.string().describe("A simple, healthy, and balanced lunch option. Be specific with portion sizes where appropriate."),
+  dinner: z.string().describe("A simple, healthy, and balanced dinner option. Be specific with portion sizes where appropriate."),
+  snacks: z.string().describe("1-2 simple and healthy snack options."),
+});
+
 const AIDietPlannerOutputSchema = z.object({
-  plan: z.string().describe('A detailed one-day sample meal plan including breakfast, lunch, dinner, and snacks. Provide simple, healthy, and balanced options. Be specific with portion sizes where appropriate (e.g., "1 cup of yogurt", "100g of chicken breast").'),
+  plan: MealPlanSchema.describe('A detailed one-day sample meal plan including breakfast, lunch, dinner, and snacks.'),
   tips: z.string().describe('A few general, actionable tips to help the user achieve their goal, related to diet, hydration, or lifestyle.'),
 });
 export type AIDietPlannerOutput = z.infer<typeof AIDietPlannerOutputSchema>;
@@ -48,17 +55,13 @@ const prompt = ai.definePrompt({
   - Dietary Preference: {{{dietaryPreference}}}
 
   Your Task:
-  1.  Create a simple, balanced, and healthy one-day meal plan (Breakfast, Lunch, Dinner, and 1-2 Snack options) that aligns with their goal and dietary preference.
+  1.  Create a simple, balanced, and healthy one-day meal plan with separate entries for Breakfast, Lunch, Dinner, and Snacks.
   2.  The plan should be realistic for a regular person to follow. Suggest common and easily accessible foods.
   3.  Provide 2-3 actionable tips to support their health goal.
   
-  Example structure for the meal plan:
-  **Breakfast:** [Dish Name]. E.g., Oatmeal with berries and a handful of nuts.
-  **Lunch:** [Dish Name]. E.g., Grilled chicken salad with mixed greens, and a vinaigrette dressing.
-  **Dinner:** [Dish Name]. E.g., Baked salmon with roasted vegetables and quinoa.
-  **Snacks:** [Option 1], [Option 2]. E.g., Greek yogurt, an apple with peanut butter.
+  Example meal plan item: "Oatmeal with berries and a handful of nuts."
   
-  IMPORTANT: Make sure the generated \`plan\` and \`tips\` fields do not contain any disclaimers. The disclaimer is handled by the application's UI.`,
+  IMPORTANT: Make sure the generated fields do not contain any disclaimers. The disclaimer is handled by the application's UI.`,
 });
 
 const aiDietPlannerFlow = ai.defineFlow(
