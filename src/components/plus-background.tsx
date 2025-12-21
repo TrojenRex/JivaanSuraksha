@@ -13,7 +13,7 @@ const PlusBackground = () => {
     // This effect runs only once on the client after the component mounts.
     // This avoids hydration errors.
     const plusSigns = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 40; i++) {
       plusSigns.push({
         id: i,
         style: {
@@ -43,5 +43,3 @@ const PlusBackground = () => {
 };
 
 export default PlusBackground;
-
-    
