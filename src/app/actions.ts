@@ -11,12 +11,8 @@ import { aiSkinAnalyzer } from '@/ai/flows/ai-skin-analyzer';
 import type { AISkinAnalyzerInput, AISkinAnalyzerOutput } from '@/ai/flows/ai-skin-analyzer';
 import { aiDietPlanner } from '@/ai/flows/ai-diet-planner';
 import type { AIDietPlannerInput, AIDietPlannerOutput } from '@/ai/flows/ai-diet-planner';
-import { aiHealthArticle } from '@/ai/flows/ai-health-articles';
-import type { AIHealthArticleInput, AIHealthArticleOutput } from '@/ai/flows/ai-health-articles';
 import { aiEmergencySOS } from '@/ai/flows/ai-emergency-sos';
 import type { AIEmergencySOSInput, AIEmergencySOSOutput } from '@/ai/flows/ai-emergency-sos';
-import { aiHealthTopics } from '@/ai/flows/ai-health-topics';
-import type { AIHealthTopicsOutput } from '@/ai/flows/ai-health-topics';
 import { aiMentalHealth } from '@/ai/flows/ai-mental-health';
 import type { AIMentalHealthInput, AIMentalHealthOutput } from '@/ai/flows/ai-mental-health';
 
@@ -111,29 +107,6 @@ export async function getDietPlan(input: AIDietPlannerInput): Promise<ActionResu
   } catch (error) {
     console.error('AI diet planner failed:', error);
     return { success: false, error: 'Failed to generate diet plan.' };
-  }
-}
-
-export async function getHealthArticle(input: AIHealthArticleInput): Promise<ActionResult<AIHealthArticleOutput>> {
-   if (!input.topic) {
-    return { success: false, error: 'Please provide a topic.' };
-  }
-  try {
-    const result = await aiHealthArticle(input);
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('AI health article failed:', error);
-    return { success: false, error: 'Failed to generate article.' };
-  }
-}
-
-export async function getHealthTopics(): Promise<ActionResult<AIHealthTopicsOutput>> {
-  try {
-    const result = await aiHealthTopics();
-    return { success: true, data: result };
-  } catch (error) {
-    console.error('AI health topics failed:', error);
-    return { success: false, error: 'Failed to generate topics.' };
   }
 }
 

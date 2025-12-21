@@ -122,13 +122,6 @@ export default function InteractiveCards() {
         buttonText={t('getHelp')}
       />
        <InteractiveCard
-        href="/health-articles"
-        icon={Newspaper}
-        title={t('healthArticles')}
-        description={t('healthArticlesDescription')}
-        buttonText={t('readArticles')}
-      />
-       <InteractiveCard
         href="/emergency-sos"
         icon={Siren}
         title={t('emergencySOS')}

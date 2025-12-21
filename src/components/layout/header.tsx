@@ -113,12 +113,6 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                   </TransitionLink>
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                  <TransitionLink href="/health-articles">
-                    <Newspaper className="mr-2 h-4 w-4" />
-                    <span>{t('healthArticles')}</span>
-                  </TransitionLink>
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
                   <TransitionLink href="/emergency-sos">
                     <Siren className="mr-2 h-4 w-4" />
                     <span>{t('emergencySOS')}</span>
