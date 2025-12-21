@@ -10,8 +10,8 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 210 90% 55%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 330 85% 55%;
+    --primary-foreground: 330 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -22,30 +22,30 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 330 85% 55%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222 47% 11%;
+    --background: 260 20% 5%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    --card: 260 20% 7%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 260 20% 5%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 90% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 17%;
+    --primary: 330 85% 65%;
+    --primary-foreground: 330 0% 100%;
+    --secondary: 280 20% 15%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
+    --muted: 280 20% 15%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
+    --accent: 280 20% 15%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 210 90% 55%;
+    --border: 280 20% 20%;
+    --input: 280 20% 20%;
+    --ring: 330 85% 65%;
   }
 }
 
@@ -176,7 +176,7 @@
     padding: 12.5px 30px;
     border: 0;
     border-radius: 100px;
-    background-color: #3390db;
+    background-color: hsl(var(--primary));
     color: #ffffff;
     font-weight: bold;
     transition: all 0.5s;
@@ -184,13 +184,13 @@
   }
 
   .btn-uiverse:hover {
-    background-color: #6fc5ff;
-    box-shadow: 0 0 20px #6fc5ff50;
+    background-color: hsl(var(--primary) / 0.8);
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
     transform: scale(1.1);
   }
 
   .btn-uiverse:active {
-    background-color: #3d94cf;
+    background-color: hsl(var(--primary));
     transition: all 0.25s;
     -webkit-transition: all 0.25s;
     box-shadow: none;
@@ -244,13 +244,13 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: rgb(51, 144, 219);
+    background-color: hsl(var(--primary));
     border: none;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 0px 0px 4px rgba(180, 160, 255, 0.253);
+    box-shadow: 0px 0px 0px 4px hsl(var(--primary) / 0.25);
     cursor: pointer;
     transition-duration: 0.3s;
     overflow: hidden;
@@ -270,7 +270,7 @@
     width: 140px;
     border-radius: 50px;
     transition-duration: 0.3s;
-    background-color: rgb(51, 144, 219);
+    background-color: hsl(var(--primary) / 0.9);
     align-items: center;
   }
   
