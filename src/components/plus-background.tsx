@@ -17,10 +17,11 @@ const PlusBackground = () => {
       plusSigns.push({
         id: i,
         style: {
-          top: `${Math.random() * 100}%`,
           left: `${Math.random() * 100}%`,
           fontSize: `${Math.random() * 30 + 20}px`,
           animationDelay: `${Math.random() * 12}s`,
+          // Start with a negative translateY to be off-screen at the top
+          transform: `translateY(-10vh)`, 
         },
       });
     }

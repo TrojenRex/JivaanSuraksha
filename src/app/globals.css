@@ -131,11 +131,11 @@
   
   @keyframes float {
     0% {
-      transform: translateY(-10vh) rotateY(0deg) scale(2);
+      transform: translateY(0) rotateY(0deg) scale(2);
       opacity: 0;
     }
     100% {
-      transform: translateY(100vh) rotateY(360deg) scale(1);
+      transform: translateY(110vh) rotateY(360deg) scale(1);
       opacity: 1;
     }
   }
