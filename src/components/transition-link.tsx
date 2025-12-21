@@ -22,7 +22,7 @@ const TransitionLink: React.FC<TransitionLinkProps> = ({ children, href, classNa
       setTimeout(() => {
         router.push(href.toString());
         // No need to setLoading(false) here, as the new page will mount and reset it.
-      }, 300); // Wait for the animation to start
+      }, 50); // Wait for the animation to start
     }
   };
 
