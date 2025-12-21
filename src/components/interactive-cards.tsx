@@ -84,7 +84,7 @@ export default function InteractiveCards() {
         icon={Pill}
         title={t('medicineChecker')}
         description={t('medicineCheckerDescription')}
-        buttonText={t('getInfo')}
+        buttonText={t('checkInfo')}
       />
       <InteractiveCard
         href="/nearby-clinics"
