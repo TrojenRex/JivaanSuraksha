@@ -68,10 +68,10 @@
   .wave {
     background: radial-gradient(
       ellipse at center,
-      rgba(0, 42, 85, 0.4) 0%,
-      rgba(0, 31, 64, 0.3) 30%,
-      rgba(0, 21, 42, 0.2) 60%,
-      rgba(0, 10, 21, 0) 80%
+      hsla(200, 15%, 85%, 0.1) 0%, /* Light blue-grey */
+      hsla(0, 0%, 100%, 0.15) 30%, /* White */
+      hsla(0, 0%, 80%, 0.1) 60%, /* Light Grey */
+      hsla(0, 0%, 100%, 0) 80%
     );
     border-radius: 100%;
     position: absolute;
