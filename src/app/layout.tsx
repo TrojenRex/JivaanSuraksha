@@ -8,7 +8,7 @@ import ScrollToTopButton from '@/components/scroll-to-top';
 import { TransitionProvider } from '@/components/transition-provider';
 import PageTransition from '@/components/page-transition';
 import SplashScreen from '@/components/splash-screen';
-import WaveBackground from '@/components/wave-background';
+import PlusBackground from '@/components/plus-background';
 
 
 const inter = Inter({ 
@@ -38,7 +38,8 @@ export default function RootLayout({
           >
             <LanguageProvider>
               <TransitionProvider>
-                <WaveBackground />
+                <div className="ocean" />
+                <PlusBackground />
                 <SplashScreen />
                 <PageTransition />
                 {children}
@@ -51,5 +52,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

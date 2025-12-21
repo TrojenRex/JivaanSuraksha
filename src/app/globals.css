@@ -67,34 +67,6 @@
     background: #001233;
   }
 
-  .wave {
-    background: hsla(0, 0%, 100%, 0.1);
-    border-radius: 50%;
-    position: fixed;
-    width: 200%;
-    height: 12em;
-    animation: wave 10s -3s linear infinite;
-    transform: translate3d(0, 0, 0);
-    opacity: 0.8;
-    bottom: 0;
-    left: 0;
-    z-index: -1;
-  }
-
-  .wave:nth-of-type(2) {
-    bottom: -1.25em;
-    animation: wave 18s linear reverse infinite;
-    opacity: 0.2;
-    background: hsla(0, 0%, 100%, 0.2);
-  }
-
-  .wave:nth-of-type(3) {
-    bottom: -2.5em;
-    animation: wave 20s -1s reverse infinite;
-    opacity: 0.3;
-    background: hsla(0, 0%, 100%, 0.3);
-  }
-
   .plus-background {
     position: fixed;
     top: 0;
@@ -111,22 +83,6 @@
     color: rgba(255, 255, 255, 0.2);
     animation: float 12s infinite linear;
     font-weight: bold;
-  }
-
-
-  @keyframes wave {
-    0% {
-      transform: translateX(0);
-    }
-  
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  @keyframes wave-bg {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
   }
   
   @keyframes float {
@@ -328,5 +284,3 @@
     text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
   }
 }
-
-    
