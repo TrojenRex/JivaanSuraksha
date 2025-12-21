@@ -62,6 +62,8 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
         fontSize="9"
         fontWeight="bold"
         letterSpacing="0.5"
+        stroke="black"
+        strokeWidth="0.2"
       >
         <textPath href="#bottomTextPath" startOffset="50%" textAnchor="middle">
           YOUR AI DOCTOR
