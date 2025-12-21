@@ -9,6 +9,7 @@ import ScrollToTopButton from '@/components/scroll-to-top';
 import { TransitionProvider } from '@/components/transition-provider';
 import PageTransition from '@/components/page-transition';
 import SplashScreen from '@/components/splash-screen';
+import WaveBackground from '@/components/wave-background';
 
 
 const inter = Inter({ 
@@ -39,7 +40,7 @@ export default function RootLayout({
             <LanguageProvider>
               <TransitionProvider>
                 <SplashScreen />
-                <PlusBackground />
+                <WaveBackground />
                 <PageTransition />
                 {children}
                 <Toaster />
