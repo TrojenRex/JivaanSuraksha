@@ -143,11 +143,11 @@
   
   @keyframes float {
     0% {
-      transform: translateY(100vh) rotate(0deg) scale(1);
+      transform: translateY(100vh) rotateY(0deg) scale(1);
       opacity: 1;
     }
     100% {
-      transform: translateY(-10vh) rotate(360deg) scale(2);
+      transform: translateY(-10vh) rotateY(360deg) scale(2);
       opacity: 0;
     }
   }
