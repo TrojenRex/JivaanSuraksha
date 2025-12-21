@@ -25,9 +25,6 @@ const JivanSurakshaLogo: React.FC<{ className?: string }> = ({ className }) => {
         />
       </defs>
 
-      {/* Translucent Background */}
-      <circle cx="100" cy="100" r="90" fill="#FFFFFF" />
-
       {/* Rings */}
       <circle
         cx="100"
