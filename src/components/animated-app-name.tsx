@@ -14,14 +14,14 @@ const AnimatedAppName = ({ text }: { text: string }) => {
   if (!isMounted) {
     // Render the static text on the server and initial client render
     return (
-      <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground text-outline">
+      <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
         {text}
       </span>
     );
   }
 
   return (
-    <div className="animated-app-name text-lg sm:text-xl md:text-2xl font-bold text-outline">
+    <div className="animated-app-name text-lg sm:text-xl md:text-2xl font-bold">
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
