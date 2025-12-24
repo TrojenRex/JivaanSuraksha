@@ -11,8 +11,11 @@ const AnimatedAppName = ({ text }: { text: string }) => {
     setKey(prevKey => prevKey + 1);
   }, []);
 
-  const lines = useMemo(() => 
-    Array.from({ length: 5 }).map((_, i) => {
+  const [lines, setLines] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Generate lines on the client side to avoid hydration mismatch
+    const generateLines = () => Array.from({ length: 5 }).map((_, i) => {
       const angle = Math.random() * 360;
       return {
         id: i,
@@ -23,18 +26,13 @@ const AnimatedAppName = ({ text }: { text: string }) => {
           '--angle': `${angle}deg`
         } as React.CSSProperties,
       }
-    }), 
-  [key]); // Depend on key to regenerate lines on click
-
-  // Use a state to prevent hydration mismatch for the animation key
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    });
+    setLines(generateLines());
+  }, [key]);
 
   return (
     <div 
-      key={isMounted ? key : 0}
+      key={key}
       className="animated-app-name text-lg sm:text-xl md:text-2xl font-bold"
       onClick={handleClick}
       aria-label={`Rerun animation for ${text}`}
