@@ -197,7 +197,7 @@ export default function MedicineChecker() {
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
         <CardHeader>
           <h2 className="text-xl sm:text-2xl font-bold text-center">{t('medicineChecker')}</h2>
         </CardHeader>

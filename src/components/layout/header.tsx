@@ -36,8 +36,8 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
           <div className="flex items-center gap-2">
             {showBackButton && (
                 <TransitionLink href="/">
-                    <Button variant="outline" size="icon" className="mr-2">
-                        <ArrowLeft className="h-6 w-6" />
+                    <Button variant="outline" size="icon" className="mr-2 h-9 w-9 sm:h-10 sm:w-10">
+                        <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                         <span className="sr-only">Back to Home</span>
                     </Button>
                 </TransitionLink>
@@ -48,7 +48,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
             </TransitionLink>
           </div>
           <nav className='flex items-center gap-1 sm:gap-2'>
-             <Button asChild variant="destructive" className="animate-pulse px-2 sm:px-4">
+             <Button asChild variant="destructive" className="animate-pulse h-9 sm:h-10 px-2 sm:px-4">
                 <a href="tel:102">
                     <Siren className="mr-0 sm:mr-2 h-5 w-5" />
                     <span className="hidden sm:inline">{t('emergency')}</span>
@@ -56,8 +56,8 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="h-6 w-6" />
+                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
+                  <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -104,8 +104,8 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                 <Button variant="outline" size="icon">
-                    <Settings className="h-6 w-6" />
+                 <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
+                    <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span className="sr-only">{t('settings')}</span>
                 </Button>
               </DropdownMenuTrigger>

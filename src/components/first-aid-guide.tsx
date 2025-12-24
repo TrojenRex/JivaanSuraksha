@@ -141,7 +141,7 @@ export default function FirstAidGuide() {
 
   if (selectedEmergency) {
     return (
-        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
             <CardHeader>
                  <Button variant="ghost" size="sm" onClick={handleReset} className="self-start gap-2">
                     <ArrowLeft className="h-4 w-4" />
@@ -192,7 +192,7 @@ export default function FirstAidGuide() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
       <CardHeader className="items-center text-center">
         <LifeBuoy className="h-12 w-12 text-white text-outline mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>

@@ -294,7 +294,7 @@ export default function SymptomChecker() {
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
         <CardHeader>
           <h2 className="text-xl sm:text-2xl font-bold text-center">{t('symptomChecker')}</h2>
         </CardHeader>
@@ -372,7 +372,7 @@ export default function SymptomChecker() {
               )}
             </div>
           </div>
-          <DialogFooter className="sm:justify-between gap-2">
+          <DialogFooter className="sm:justify-between gap-2 flex-col sm:flex-row">
              <Button onClick={toggleLiveAnalysis} disabled={!hasCameraPermission} variant={isAnalyzing ? "destructive" : "default"}>
                 {isAnalyzing ? <><XCircle className="mr-2 h-4 w-4" />Stop Analysis</> : <><PlayCircle className="mr-2 h-4 w-4" />Start Live Analysis</>}
              </Button>

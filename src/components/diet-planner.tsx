@@ -182,7 +182,7 @@ export default function DietPlanner() {
 
   if (dietPlan) {
     return (
-        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
             <CardHeader className="items-center text-center">
                 <Sparkles className="h-12 w-12 text-white text-outline mb-4" />
                 <CardTitle className="text-3xl font-bold">Your Personalized Plan</CardTitle>
@@ -232,7 +232,7 @@ export default function DietPlanner() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2">
+    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
       <CardHeader className="items-center text-center">
         <Utensils className="h-12 w-12 text-white text-outline mb-4" />
         <CardTitle className="text-3xl font-bold">{t('dietPlanner')}</CardTitle>
@@ -258,7 +258,7 @@ export default function DietPlanner() {
                     </div>
                 </RadioGroup>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="age"
@@ -378,7 +378,7 @@ export default function DietPlanner() {
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                 control={form.control}
                 name="goal"
