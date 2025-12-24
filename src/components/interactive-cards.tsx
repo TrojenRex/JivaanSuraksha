@@ -31,13 +31,13 @@ const InteractiveCard = ({
     const rotateX = (-y / height) * 10; // Tilt intensity
     const rotateY = (x / width) * 10;
 
-    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05) translateZ(20px)`;
     cardRef.current.style.transition = 'transform 0.1s ease-out';
   };
 
   const onMouseLeave = () => {
     if (cardRef.current) {
-      cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+      cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0px)';
       cardRef.current.style.transition = 'transform 0.3s ease-in-out';
     }
   };
