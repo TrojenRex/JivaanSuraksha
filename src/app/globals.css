@@ -134,12 +134,15 @@
   
   @keyframes float {
     from {
-      transform: translateY(-10vh) rotateY(0deg) scale(2);
+      transform: translateY(-10vh) rotate(0deg) scale(1);
       opacity: 0;
     }
-    to {
-      transform: translateY(110vh) rotateY(360deg) scale(1);
+    50% {
       opacity: 1;
+    }
+    to {
+      transform: translateY(110vh) rotate(360deg) scale(1.5);
+      opacity: 0;
     }
   }
 
@@ -388,3 +391,5 @@
     }
   }
 }
+
+    

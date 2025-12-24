@@ -182,9 +182,9 @@ export default function DietPlanner() {
 
   if (dietPlan) {
     return (
-        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
             <CardHeader className="items-center text-center">
-                <Sparkles className="h-12 w-12 text-white text-outline mb-4" />
+                <Sparkles className="h-12 w-12 text-primary mb-4" />
                 <CardTitle className="text-3xl font-bold">Your Personalized Plan</CardTitle>
                 <CardDescription>A one-day sample meal plan to get you started.</CardDescription>
             </CardHeader>
@@ -232,9 +232,9 @@ export default function DietPlanner() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
       <CardHeader className="items-center text-center">
-        <Utensils className="h-12 w-12 text-white text-outline mb-4" />
+        <Utensils className="h-12 w-12 text-primary mb-4" />
         <CardTitle className="text-3xl font-bold">{t('dietPlanner')}</CardTitle>
         <CardDescription>Tell us about yourself to get a personalized meal plan from our AI.</CardDescription>
       </CardHeader>
@@ -352,7 +352,7 @@ export default function DietPlanner() {
             {bmi && (
                 <Card className="bg-muted/50 border-dashed">
                     <CardContent className="p-4 text-center">
-                        <p className="font-bold">Your approximate BMI is: <span className="text-white text-outline">{bmi}</span> ({bmiCategory})</p>
+                        <p className="font-bold">Your approximate BMI is: <span className="text-primary">{bmi}</span> ({bmiCategory})</p>
                     </CardContent>
                 </Card>
             )}
@@ -438,3 +438,5 @@ export default function DietPlanner() {
     </Card>
   );
 }
+
+    

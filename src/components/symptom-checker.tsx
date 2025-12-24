@@ -294,7 +294,7 @@ export default function SymptomChecker() {
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+      <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
         <CardHeader>
           <h2 className="text-xl sm:text-2xl font-bold text-center">{t('symptomChecker')}</h2>
         </CardHeader>
@@ -389,3 +389,5 @@ export default function SymptomChecker() {
     </>
   );
 }
+
+    

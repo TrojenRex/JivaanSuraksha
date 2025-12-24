@@ -11,24 +11,21 @@ const PlusBackground = () => {
 
   useEffect(() => {
     // This effect runs only once on the client after the component mounts.
-    // This avoids hydration errors.
-    const plusSigns = [];
-    for (let i = 0; i < 40; i++) {
-      plusSigns.push({
+    // This avoids hydration errors that can break animations.
+    const plusSigns = Array.from({ length: 40 }).map((_, i) => ({
         id: i,
         style: {
           left: `${Math.random() * 100}%`,
           fontSize: `${Math.random() * 30 + 20}px`,
           animationDelay: `${Math.random() * 12}s`,
-          // Start with a negative translateY to be off-screen at the top
-          transform: `translateY(-10vh)`, 
+          animationDuration: `${Math.random() * 5 + 7}s`,
         },
-      });
-    }
+    }));
     setPluses(plusSigns);
   }, []);
 
   if (!pluses.length) {
+    // Render nothing on the server and initial client render to prevent mismatch
     return null;
   }
 
@@ -44,3 +41,5 @@ const PlusBackground = () => {
 };
 
 export default PlusBackground;
+
+    

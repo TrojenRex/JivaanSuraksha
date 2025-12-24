@@ -186,7 +186,7 @@ export default function NearbyClinics() {
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
@@ -245,7 +245,7 @@ export default function NearbyClinics() {
 
         {loading && (
           <div className="flex flex-col items-center space-y-2 pt-4">
-            <Loader2 className="h-8 w-8 animate-spin text-white text-outline" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p>Searching for clinics...</p>
           </div>
         )}
@@ -278,13 +278,13 @@ export default function NearbyClinics() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 flex-1">
                       <h4 className="font-bold flex items-center gap-2">
-                        <Hospital className="h-5 w-5 text-white text-outline flex-shrink-0" />
+                        <Hospital className="h-5 w-5 text-primary flex-shrink-0" />
                         {clinic.name}
                       </h4>
                       <p className="text-sm text-muted-foreground">{clinic.address}</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
-                      <span className="text-sm font-semibold text-white text-outline whitespace-nowrap">{clinic.distance}</span>
+                      <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
                       <Button asChild variant="secondary" size="sm">
                           <Link href={`https://www.openstreetmap.org/?mlat=${clinic.location.lat}&mlon=${clinic.location.lon}#map=16/${clinic.location.lat}/${clinic.location.lon}`} target="_blank" rel="noopener noreferrer">
                               <Map className="mr-2 h-4 w-4" />
@@ -305,3 +305,5 @@ export default function NearbyClinics() {
     </Card>
   );
 }
+
+    

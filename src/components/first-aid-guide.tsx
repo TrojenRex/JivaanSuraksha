@@ -141,7 +141,7 @@ export default function FirstAidGuide() {
 
   if (selectedEmergency) {
     return (
-        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+        <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
             <CardHeader>
                  <Button variant="ghost" size="sm" onClick={handleReset} className="self-start gap-2">
                     <ArrowLeft className="h-4 w-4" />
@@ -192,9 +192,9 @@ export default function FirstAidGuide() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2 translate-z-20">
+    <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
       <CardHeader className="items-center text-center">
-        <LifeBuoy className="h-12 w-12 text-white text-outline mb-4" />
+        <LifeBuoy className="h-12 w-12 text-primary mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>
         <CardDescription>Select a common emergency or search to get instant guidance.</CardDescription>
         <div className="relative w-full max-w-sm pt-4">
@@ -232,7 +232,7 @@ export default function FirstAidGuide() {
                         className="h-24 flex-col gap-2 text-base"
                         onClick={() => handleSelectEmergency(emergency.value)}
                     >
-                        <Icon className="h-8 w-8 text-white text-outline" />
+                        <Icon className="h-8 w-8 text-primary" />
                         <span>{emergency.name}</span>
                     </Button>
                 )
@@ -250,3 +250,5 @@ export default function FirstAidGuide() {
     </Card>
   );
 }
+
+    

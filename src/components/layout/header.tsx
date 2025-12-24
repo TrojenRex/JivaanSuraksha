@@ -42,7 +42,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                     </Button>
                 </TransitionLink>
             )}
-            <TransitionLink href="/" className="flex items-center gap-2 text-white">
+            <TransitionLink href="/" className="flex items-center gap-2 text-foreground">
               <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
               <AnimatedAppName text={t('appName')} />
             </TransitionLink>
@@ -156,3 +156,5 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
 };
 
 export default Header;
+
+    

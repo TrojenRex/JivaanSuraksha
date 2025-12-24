@@ -1,36 +1,50 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 const AnimatedAppName = ({ text }: { text: string }) => {
-  const [isMounted, setIsMounted] = useState(false);
+  const [key, setKey] = useState(0);
 
+  const handleClick = useCallback(() => {
+    setKey(prevKey => prevKey + 1);
+  }, []);
+
+  const lines = useMemo(() => 
+    Array.from({ length: 5 }).map((_, i) => {
+      const angle = Math.random() * 360;
+      return {
+        id: i,
+        style: {
+          top: `${Math.random() * 100}%`,
+          width: `${Math.random() * 40 + 60}%`,
+          animationDelay: `${i * 0.1 + Math.random() * 0.2}s`,
+          '--angle': `${angle}deg`
+        } as React.CSSProperties,
+      }
+    }), 
+  [key]); // Depend on key to regenerate lines on click
+
+  // Use a state to prevent hydration mismatch for the animation key
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    // This component will only render on the client, preventing hydration mismatch.
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    // Render the static text on the server and initial client render
-    return (
-      <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
-        {text}
-      </span>
-    );
-  }
-
   return (
-    <div className="animated-app-name text-lg sm:text-xl md:text-2xl font-bold">
-      {Array.from({ length: 5 }).map((_, i) => (
+    <div 
+      key={isMounted ? key : 0}
+      className="animated-app-name text-lg sm:text-xl md:text-2xl font-bold"
+      onClick={handleClick}
+      aria-label={`Rerun animation for ${text}`}
+      role="button"
+    >
+      {lines.map((line) => (
         <div
-          key={i}
+          key={line.id}
           className="animated-app-name-line"
-          style={{
-            top: `${20 * i}%`,
-            width: `${Math.random() * 40 + 60}%`,
-            animationDelay: `${i * 0.1}s`,
-          }}
+          style={line.style}
         />
       ))}
       <span className="animated-app-name-text text-foreground">{text}</span>
@@ -39,3 +53,5 @@ const AnimatedAppName = ({ text }: { text: string }) => {
 };
 
 export default AnimatedAppName;
+
+    

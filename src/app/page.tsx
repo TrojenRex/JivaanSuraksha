@@ -14,9 +14,9 @@ export default function Home() {
         className="flex-1 flex flex-col items-center justify-center p-4 pt-20 md:pt-28"
       >
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-outline">{t('welcomeMessage')}</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">{t('welcomeMessage')}</h1>
           <p 
-            className="text-lg md:text-xl max-w-3xl mx-auto text-white text-outline"
+            className="text-lg md:text-xl max-w-3xl mx-auto text-white"
           >
             {t('appDescription')}
           </p>
@@ -26,3 +26,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
