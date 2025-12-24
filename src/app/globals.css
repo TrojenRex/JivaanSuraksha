@@ -129,14 +129,15 @@
     color: rgba(255, 255, 255, 0.6);
     animation: float 12s infinite linear;
     font-weight: bold;
+    transform: translateY(-10vh);
   }
   
   @keyframes float {
-    0% {
+    from {
       transform: translateY(-10vh) rotateY(0deg) scale(2);
       opacity: 0;
     }
-    100% {
+    to {
       transform: translateY(110vh) rotateY(360deg) scale(1);
       opacity: 1;
     }
@@ -367,11 +368,23 @@
 
   .animated-app-name-text {
     opacity: 0;
-    animation: text-fade-in 0.2s 1.2s forwards;
+    animation: text-fade-in 0.2s 1.2s forwards, float-text 3s ease-in-out 1.4s infinite;
   }
 
   @keyframes text-fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+
+  @keyframes float-text {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+    }
   }
 }
