@@ -134,14 +134,14 @@
   
   @keyframes float {
     from {
-      transform: translateY(-10vh) rotate(0deg) scale(1);
+      transform: translateY(-10vh) rotateY(0deg) scale(1);
       opacity: 0;
     }
     50% {
       opacity: 1;
     }
     to {
-      transform: translateY(110vh) rotate(360deg) scale(1.5);
+      transform: translateY(110vh) rotateY(360deg) scale(1.5);
       opacity: 0;
     }
   }
@@ -349,22 +349,23 @@
     animation-timing-function: cubic-bezier(0.2, 1, 0.2, 1);
     animation-delay: 0.5s;
     opacity: 0;
+    transform-origin: 50% 50%;
   }
 
   @keyframes line-anim {
     0% {
-      transform: scaleX(0);
+      transform: scaleX(0) rotate(var(--angle, 0deg));
       opacity: 0;
     }
     30% {
-      transform: scaleX(1);
+      transform: scaleX(1) rotate(var(--angle, 0deg));
       opacity: 1;
     }
     80% {
       opacity: 1;
     }
     100% {
-      transform: scaleX(1);
+      transform: scaleX(1) rotate(var(--angle, 0deg));
       opacity: 0;
     }
   }
