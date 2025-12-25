@@ -126,7 +126,7 @@ export default function NearbyClinics() {
     }
   };
   
-  const handleUseMyLocation = async () => {
+  const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       setLoading(true);
       setError(null);
@@ -168,11 +168,6 @@ export default function NearbyClinics() {
               setError("An unknown error occurred while getting your location.");
               break;
           }
-        },
-        {
-          maximumAge: 0, // Force a fresh location request
-          timeout: 10000,
-          enableHighAccuracy: true,
         }
       );
     } else {
