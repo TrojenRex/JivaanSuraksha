@@ -317,16 +317,18 @@ export default function SymptomChecker() {
               <FormField
                 control={form.control} name="symptoms"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem className="flex-1 relative">
                     <FormControl>
-                      <Textarea placeholder={isListening ? "Listening..." : "e.g., I have a high fever, headache, and a sore throat..."} className="resize-none" disabled={isLoading} rows={1} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.handleSubmit(onSubmit)(); } }} {...field} />
+                      <Textarea placeholder={isListening ? "Listening..." : "e.g., I have a high fever, headache, and a sore throat..."} className="resize-none pr-20" disabled={isLoading} rows={1} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.handleSubmit(onSubmit)(); } }} {...field} />
                     </FormControl>
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                        <Button type="button" size="icon" variant={isListening ? 'destructive' : 'ghost'} onClick={handleListen} disabled={isLoading || micPermissionDenied}><Mic className="h-4 w-4" /><span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span></Button>
+                        <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}><Camera className="h-4 w-4" /><span className="sr-only">Use Camera</span></Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleListen} disabled={isLoading || micPermissionDenied}><Mic className="h-4 w-4" /><span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span></Button>
-              <Button type="button" size="icon" variant="outline" onClick={handleCameraOpen} disabled={isLoading}><Camera className="h-4 w-4" /><span className="sr-only">Use Camera</span></Button>
               <Button type="submit" size="icon" disabled={isLoading || !form.watch('symptoms')}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>

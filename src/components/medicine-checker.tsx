@@ -299,11 +299,11 @@ export default function MedicineChecker() {
                 control={form.control}
                 name="medicine"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem className="flex-1 relative">
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., Paracetamol, or use the camera ->"
-                        className="resize-none"
+                        placeholder="e.g., Paracetamol, or use the camera"
+                        className="resize-none pr-12"
                         disabled={isLoading}
                         rows={1}
                         onKeyDown={(e) => {
@@ -315,14 +315,16 @@ export default function MedicineChecker() {
                         {...field}
                       />
                     </FormControl>
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                        <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}>
+                            <Camera className="h-4 w-4" />
+                            <span className="sr-only">Use Camera</span>
+                        </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="button" size="icon" variant="outline" onClick={handleCameraOpen} disabled={isLoading}>
-                <Camera className="h-4 w-4" />
-                <span className="sr-only">Use Camera</span>
-              </Button>
               <Button type="submit" size="icon" disabled={isLoading || !form.getValues('medicine')}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>
