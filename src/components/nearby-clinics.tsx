@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef }from 'react';
@@ -96,22 +95,19 @@ export default function NearbyClinics() {
 
     try {
       const response = await fetch(`/api/places?location=${encodeURIComponent(location)}`);
-      const responseData = await response.json().catch(() => null);
-
+      
       if (!response.ok) {
-        let errorMessage = 'An unknown error occurred.';
-        if (responseData && typeof responseData.error === 'string') {
-          errorMessage = responseData.error;
-        } else if (response.statusText) {
-          errorMessage = `Error: ${response.statusText}`;
-        }
+        const responseData = await response.json().catch(() => ({ error: 'Failed to parse error response.' }));
+        let errorMessage = responseData.error || `An unknown error occurred. Status: ${response.status}`;
         if (errorMessage.includes('API configuration error') || errorMessage.includes('request was denied')) {
             setIsApiError(true);
         }
-        throw new Error(errorMessage);
+        setError(errorMessage);
+        setLoading(false);
+        return;
       }
       
-      const data: ApiResponse = responseData;
+      const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {
         setError(`No clinics or hospitals found near your location. Please try a different search.`)
@@ -345,3 +341,5 @@ export default function NearbyClinics() {
     </Card>
   );
 }
+
+    

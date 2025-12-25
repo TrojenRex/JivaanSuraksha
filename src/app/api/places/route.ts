@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (!placesResponse.ok) {
         const errorText = await placesResponse.text();
         console.error('Overpass API error:', errorText);
-        return NextResponse.json({ error: 'why is this line comming' }, { status: 503 });
+        return NextResponse.json({ error: 'Failed to fetch nearby places from OpenStreetMap. The service may be temporarily unavailable.' }, { status: 503 });
     }
 
     const placesData = await placesResponse.json();
@@ -100,3 +100,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "An unexpected error occurred while fetching nearby clinics. Please try again later." }, { status: 500 });
   }
 }
+
+    
