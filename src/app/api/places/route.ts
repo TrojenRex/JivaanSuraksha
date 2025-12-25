@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (!placesResponse.ok) {
         const errorText = await placesResponse.text();
         console.error('Overpass API error:', errorText);
-        return NextResponse.json({ error: 'Failed to fetch nearby places from OpenStreetMap.' }, { status: placesResponse.status });
+        return NextResponse.json({ error: 'Failed to fetch nearby places from OpenStreetMap. The service may be temporarily unavailable.' }, { status: placesResponse.status });
     }
 
     const placesData = await placesResponse.json();
@@ -98,6 +98,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ clinics: nearbyPlaces });
   } catch (error: any) {
     console.error('Error in GET /api/places:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "An unexpected error occurred while fetching nearby clinics. Please try again later." }, { status: 500 });
   }
 }
