@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef }from 'react';
@@ -99,13 +100,12 @@ export default function NearbyClinics() {
     try {
       const response = await fetch(`/api/places?location=${encodeURIComponent(location)}`);
       
-      const responseData = await response.json();
-
       if (!response.ok) {
-        throw new Error(responseData.error || 'An unknown error occurred.');
+        const responseData = await response.json().catch(() => null);
+        throw new Error(responseData?.error || 'An unknown error occurred.');
       }
       
-      const data: ApiResponse = responseData;
+      const data: ApiResponse = await response.json();
 
        if (data.clinics.length === 0) {
         setError(`No clinics or hospitals found near your location. Please try a different search.`)
@@ -166,8 +166,7 @@ export default function NearbyClinics() {
               setError("An unknown error occurred while getting your location.");
               break;
           }
-        },
-        { maximumAge: 0 }
+        }
       );
     } else {
       setError("Geolocation is not supported by this browser.");
@@ -354,3 +353,5 @@ export default function NearbyClinics() {
     </Card>
   );
 }
+
+    
