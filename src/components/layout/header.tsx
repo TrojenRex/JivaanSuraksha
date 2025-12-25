@@ -45,7 +45,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
             )}
             <TransitionLink href="/" className="flex items-center gap-2 text-foreground">
               <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
-               <h1 className="text-lg sm:text-xl md:text-2xl font-bold">{t('appName')}</h1>
+               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-outline">{t('appName')}</h1>
             </TransitionLink>
           </div>
           <nav className='flex items-center gap-1 sm:gap-2'>
