@@ -165,14 +165,14 @@
   
   @keyframes float {
     from {
-      transform: translateY(-10vh) rotateX(0deg) rotateY(0deg) scale(1);
+      transform: translateY(-10vh) rotateX(0) rotateY(0) scale(1);
       opacity: 0;
     }
     50% {
       opacity: 1;
     }
     to {
-      transform: translateY(110vh) rotateX(360deg) rotateY(360deg) scale(1.5);
+      transform: translateY(110vh) rotateX(var(--rotate-x)) rotateY(var(--rotate-y)) scale(1.5);
       opacity: 0;
     }
   }

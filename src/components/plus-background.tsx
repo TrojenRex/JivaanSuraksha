@@ -14,10 +14,14 @@ const PlusBackground = () => {
     // This avoids hydration errors that can break animations.
     const plusSigns = Array.from({ length: 37 }).map((_, i) => {
         const size = Math.random() * 30 + 20;
+        const rotateX = `${(Math.random() - 0.5) * 720}deg`;
+        const rotateY = `${(Math.random() - 0.5) * 720}deg`;
         return {
             id: i,
             style: {
               '--size': `${size}px`,
+              '--rotate-x': rotateX,
+              '--rotate-y': rotateY,
               left: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 12}s`,
               animationDuration: `${Math.random() * 5 + 7}s`,
