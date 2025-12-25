@@ -111,23 +111,6 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                 <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 mr-2" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 mr-2" />
-                    <span>{t('theme')}</span>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setTheme("light")}>
-                        {t('light')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setTheme("dark")}>
-                        {t('dark')}
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Languages className="mr-2 h-4 w-4" />
