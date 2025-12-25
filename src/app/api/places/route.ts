@@ -4,7 +4,7 @@ import {NextRequest, NextResponse} from 'next/server';
 
 // Helper function to calculate distance (Haversine formula)
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 3959; // Radius of the Earth in miles
+  const R = 6371; // Radius of the Earth in kilometers
   const rlat1 = lat1 * (Math.PI/180);
   const rlat2 = lat2 * (Math.PI/180);
   const difflat = rlat2 - rlat1;
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const userLon = parseFloat(location.lon);
 
     // 2. Use the coordinates to find nearby hospitals using OpenStreetMap Overpass API
-    const radiusInMeters = 8046; // Approx 5 miles
+    const radiusInMeters = 8046; // Approx 5 miles / 8 km
     const overpassQuery = `
       [out:json][timeout:25];
       (
@@ -87,15 +87,14 @@ export async function GET(request: NextRequest) {
             name: tags.name || 'Unnamed Clinic/Hospital',
             address: address || 'Address not available',
             phone: tags.phone || tags['contact:phone'] || null,
-            distance: `${distance.toFixed(1)} miles`,
+            distance: `${distance.toFixed(1)} km`,
             location: { lat: placeLat, lon: placeLon },
         };
     }).filter((place: any) => place.location.lat && place.location.lon);
 
     places.sort((a: any, b: any) => parseFloat(a.distance) - parseFloat(b.distance));
-    const nearbyPlaces = places.slice(0, 10);
     
-    return NextResponse.json({ clinics: nearbyPlaces });
+    return NextResponse.json({ clinics: places });
   } catch (error: any) {
     console.error('Error in GET /api/places:', error);
     return NextResponse.json({ error: "An unexpected error occurred while fetching nearby clinics. Please try again later." }, { status: 500 });

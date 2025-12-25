@@ -32,6 +32,8 @@ type Suggestion = {
     place_id: string;
 };
 
+const INITIAL_DISPLAY_COUNT = 5;
+
 export default function NearbyClinics() {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,6 +43,7 @@ export default function NearbyClinics() {
   const [isApiError, setIsApiError] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_DISPLAY_COUNT);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
 
@@ -86,6 +89,7 @@ export default function NearbyClinics() {
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
+    setVisibleCount(INITIAL_DISPLAY_COUNT);
     
     setShowSuggestions(false);
     setSearchQuery(location);
@@ -187,6 +191,11 @@ export default function NearbyClinics() {
   };
 
   const clinics = apiResponse?.clinics || [];
+  const hasMoreClinics = clinics.length > visibleCount;
+
+  const showMore = () => {
+    setVisibleCount(prev => prev + 5);
+  };
   
   const resetSearch = () => {
     setApiResponse(null); 
@@ -194,6 +203,7 @@ export default function NearbyClinics() {
     setSearchQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
+    setVisibleCount(INITIAL_DISPLAY_COUNT);
   }
 
   return (
@@ -288,7 +298,7 @@ export default function NearbyClinics() {
             <h3 className="text-lg font-bold text-center">Clinics Near: {searchQuery}</h3>
             
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-              {clinics.map((clinic) => (
+              {clinics.slice(0, visibleCount).map((clinic) => (
                 <div key={clinic.id} className="p-4 bg-muted/50 rounded-lg border">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 flex-1">
@@ -319,9 +329,16 @@ export default function NearbyClinics() {
                 </div>
               ))}
             </div>
-             <Button onClick={resetSearch} variant="outline" className="w-full">
-              Start New Search
-            </Button>
+            <div className='flex flex-col gap-2'>
+                {hasMoreClinics && (
+                    <Button onClick={showMore} variant="secondary" className="w-full">
+                        Show More
+                    </Button>
+                )}
+                <Button onClick={resetSearch} variant="outline" className="w-full">
+                Start New Search
+                </Button>
+            </div>
           </div>
         )}
       </CardContent>
