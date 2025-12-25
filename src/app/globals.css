@@ -69,7 +69,7 @@
   .ocean {
     height: 80px;
     width: 100%;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: -1;
@@ -274,12 +274,14 @@
   .scroll-to-top-button:hover {
     width: 140px;
     border-radius: 50px;
+    transition: all 0.3s ease-in-out;
     background-color: hsl(var(--primary) / 0.9);
   }
   
   .scroll-to-top-button:hover .svgIcon {
     transform: translateY(-200%);
     opacity: 0;
+    transition: all 0.3s ease-in-out;
   }
   
   .scroll-to-top-button::before {
@@ -299,6 +301,7 @@
     bottom: 0;
     font-size: 13px;
     opacity: 1;
+    transition: all 0.3s ease-in-out;
   }
 
   /* Splash Screen Animations */
