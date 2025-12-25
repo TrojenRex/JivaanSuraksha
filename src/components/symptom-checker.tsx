@@ -54,6 +54,7 @@ export default function SymptomChecker() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [playingMessage, setPlayingMessage] = useState<string | null>(null);
+  const [micPermissionDenied, setMicPermissionDenied] = useState(false);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
@@ -128,7 +129,10 @@ export default function SymptomChecker() {
         let errorMessage = 'An unknown error occurred.';
         if (event.error === 'no-speech') errorMessage = 'No speech was detected. Please try again.';
         else if (event.error === 'audio-capture') errorMessage = 'Microphone is not available.';
-        else if (event.error === 'not-allowed') errorMessage = 'Microphone permission denied.';
+        else if (event.error === 'not-allowed') {
+          errorMessage = 'Microphone permission denied. Please enable it in your browser settings.';
+          setMicPermissionDenied(true);
+        }
         toast({ variant: 'destructive', title: 'Voice Input Error', description: errorMessage });
         setIsListening(false);
     };
@@ -154,11 +158,25 @@ export default function SymptomChecker() {
     await processRequest({ symptoms: values.symptoms });
   }
 
-  const handleListen = () => {
+  const handleListen = async () => {
     if (!SpeechRecognition) {
       toast({ variant: 'destructive', title: 'Feature Not Supported', description: 'Your browser does not support voice recognition.' });
       return;
     }
+
+    if (navigator.permissions) {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'microphone' as any });
+        if (permissionStatus.state === 'denied') {
+          setMicPermissionDenied(true);
+          toast({ variant: 'destructive', title: 'Permission Denied', description: 'Microphone access was denied. Please enable it in your browser settings.' });
+          return;
+        }
+      } catch (e) {
+        console.error("Could not query microphone permission", e);
+      }
+    }
+
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
@@ -279,7 +297,7 @@ export default function SymptomChecker() {
                   </FormItem>
                 )}
               />
-              <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleListen} disabled={isLoading}><Mic className="h-4 w-4" /><span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span></Button>
+              <Button type="button" size="icon" variant={isListening ? 'destructive' : 'outline'} onClick={handleListen} disabled={isLoading || micPermissionDenied}><Mic className="h-4 w-4" /><span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span></Button>
               <Button type="button" size="icon" variant="outline" onClick={handleCameraOpen} disabled={isLoading}><Camera className="h-4 w-4" /><span className="sr-only">Use Camera</span></Button>
               <Button type="submit" size="icon" disabled={isLoading || !form.watch('symptoms')}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
