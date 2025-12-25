@@ -325,25 +325,27 @@ export default function FirstAidGuide() {
         <LifeBuoy className="h-12 w-12 text-primary mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>
         <CardDescription>Select a common emergency or search to get instant guidance.</CardDescription>
-        <form className="relative w-full max-w-sm pt-4" onSubmit={(e) => { e.preventDefault(); handleSearchWithAI(searchTerm); }}>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-             <Input
-                type="text"
-                placeholder={isListening ? "Listening..." : "Search for an emergency..."}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-20"
-                disabled={isLoading}
-            />
-            <div className='absolute right-1 top-1/2 -translate-y-1/2 flex items-center'>
-                <Button type="button" size="icon" variant={isListening ? 'destructive' : 'ghost'} onClick={handleListen} disabled={isLoading}>
-                    <Mic className="h-4 w-4" />
-                    <span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span>
-                </Button>
-                <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}>
-                    <Camera className="h-4 w-4" />
-                    <span className="sr-only">Use Camera</span>
-                </Button>
+        <form className="w-full max-w-sm pt-4" onSubmit={(e) => { e.preventDefault(); handleSearchWithAI(searchTerm); }}>
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    type="text"
+                    placeholder={isListening ? "Listening..." : "Search for an emergency..."}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-20"
+                    disabled={isLoading}
+                />
+                <div className='absolute right-1 top-1/2 -translate-y-1/2 flex items-center'>
+                    <Button type="button" size="icon" variant={isListening ? 'destructive' : 'ghost'} onClick={handleListen} disabled={isLoading}>
+                        <Mic className="h-4 w-4" />
+                        <span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span>
+                    </Button>
+                    <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}>
+                        <Camera className="h-4 w-4" />
+                        <span className="sr-only">Use Camera</span>
+                    </Button>
+                </div>
             </div>
         </form>
       </CardHeader>
