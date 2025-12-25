@@ -35,7 +35,7 @@ const aiFirstAidImageGeneratorFlow = ai.defineFlow(
   async ({ step }) => {
     const { media } = await ai.generate({
       model: googleAI.model('imagen-4.0-fast-generate-001'),
-      prompt: `Generate a very simple, minimalist, black and white line drawing icon that visually represents the following first-aid step. The background must be transparent. The drawing should be clear, easy to understand, and avoid any complex details or text. Focus on a single action or object.
+      prompt: `Generate a simple, cartoon comic style, black and white line drawing icon. This demonstrative image should visually represent the following first-aid step. The background must be transparent. The drawing should be clear, easy to understand, and avoid any complex details or text. Focus on a single action or object.
 
       First-aid step: "${step}"`,
     });
