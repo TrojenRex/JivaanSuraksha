@@ -5,7 +5,7 @@ import { useState, useEffect, useRef }from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Hospital, Search, LocateFixed, Map } from 'lucide-react';
+import { Loader2, Hospital, Search, LocateFixed, Map, Phone } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import { useLanguage } from './language-provider';
@@ -16,6 +16,7 @@ type Clinic = {
   name: string;
   address: string;
   distance: string;
+  phone: string | null;
   location: {
     lat: number;
     lon: number;
@@ -125,14 +126,29 @@ export default function NearbyClinics() {
     }
   };
   
-  const handleUseMyLocation = () => {
+  const handleUseMyLocation = async () => {
     if (navigator.geolocation) {
       setLoading(true);
       setError(null);
       setApiResponse(null);
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
+          
+          // Reverse geocode to get a human-readable name
+          try {
+            const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+            const response = await fetch(geocodeUrl, { headers: { 'User-Agent': 'JivaanSuraksha/1.0 (Firebase Studio App)' }});
+            if (response.ok) {
+              const data = await response.json();
+              setSearchQuery(data.display_name || `${latitude}, ${longitude}`);
+            } else {
+              setSearchQuery(`${latitude}, ${longitude}`);
+            }
+          } catch (e) {
+            setSearchQuery(`${latitude}, ${longitude}`);
+          }
+
           const locationString = `${latitude},${longitude}`;
           findClinics(locationString);
         },
@@ -282,12 +298,20 @@ export default function NearbyClinics() {
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
-                      <Button asChild variant="secondary" size="sm">
-                          <Link href={`https://www.openstreetmap.org/?mlat=${clinic.location.lat}&mlon=${clinic.location.lon}#map=16/${clinic.location.lat}/${clinic.location.lon}`} target="_blank" rel="noopener noreferrer">
-                              <Map className="mr-2 h-4 w-4" />
-                              View Map
-                          </Link>
-                      </Button>
+                      <div className='flex gap-2'>
+                        <Button asChild variant="secondary" size="sm">
+                            <a href={`tel:${clinic.phone}`} aria-label={`Call ${clinic.name}`} disabled={!clinic.phone}>
+                                <Phone className="mr-2 h-4 w-4" />
+                                Call
+                            </a>
+                        </Button>
+                        <Button asChild variant="secondary" size="sm">
+                            <Link href={`https://www.openstreetmap.org/?mlat=${clinic.location.lat}&mlon=${clinic.location.lon}#map=16/${clinic.location.lat}/${clinic.location.lon}`} target="_blank" rel="noopener noreferrer">
+                                <Map className="mr-2 h-4 w-4" />
+                                Map
+                            </Link>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

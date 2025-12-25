@@ -86,6 +86,7 @@ export async function GET(request: NextRequest) {
             id: place.id,
             name: tags.name || 'Unnamed Clinic/Hospital',
             address: address || 'Address not available',
+            phone: tags.phone || tags['contact:phone'] || null,
             distance: `${distance.toFixed(1)} miles`,
             location: { lat: placeLat, lon: placeLon },
         };
