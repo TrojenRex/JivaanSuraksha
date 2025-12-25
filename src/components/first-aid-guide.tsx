@@ -1,18 +1,19 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search, Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
+import { LifeBuoy, AlertTriangle, ArrowLeft, Wind, HeartPulse, Flame, Search, Sparkles, Loader2, Image as ImageIcon, Mic, Camera, Video, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from './ui/input';
-import { getFirstAidInstructions } from '@/app/actions';
+import { getFirstAidInstructions, getImageDescription } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from './ui/dialog';
+import { cn } from '@/lib/utils';
 
 type EmergencyStep = {
   text: string;
@@ -92,11 +93,74 @@ const parseSteps = (steps: string): EmergencyStep[] => {
     return steps.split('\n').filter(s => s.trim()).map(text => ({ text }));
 };
 
+interface CustomSpeechRecognition extends SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+}
+
+const SpeechRecognition =
+  (typeof window !== 'undefined' && (window.SpeechRecognition || (window as any).webkitSpeechRecognition)) || null;
+
+
 export default function FirstAidGuide() {
   const [selectedEmergency, setSelectedEmergency] = useState<EmergencyData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const [isListening, setIsListening] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+
+  useEffect(() => {
+    if (!SpeechRecognition) return;
+    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+        setSearchTerm(prev => prev + finalTranscript);
+      }
+    };
+    
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        let errorMessage = 'An unknown error occurred.';
+        if (event.error === 'no-speech') errorMessage = 'No speech was detected. Please try again.';
+        else if (event.error === 'audio-capture') errorMessage = 'Microphone is not available.';
+        else if (event.error === 'not-allowed') errorMessage = 'Microphone permission denied.';
+        toast({ variant: 'destructive', title: 'Voice Input Error', description: errorMessage });
+        setIsListening(false);
+    };
+    recognitionRef.current = recognition;
+  }, [toast]);
+  
+  useEffect(() => {
+    const stopCamera = () => {
+      if (videoRef.current?.srcObject) {
+        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    };
+
+    if (!isCameraOpen) {
+      stopCamera();
+    }
+  }, [isCameraOpen]);
 
   const handleSelectEmergency = (emergencyValue: string) => {
     const data = firstAidData[emergencyValue];
@@ -114,12 +178,12 @@ export default function FirstAidGuide() {
     setSearchTerm('');
   }
 
-  const handleSearchWithAI = async () => {
-    if (!searchTerm) return;
+  const handleSearchWithAI = async (query: string) => {
+    if (!query) return;
     setIsLoading(true);
     setSelectedEmergency(null);
     
-    const result = await getFirstAidInstructions({ query: searchTerm });
+    const result = await getFirstAidInstructions({ query });
     
     if (result.success && result.data) {
         setSelectedEmergency(result.data);
@@ -133,6 +197,69 @@ export default function FirstAidGuide() {
 
     setIsLoading(false);
   }
+
+  const handleListen = () => {
+    if (!SpeechRecognition) {
+      toast({ variant: 'destructive', title: 'Feature Not Supported', description: 'Your browser does not support voice recognition.' });
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch(e) { console.error("Could not start recognition", e) }
+    }
+  };
+
+  const handleCameraOpen = async () => {
+    setIsCameraOpen(true);
+    setHasCameraPermission(null);
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+        setHasCameraPermission(true);
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Please enable camera permissions.' });
+      }
+    } else {
+      setHasCameraPermission(false);
+      toast({ variant: 'destructive', title: 'Camera Not Supported', description: 'Your browser does not support camera access.' });
+    }
+  };
+
+  const handleCaptureAndAnalyze = async () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUri = canvas.toDataURL('image/jpeg');
+      setIsCameraOpen(false);
+      
+      setIsLoading(true);
+      const descriptionResult = await getImageDescription({ photoDataUri: dataUri });
+      if (descriptionResult.success && descriptionResult.data) {
+        setSearchTerm(descriptionResult.data.description);
+        await handleSearchWithAI(descriptionResult.data.description);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Image Analysis Failed',
+          description: descriptionResult.error || 'Could not understand the image.',
+        });
+        setIsLoading(false);
+      }
+    }
+  };
+
 
   const filteredEmergencies = emergencies.filter((emergency) => 
     emergency.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -192,22 +319,33 @@ export default function FirstAidGuide() {
   }
 
   return (
+    <>
     <Card className="w-full max-w-2xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
       <CardHeader className="items-center text-center">
         <LifeBuoy className="h-12 w-12 text-primary mb-4" />
         <CardTitle className="text-3xl font-bold">First-Aid Guide</CardTitle>
         <CardDescription>Select a common emergency or search to get instant guidance.</CardDescription>
-        <div className="relative w-full max-w-sm pt-4">
+        <form className="relative w-full max-w-sm pt-4" onSubmit={(e) => { e.preventDefault(); handleSearchWithAI(searchTerm); }}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
+             <Input
                 type="text"
-                placeholder="Search for an emergency..."
+                placeholder={isListening ? "Listening..." : "Search for an emergency..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 pr-20"
                 disabled={isLoading}
             />
-        </div>
+            <div className='absolute right-1 top-1/2 -translate-y-1/2 flex items-center'>
+                <Button type="button" size="icon" variant={isListening ? 'destructive' : 'ghost'} onClick={handleListen} disabled={isLoading}>
+                    <Mic className="h-4 w-4" />
+                    <span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span>
+                </Button>
+                <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}>
+                    <Camera className="h-4 w-4" />
+                    <span className="sr-only">Use Camera</span>
+                </Button>
+            </div>
+        </form>
       </CardHeader>
       <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {isLoading ? (
@@ -222,7 +360,7 @@ export default function FirstAidGuide() {
                     <Skeleton className="h-16 w-full" />
                 </div>
             </div>
-        ) : filteredEmergencies.length > 0 ? (
+        ) : filteredEmergencies.length > 0 && !searchTerm ? (
             filteredEmergencies.map((emergency) => {
                 const Icon = emergency.icon;
                 return (
@@ -239,8 +377,8 @@ export default function FirstAidGuide() {
             })
         ) : (
             <div className="col-span-full text-center text-muted-foreground p-4 flex flex-col items-center gap-4">
-                <p>No pre-defined guides found for "{searchTerm}".</p>
-                <Button onClick={handleSearchWithAI} disabled={!searchTerm || isLoading}>
+                 <p>No pre-defined guides found for "{searchTerm}".</p>
+                <Button onClick={() => handleSearchWithAI(searchTerm)} disabled={!searchTerm || isLoading}>
                     <Sparkles className="mr-2 h-4 w-4" />
                     Search with AI
                 </Button>
@@ -248,7 +386,28 @@ export default function FirstAidGuide() {
         )}
       </CardContent>
     </Card>
+
+    <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          <DialogHeader><DialogTitle>Analyze Emergency</DialogTitle></DialogHeader>
+          <div className="flex flex-col items-center gap-4">
+            {hasCameraPermission === null && <div className="flex items-center text-muted-foreground gap-2"><Loader2 className="h-5 w-5 animate-spin" /><span>Waiting for camera...</span></div>}
+            {hasCameraPermission === false && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Camera Access Denied</AlertTitle><AlertDescription>Please enable camera permissions in your browser settings.</AlertDescription></Alert>}
+            <div className="relative w-full">
+              <video ref={videoRef} className={cn("w-full aspect-video rounded-md bg-muted", hasCameraPermission !== true && "hidden")} autoPlay playsInline muted />
+              <canvas ref={canvasRef} className="hidden" />
+              {hasCameraPermission !== true && <div className="w-full aspect-video rounded-md bg-muted flex items-center justify-center"><Video className="h-16 w-16 text-muted-foreground" /></div>}
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-end gap-2">
+             <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
+             <Button onClick={handleCaptureAndAnalyze} disabled={!hasCameraPermission || isLoading}>
+                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Camera className="mr-2 h-4 w-4" />}
+                 Capture & Analyze
+             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-    

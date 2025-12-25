@@ -13,6 +13,8 @@ import { aiFirstAid } from '@/ai/flows/ai-first-aid';
 import type { AIFirstAidInput, AIFirstAidOutput } from '@/ai/flows/ai-first-aid';
 import { aiFirstAidImageGenerator } from '@/ai/flows/ai-first-aid-image-generator';
 import type { AIFirstAidImageGeneratorInput, AIFirstAidImageGeneratorOutput } from '@/ai/flows/ai-first-aid-image-generator';
+import { aiDescribeImage } from '@/ai/flows/ai-describe-image';
+import type { AIDescribeImageInput, AIDescribeImageOutput } from '@/ai/flows/ai-describe-image';
 
 
 // Generic Action Result type
@@ -128,4 +130,23 @@ export async function getFirstAidImage(input: AIFirstAidImageGeneratorInput): Pr
         error: 'Sorry, I was unable to generate an image for your request. Please try again later.',
         };
     }
+}
+
+export async function getImageDescription(input: AIDescribeImageInput): Promise<ActionResult<AIDescribeImageOutput>> {
+  if (!input.photoDataUri) {
+    return {
+      success: false,
+      error: 'Please provide a photo.',
+    };
+  }
+  try {
+    const result = await aiDescribeImage(input);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('AI image description failed:', error);
+    return {
+      success: false,
+      error: 'Sorry, I was unable to analyze the image. Please try again later.',
+    };
+  }
 }
