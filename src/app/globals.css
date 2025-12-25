@@ -264,7 +264,7 @@
   
   .scroll-to-top-button .svgIcon {
     width: 12px;
-    transition: transform 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
   
   .scroll-to-top-button .svgIcon path {
@@ -272,29 +272,33 @@
   }
   
   .scroll-to-top-button:hover {
-    transform: scale(1.1);
+    width: 140px;
+    border-radius: 50px;
     background-color: hsl(var(--primary) / 0.9);
   }
   
   .scroll-to-top-button:hover .svgIcon {
     transform: translateY(-200%);
+    opacity: 0;
   }
   
   .scroll-to-top-button::before {
     position: absolute;
-    bottom: -20px;
     content: "Back to Top";
     color: white;
     font-size: 0px;
     opacity: 0;
     transition: all 0.3s ease-in-out;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
   
   .scroll-to-top-button:hover::before {
+    bottom: 0;
     font-size: 13px;
     opacity: 1;
-    bottom: 50%;
-    transform: translateY(50%);
   }
 
   /* Splash Screen Animations */
