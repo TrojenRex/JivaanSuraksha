@@ -54,15 +54,12 @@ export default function SymptomChecker() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [playingMessage, setPlayingMessage] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const analysisIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -113,14 +110,6 @@ export default function SymptomChecker() {
   }, [messages]);
 
   useEffect(() => {
-    const stopAnalysis = () => {
-      if (analysisIntervalRef.current) {
-        clearInterval(analysisIntervalRef.current);
-        analysisIntervalRef.current = null;
-      }
-      setIsAnalyzing(false);
-    };
-
     const stopCamera = () => {
       if (videoRef.current?.srcObject) {
         (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
@@ -130,57 +119,38 @@ export default function SymptomChecker() {
 
     if (!isCameraOpen) {
       stopCamera();
-      stopAnalysis();
-    }
-
-    return () => {
-      stopAnalysis();
     }
   }, [isCameraOpen]);
   
   const processRequest = useCallback(async (input: AISymptomDetectionInput) => {
-    const isFromLiveAnalysis = input.photoDataUri && !input.symptoms;
-    
-    if (!isFromLiveAnalysis) {
-      setIsLoading(true);
-      const userMessage = input.symptoms || 'Image of a symptom';
-      setMessages(prev => [...prev, { role: 'user', content: userMessage, textContent: userMessage }]);
-    }
+    setIsLoading(true);
+    const userMessage = input.symptoms || 'Image of a symptom';
+    setMessages(prev => [...prev, { role: 'user', content: userMessage, textContent: userMessage }]);
 
     const result = await getAiSymptomResponse(input);
 
     if (result.success && result.data) {
       const { possibleDiseases, suggestedCures } = result.data;
-      if (isFromLiveAnalysis) {
-         setAnalysisResult(`Possible Conditions: ${possibleDiseases}`);
-      } else {
-        const textContent = `Possible Conditions: ${possibleDiseases}. Suggested Actions: ${suggestedCures}.`;
-        const aiContent = (
-          <div>
-            <h3 className="font-bold text-lg mb-2">Possible Conditions:</h3>
-            <p className="mb-4">{possibleDiseases}</p>
-            <h3 className="font-bold text-lg mb-2">Suggested Actions:</h3>
-            <p>{suggestedCures}</p>
-            <p className="text-xs text-muted-foreground mt-4">
-              Disclaimer: I am an AI assistant. This is not medical advice. Please consult a healthcare professional for any health concerns.
-            </p>
-          </div>
-        );
-        setMessages(prev => [...prev, { role: 'assistant', content: aiContent, textContent }]);
-      }
+      const textContent = `Possible Conditions: ${possibleDiseases}. Suggested Actions: ${suggestedCures}.`;
+      const aiContent = (
+        <div>
+          <h3 className="font-bold text-lg mb-2">Possible Conditions:</h3>
+          <p className="mb-4">{possibleDiseases}</p>
+          <h3 className="font-bold text-lg mb-2">Suggested Actions:</h3>
+          <p>{suggestedCures}</p>
+          <p className="text-xs text-muted-foreground mt-4">
+            Disclaimer: I am an AI assistant. This is not medical advice. Please consult a healthcare professional for any health concerns.
+          </p>
+        </div>
+      );
+      setMessages(prev => [...prev, { role: 'assistant', content: aiContent, textContent }]);
     } else {
       const errorContent = result.error || 'An unknown error occurred.';
-       if (isFromLiveAnalysis) {
-         setAnalysisResult(`Error: ${errorContent}`);
-       } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: errorContent, textContent: errorContent }]);
-       }
+      setMessages(prev => [...prev, { role: 'assistant', content: errorContent, textContent: errorContent }]);
     }
     
-    if (!isFromLiveAnalysis) {
-      form.reset();
-      setIsLoading(false);
-    }
+    form.reset();
+    setIsLoading(false);
   }, [form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -244,36 +214,6 @@ export default function SymptomChecker() {
     } else {
       setHasCameraPermission(false);
       toast({ variant: 'destructive', title: 'Camera Not Supported', description: 'Your browser does not support camera access.' });
-    }
-  };
-
-  const captureFrameAndAnalyze = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    if (context) {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUri = canvas.toDataURL('image/jpeg');
-      processRequest({ photoDataUri: dataUri });
-    }
-  }, [processRequest]);
-
-  const toggleLiveAnalysis = () => {
-    if (isAnalyzing) {
-      if (analysisIntervalRef.current) {
-        clearInterval(analysisIntervalRef.current);
-        analysisIntervalRef.current = null;
-      }
-      setIsAnalyzing(false);
-      setAnalysisResult(null);
-    } else {
-      setIsAnalyzing(true);
-      setAnalysisResult("Starting analysis...");
-      captureFrameAndAnalyze(); // Immediate analysis
-      analysisIntervalRef.current = setInterval(captureFrameAndAnalyze, 5000); // Analyze every 5 seconds
     }
   };
 
@@ -356,7 +296,7 @@ export default function SymptomChecker() {
 
       <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
         <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader><DialogTitle>Live Symptom Analysis</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Symptom Analysis</DialogTitle></DialogHeader>
           <div className="flex flex-col items-center gap-4">
             {hasCameraPermission === null && <div className="flex items-center text-muted-foreground gap-2"><Loader2 className="h-5 w-5 animate-spin" /><span>Waiting for camera...</span></div>}
             {hasCameraPermission === false && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Camera Access Denied</AlertTitle><AlertDescription>Please enable camera permissions in your browser settings.</AlertDescription></Alert>}
@@ -364,30 +304,17 @@ export default function SymptomChecker() {
               <video ref={videoRef} className={cn("w-full aspect-video rounded-md bg-muted", hasCameraPermission !== true && "hidden")} autoPlay playsInline muted />
               <canvas ref={canvasRef} className="hidden" />
               {hasCameraPermission !== true && <div className="w-full aspect-video rounded-md bg-muted flex items-center justify-center"><Video className="h-16 w-16 text-muted-foreground" /></div>}
-               {analysisResult && (
-                <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white p-2 rounded-md text-sm flex items-center gap-2">
-                  <ScanLine className="h-4 w-4 text-primary" />
-                  <span>{analysisResult}</span>
-                </div>
-              )}
             </div>
           </div>
-          <DialogFooter className="sm:justify-between gap-2 flex-col sm:flex-row">
-             <Button onClick={toggleLiveAnalysis} disabled={!hasCameraPermission} variant={isAnalyzing ? "destructive" : "default"}>
-                {isAnalyzing ? <><XCircle className="mr-2 h-4 w-4" />Stop Analysis</> : <><PlayCircle className="mr-2 h-4 w-4" />Start Live Analysis</>}
+          <DialogFooter className="sm:justify-end gap-2">
+             <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
+             <Button onClick={handleCaptureAndSubmit} disabled={!hasCameraPermission || isLoading}>
+                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Camera className="mr-2 h-4 w-4" />}
+                 Capture & Submit
              </Button>
-             <div className='flex gap-2'>
-                <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
-                <Button onClick={handleCaptureAndSubmit} disabled={!hasCameraPermission || isLoading}>
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Camera className="mr-2 h-4 w-4" />}
-                    Capture & Submit
-                </Button>
-             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
   );
 }
-
-    
