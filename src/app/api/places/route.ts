@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     places.sort((a: any, b: any) => parseFloat(a.distance) - parseFloat(b.distance));
     const nearbyPlaces = places.slice(0, 10);
     
-    return NextResponse.json({ clinics: nearbyPlaces, userLocation: { lat: userLat, lon: userLon } });
+    return NextResponse.json({ clinics: nearbyPlaces });
   } catch (error: any) {
     console.error('Error in GET /api/places:', error);
     return NextResponse.json({ error: "An unexpected error occurred while fetching nearby clinics. Please try again later." }, { status: 500 });
