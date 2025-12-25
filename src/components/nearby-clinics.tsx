@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef }from 'react';
@@ -53,7 +54,7 @@ export default function NearbyClinics() {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.length > 2 && searchQuery !== 'My Current Location') {
+    if (searchQuery.length > 2) {
       const fetchSuggestions = async () => {
         try {
           const response = await fetch(`/api/autocomplete?input=${searchQuery}`);
@@ -79,21 +80,17 @@ export default function NearbyClinics() {
   }, [searchQuery]);
 
 
-  const findClinics = async (location: string | {latitude: number, longitude: number}) => {
+  const findClinics = async (location: string) => {
     setLoading(true);
     setError(null);
     setIsApiError(false);
     setApiResponse(null);
     
-    if (typeof location === 'string') {
-        setShowSuggestions(false);
-        setSearchQuery(location);
-    }
-
-    const query = typeof location === 'string' ? location : `${location.latitude},${location.longitude}`;
+    setShowSuggestions(false);
+    setSearchQuery(location);
 
     try {
-      const response = await fetch(`/api/places?location=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/places?location=${encodeURIComponent(location)}`);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -136,8 +133,8 @@ export default function NearbyClinics() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setSearchQuery('My Current Location');
-          findClinics({latitude, longitude});
+          const locationString = `${latitude},${longitude}`;
+          findClinics(locationString);
         },
         (error) => {
           setLoading(false);
@@ -164,7 +161,7 @@ export default function NearbyClinics() {
 
   const handleManualSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim() || searchQuery === 'My Current Location') {
+    if (!searchQuery.trim()) {
         setError("Please enter a location to search.");
         return;
     }
@@ -203,7 +200,7 @@ export default function NearbyClinics() {
                             disabled={loading}
                             onFocus={() => setShowSuggestions(true)}
                         />
-                        <Button type="submit" disabled={loading || !searchQuery || searchQuery === 'My Current Location'}>
+                        <Button type="submit" disabled={loading || !searchQuery}>
                             <Search className="mr-2 h-4 w-4" />
                             Search
                         </Button>
