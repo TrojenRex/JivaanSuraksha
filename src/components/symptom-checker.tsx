@@ -70,57 +70,10 @@ export default function SymptomChecker() {
   });
   
   useEffect(() => {
-    if (!SpeechRecognition) {
-      return;
-    }
-    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (event) => {
-      let finalTranscript = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        }
-      }
-      if (finalTranscript) {
-        form.setValue('symptoms', form.getValues('symptoms') + finalTranscript);
-      }
-    };
-    
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = (event) => {
-        console.error('Speech recognition error', event.error);
-        let errorMessage = 'An unknown error occurred.';
-        if (event.error === 'no-speech') errorMessage = 'No speech was detected. Please try again.';
-        else if (event.error === 'audio-capture') errorMessage = 'Microphone is not available.';
-        else if (event.error === 'not-allowed') errorMessage = 'Microphone permission denied.';
-        toast({ variant: 'destructive', title: 'Voice Input Error', description: errorMessage });
-        setIsListening(false);
-    };
-    recognitionRef.current = recognition;
-  }, [form, toast]);
-
-  useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
-
-  useEffect(() => {
-    const stopCamera = () => {
-      if (videoRef.current?.srcObject) {
-        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-      }
-    };
-
-    if (!isCameraOpen) {
-      stopCamera();
-    }
-  }, [isCameraOpen]);
   
   const processRequest = useCallback(async (input: AISymptomDetectionInput) => {
     setIsLoading(true);
@@ -152,6 +105,49 @@ export default function SymptomChecker() {
     form.reset();
     setIsLoading(false);
   }, [form]);
+
+  useEffect(() => {
+    if (!SpeechRecognition) {
+      return;
+    }
+    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      const finalTranscript = event.results[event.results.length - 1][0].transcript;
+      if (finalTranscript) {
+        processRequest({symptoms: finalTranscript});
+      }
+    };
+    
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        let errorMessage = 'An unknown error occurred.';
+        if (event.error === 'no-speech') errorMessage = 'No speech was detected. Please try again.';
+        else if (event.error === 'audio-capture') errorMessage = 'Microphone is not available.';
+        else if (event.error === 'not-allowed') errorMessage = 'Microphone permission denied.';
+        toast({ variant: 'destructive', title: 'Voice Input Error', description: errorMessage });
+        setIsListening(false);
+    };
+    recognitionRef.current = recognition;
+  }, [processRequest, toast]);
+
+  useEffect(() => {
+    const stopCamera = () => {
+      if (videoRef.current?.srcObject) {
+        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    };
+
+    if (!isCameraOpen) {
+      stopCamera();
+    }
+  }, [isCameraOpen]);
+  
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values.symptoms.trim()) return;
