@@ -19,7 +19,7 @@ import { useLanguage } from '../language-provider';
 import { useTheme } from 'next-themes';
 import TransitionLink from '../transition-link';
 import Logo from '../logo';
-import AnimatedAppName from '../animated-app-name';
+import { usePathname } from 'next/navigation';
 
 type HeaderProps = {
   showBackButton?: boolean;
@@ -28,6 +28,7 @@ type HeaderProps = {
 const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
   const { t, setLanguage } = useLanguage();
   const { setTheme } = useTheme();
+  const pathname = usePathname();
 
   return (
     <header className="absolute top-0 left-0 w-full z-10">
@@ -44,7 +45,7 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
             )}
             <TransitionLink href="/" className="flex items-center gap-2 text-foreground">
               <Logo className="h-10 w-10 sm:h-12 sm:w-12" />
-              <AnimatedAppName text={t('appName')} />
+               <h1 className="text-lg sm:text-xl md:text-2xl font-bold">{t('appName')}</h1>
             </TransitionLink>
           </div>
           <nav className='flex items-center gap-1 sm:gap-2'>
@@ -156,5 +157,3 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
 };
 
 export default Header;
-
-    
