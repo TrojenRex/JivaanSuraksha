@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef }from 'react';
@@ -10,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 import { useLanguage } from './language-provider';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Clinic = {
   id: string;
@@ -23,8 +23,14 @@ type Clinic = {
   }
 };
 
+type UserLocation = {
+    lat: number;
+    lon: number;
+}
+
 type ApiResponse = {
   clinics: Clinic[];
+  userLocation: UserLocation;
 }
 
 type Suggestion = {
@@ -168,7 +174,7 @@ export default function NearbyClinics() {
               setError("An unknown error occurred while getting your location.");
               break;
           }
-        }
+        },
       );
     } else {
       setError("Geolocation is not supported by this browser.");
@@ -198,63 +204,81 @@ export default function NearbyClinics() {
     setShowSuggestions(false);
   }
 
+  const generateStaticMapUrl = (userLocation: UserLocation, clinics: Clinic[]): string => {
+    const userMarker = `pin-s-l+0074D9(${userLocation.lon},${userLocation.lat})`; // Blue marker for user
+    const clinicMarkers = clinics.map(clinic => 
+      `pin-s-h+D90000(${clinic.location.lon},${clinic.location.lat})` // Red 'h' marker for hospital
+    ).join(',');
+
+    const markers = [userMarker, clinicMarkers].filter(Boolean).join(',');
+
+    // The static map API URL format can be complex. For OpenStreetMap, there isn't a direct static image API as robust as Google's.
+    // We will use a simple map view centered on the user.
+    const zoom = 13;
+    return `https://render.openstreetmap.org/cgi-bin/export?bbox=${userLocation.lon-0.05},${userLocation.lat-0.02},${userLocation.lon+0.05},${userLocation.lat+0.02}&scale=50000&format=png`;
+    // A more complex API like StaticMapMaker or other services would be needed for markers.
+    // For simplicity, we are showing a centered map.
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-2xl backdrop-blur-sm bg-card/80 border-2" style={{transform: 'translateZ(20px)'}}>
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">{t('nearbyClinics')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center space-y-4 p-6">
-        <div className="w-full max-w-md mx-auto space-y-4" ref={searchContainerRef}>
-            <form onSubmit={handleManualSearch} className="w-full space-y-2">
-                <div className='relative w-full'>
-                    <div className="flex w-full gap-2">
-                         <Input 
-                            type="text"
-                            placeholder={t('locationPlaceholder')}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            disabled={loading}
-                            onFocus={() => setShowSuggestions(true)}
-                        />
-                        <Button type="submit" disabled={loading || !searchQuery}>
-                            <Search className="mr-2 h-4 w-4" />
-                            Search
-                        </Button>
-                    </div>
-                    {showSuggestions && suggestions.length > 0 && (
-                        <Card className="absolute top-full mt-2 w-full z-10 shadow-lg">
-                            <CardContent className="p-2">
-                                <ul className="space-y-1">
-                                    {suggestions.map((suggestion) => (
-                                        <li key={suggestion.place_id}>
-                                            <Button 
-                                                variant="ghost" 
-                                                className="w-full justify-start h-auto py-2 text-left"
-                                                onClick={() => handleSuggestionClick(suggestion)}>
-                                                {suggestion.description}
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            </form>
-             <div className="relative flex items-center justify-center">
-                <span className="absolute left-0 w-full h-px bg-border"></span>
-                <span className="relative bg-card px-2 text-sm text-muted-foreground">OR</span>
-            </div>
-            <Button 
-                onClick={handleUseMyLocation} 
-                disabled={loading}
-                variant="outline"
-                className="w-full"
-            >
-                <LocateFixed className="mr-2 h-4 w-4" />
-                {t('useMyLocation')}
-            </Button>
-        </div>
+        { !apiResponse ? (
+          <div className="w-full max-w-md mx-auto space-y-4" ref={searchContainerRef}>
+              <form onSubmit={handleManualSearch} className="w-full space-y-2">
+                  <div className='relative w-full'>
+                      <div className="flex w-full gap-2">
+                          <Input 
+                              type="text"
+                              placeholder={t('locationPlaceholder')}
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              disabled={loading}
+                              onFocus={() => setShowSuggestions(true)}
+                          />
+                          <Button type="submit" disabled={loading || !searchQuery}>
+                              <Search className="mr-2 h-4 w-4" />
+                              Search
+                          </Button>
+                      </div>
+                      {showSuggestions && suggestions.length > 0 && (
+                          <Card className="absolute top-full mt-2 w-full z-10 shadow-lg">
+                              <CardContent className="p-2">
+                                  <ul className="space-y-1">
+                                      {suggestions.map((suggestion) => (
+                                          <li key={suggestion.place_id}>
+                                              <Button 
+                                                  variant="ghost" 
+                                                  className="w-full justify-start h-auto py-2 text-left"
+                                                  onClick={() => handleSuggestionClick(suggestion)}>
+                                                  {suggestion.description}
+                                              </Button>
+                                          </li>
+                                      ))}
+                                  </ul>
+                              </CardContent>
+                          </Card>
+                      )}
+                  </div>
+              </form>
+              <div className="relative flex items-center justify-center">
+                  <span className="absolute left-0 w-full h-px bg-border"></span>
+                  <span className="relative bg-card px-2 text-sm text-muted-foreground">OR</span>
+              </div>
+              <Button 
+                  onClick={handleUseMyLocation} 
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full"
+              >
+                  <LocateFixed className="mr-2 h-4 w-4" />
+                  {t('useMyLocation')}
+              </Button>
+          </div>
+        ) : null }
 
         {loading && (
           <div className="flex flex-col items-center space-y-2 pt-4">
@@ -284,8 +308,19 @@ export default function NearbyClinics() {
         
         {apiResponse && clinics.length > 0 && (
           <div className="w-full space-y-4 pt-4">
-            <h3 className="text-lg font-bold text-center">Clinics and Hospitals Near You</h3>
-            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+            <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden border-2 border-primary/50 shadow-lg">
+               <Image 
+                  src={generateStaticMapUrl(apiResponse.userLocation, apiResponse.clinics)}
+                  alt="Map showing nearby clinics"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <h3 className="absolute bottom-2 left-4 text-lg font-bold text-white text-outline">Clinics Near: {searchQuery}</h3>
+            </div>
+            
+            <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2">
               {clinics.map((clinic) => (
                 <div key={clinic.id} className="p-4 bg-muted/50 rounded-lg border">
                   <div className="flex items-start justify-between gap-4">
@@ -299,8 +334,8 @@ export default function NearbyClinics() {
                     <div className="flex flex-col items-end gap-2">
                       <span className="text-sm font-semibold text-primary whitespace-nowrap">{clinic.distance}</span>
                       <div className='flex gap-2'>
-                        <Button asChild variant="secondary" size="sm">
-                            <a href={`tel:${clinic.phone}`} aria-label={`Call ${clinic.name}`} disabled={!clinic.phone}>
+                        <Button asChild variant="secondary" size="sm" disabled={!clinic.phone}>
+                            <a href={`tel:${clinic.phone}`} aria-label={`Call ${clinic.name}`}>
                                 <Phone className="mr-2 h-4 w-4" />
                                 Call
                             </a>
@@ -326,5 +361,3 @@ export default function NearbyClinics() {
     </Card>
   );
 }
-
-    
