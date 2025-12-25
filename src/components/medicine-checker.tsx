@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 
-import { getMedicineInfo, getAudioFromText } from '@/app/actions';
+import { getMedicineInfo } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -115,23 +115,45 @@ export default function MedicineChecker() {
       setPlayingMessage(null);
       return;
     }
-
+  
     setPlayingMessage(messageId);
-    const result = await getAudioFromText(text);
-
-    if (result.success && result.data) {
-      const audio = new Audio(result.data.audioDataUri);
+    
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch audio stream');
+      }
+  
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
       audio.play();
       audio.onended = () => {
         setPlayingMessage(null);
         audioRef.current = null;
+        URL.revokeObjectURL(audioUrl);
       };
-    } else {
+      audio.onerror = () => {
+        toast({
+          variant: 'destructive',
+          title: 'Audio Playback Error',
+          description: 'Could not play the generated audio.',
+        });
+        setPlayingMessage(null);
+      }
+    } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Audio Playback Error',
-        description: result.error || 'Failed to generate audio.',
+        title: 'Audio Generation Error',
+        description: error.message || 'An unexpected error occurred.',
       });
       setPlayingMessage(null);
     }
@@ -362,5 +384,3 @@ export default function MedicineChecker() {
     </>
   );
 }
-
-    
