@@ -130,6 +130,33 @@
     animation: float 12s infinite linear;
     font-weight: bold;
     transform: translateY(-10vh);
+    width: var(--size);
+    height: var(--size);
+  }
+
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    background-color: currentColor;
+  }
+
+  .plus::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 20%;
+    transform: translateY(-50%);
+    border-radius: 4px;
+  }
+  
+  .plus::after {
+    top: 0;
+    left: 50%;
+    width: 20%;
+    height: 100%;
+    transform: translateX(-50%);
+    border-radius: 4px;
   }
   
   @keyframes float {
@@ -392,5 +419,3 @@
     }
   }
 }
-
-    
