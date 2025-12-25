@@ -99,21 +99,13 @@ export default function NearbyClinics() {
     try {
       const response = await fetch(`/api/places?location=${encodeURIComponent(location)}`);
       
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = errorText;
-        try {
-          const errorJson = JSON.parse(errorText);
-          if (errorJson.error) {
-            errorMessage = errorJson.error;
-          }
-        } catch (e) {
-          // Not JSON, use the raw text, which is fine
-        }
-        throw new Error(errorMessage);
+        throw new Error(responseData.error || 'An unknown error occurred.');
       }
       
-      const data: ApiResponse = await response.json();
+      const data: ApiResponse = responseData;
 
        if (data.clinics.length === 0) {
         setError(`No clinics or hospitals found near your location. Please try a different search.`)
@@ -175,6 +167,7 @@ export default function NearbyClinics() {
               break;
           }
         },
+        { maximumAge: 0 }
       );
     } else {
       setError("Geolocation is not supported by this browser.");
