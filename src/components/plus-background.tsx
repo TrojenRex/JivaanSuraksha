@@ -12,7 +12,7 @@ const PlusBackground = () => {
   useEffect(() => {
     // This effect runs only once on the client after the component mounts.
     // This avoids hydration errors that can break animations.
-    const plusSigns = Array.from({ length: 40 }).map((_, i) => {
+    const plusSigns = Array.from({ length: 37 }).map((_, i) => {
         const size = Math.random() * 30 + 20;
         return {
             id: i,
