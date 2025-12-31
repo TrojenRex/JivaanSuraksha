@@ -1,8 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Siren, User, Phone, MapPin, AlertTriangle, PartyPopper } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, Siren, User, Phone, MapPin, AlertTriangle, PartyPopper, Mic, Play, Square, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
@@ -14,19 +14,127 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from './language-provider';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   patientName: z.string().min(2, 'Patient name is required.'),
   contactNumber: z.string().min(10, 'A valid contact number is required.'),
   location: z.string().min(5, 'A detailed location or address is required.'),
-  emergencyDetails: z.string().min(10, 'Please describe the emergency.'),
 });
+
+interface CustomSpeechRecognition extends SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+}
+
+const SpeechRecognition =
+  (typeof window !== 'undefined' && (window.SpeechRecognition || (window as any).webkitSpeechRecognition)) || null;
 
 export default function BookAmbulance() {
   const { t } = useLanguage();
   const [isBooked, setIsBooked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  const [isListening, setIsListening] = useState(false);
+  const [audioRecording, setAudioRecording] = useState<string | null>(null);
+  const [transcribedText, setTranscribedText] = useState<string>("");
+  const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
+
+  useEffect(() => {
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition() as CustomSpeechRecognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
+        }
+        setTranscribedText(finalTranscript + interimTranscript);
+    };
+
+    recognition.onend = () => {
+        setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        toast({ variant: 'destructive', title: 'Voice Input Error', description: 'Could not process audio.' });
+        setIsListening(false);
+    };
+    
+    recognitionRef.current = recognition;
+  }, [toast]);
+  
+  const handleToggleRecording = async () => {
+    if (!SpeechRecognition) {
+      toast({ variant: 'destructive', title: 'Feature Not Supported', description: 'Your browser does not support voice recognition.' });
+      return;
+    }
+  
+    if (isListening) {
+      recognitionRef.current?.stop();
+      mediaRecorderRef.current?.stop();
+      setIsListening(false);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunksRef.current.push(event.data);
+        };
+        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setAudioRecording(audioUrl);
+          stream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.start();
+        recognitionRef.current?.start();
+        setIsListening(true);
+        setAudioRecording(null);
+        setTranscribedText('');
+      } catch (err) {
+        console.error('Error accessing microphone:', err);
+        toast({ variant: 'destructive', title: 'Microphone Access Denied', description: 'Please enable microphone permissions.' });
+      }
+    }
+  };
+
+  const handlePlayRecording = () => {
+      if(audioRecording && audioRef.current) {
+          audioRef.current.src = audioRecording;
+          audioRef.current.play();
+      }
+  }
+
+  const handleDeleteRecording = () => {
+    setAudioRecording(null);
+    setTranscribedText('');
+    if (audioRef.current) {
+        audioRef.current.src = '';
+    }
+  }
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,7 +142,6 @@ export default function BookAmbulance() {
       patientName: '',
       contactNumber: '',
       location: '',
-      emergencyDetails: '',
     },
   });
 
@@ -42,7 +149,10 @@ export default function BookAmbulance() {
     setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('Ambulance booked with details:', values);
+    console.log('Ambulance booked with details:', {
+        ...values,
+        emergencyAudioTranscription: transcribedText
+    });
     setIsLoading(false);
     setIsBooked(true);
   }
@@ -50,6 +160,8 @@ export default function BookAmbulance() {
   const handleReset = () => {
     form.reset();
     setIsBooked(false);
+    setAudioRecording(null);
+    setTranscribedText('');
   }
 
   if (isBooked) {
@@ -134,19 +246,41 @@ export default function BookAmbulance() {
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="emergencyDetails"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Nature of Emergency</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="e.g., 'Unconscious, difficulty breathing', 'Possible heart attack'" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            <div className='space-y-2'>
+                <FormLabel className="flex items-center gap-2"><Mic className="h-4 w-4" /> Record Emergency Details</FormLabel>
+                <div className={cn("p-4 rounded-md border flex items-center justify-center gap-4", isListening ? 'border-destructive' : 'border-input')}>
+                    <Button type="button" variant={isListening ? 'destructive' : 'outline'} size="icon" className='h-14 w-14 rounded-full' onClick={handleToggleRecording} disabled={isLoading}>
+                        {isListening ? <Square className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                        <span className="sr-only">{isListening ? 'Stop Recording' : 'Start Recording'}</span>
+                    </Button>
+                    <div className='flex-1 text-center'>
+                        {isListening ? (
+                            <p className='text-destructive animate-pulse'>Recording...</p>
+                        ) : audioRecording ? (
+                            <div className='flex items-center gap-2'>
+                                <Button type="button" variant="ghost" size="icon" onClick={handlePlayRecording}>
+                                    <Play className="h-5 w-5" />
+                                </Button>
+                                <p className='text-sm text-muted-foreground truncate flex-1'>Recording saved.</p>
+                                <Button type="button" variant="ghost" size="icon" onClick={handleDeleteRecording}>
+                                    <X className="h-5 w-5" />
+                                </Button>
+                                <audio ref={audioRef} className='hidden' />
+                            </div>
+                        ) : (
+                            <p className='text-muted-foreground'>Tap to record</p>
+                        )}
+                    </div>
+                </div>
+                {transcribedText && (
+                    <div className='p-3 bg-muted rounded-md text-sm text-muted-foreground'>
+                        <p className='font-semibold mb-1'>Transcript:</p>
+                        <p>{transcribedText}</p>
+                    </div>
+                )}
+            </div>
+             
             <Button type="submit" className="w-full !mt-8" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -163,3 +297,5 @@ export default function BookAmbulance() {
     </Card>
   );
 }
+
+    
