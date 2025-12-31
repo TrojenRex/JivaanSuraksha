@@ -28,5 +28,8 @@
     "createPlan": "Create Plan",
     "firstAidGuide": "First-Aid Guide",
     "firstAidGuideDescription": "Get instant, step-by-step AI guidance for common first-aid emergencies.",
-    "getHelp": "Get Help"
+    "getHelp": "Get Help",
+    "bookAmbulance": "Book an Ambulance",
+    "bookAmbulanceDescription": "Instantly request an ambulance to your location in case of an emergency.",
+    "bookNow": "Book Now"
 }

@@ -94,6 +94,13 @@ export default function InteractiveCards() {
         buttonText={t('findClinics')}
       />
       <InteractiveCard
+        href="/book-ambulance"
+        icon={Siren}
+        title={t('bookAmbulance')}
+        description={t('bookAmbulanceDescription')}
+        buttonText={t('bookNow')}
+      />
+      <InteractiveCard
         href="/diet-planner"
         icon={Utensils}
         title={t('dietPlanner')}
@@ -110,5 +117,3 @@ export default function InteractiveCards() {
     </div>
   );
 }
-
-    

@@ -88,6 +88,12 @@ const Header: FC<HeaderProps> = ({ showBackButton = false }) => {
                     <span>{t('nearbyClinics')}</span>
                   </TransitionLink>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <TransitionLink href="/book-ambulance">
+                    <Siren className="mr-2 h-4 w-4" />
+                    <span>{t('bookAmbulance')}</span>
+                  </TransitionLink>
+                </DropdownMenuItem>
                  <DropdownMenuItem asChild>
                   <TransitionLink href="/diet-planner">
                     <Utensils className="mr-2 h-4 w-4" />
