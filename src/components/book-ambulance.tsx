@@ -203,6 +203,8 @@ export default function BookAmbulance() {
             <AlertTitle>This is a Simulation</AlertTitle>
             <AlertDescription>
                 This feature is for demonstration only. In a real emergency, always call your local emergency number.
+                <br />
+                Feature will be added soon.
             </AlertDescription>
         </Alert>
         <Form {...form}>
@@ -297,5 +299,3 @@ export default function BookAmbulance() {
     </Card>
   );
 }
-
-    
