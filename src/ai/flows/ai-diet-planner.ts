@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const AIDietPlannerInputSchema = z.object({
     age: z.number().describe('The age of the user.'),
@@ -62,6 +63,7 @@ const prompt = ai.definePrompt({
   Example meal plan item: "Oatmeal with berries and a handful of nuts."
   
   IMPORTANT: Make sure the generated fields do not contain any disclaimers. The disclaimer is handled by the application's UI.`,
+  model: googleAI.model('gemini-2.5-flash'),
 });
 
 const aiDietPlannerFlow = ai.defineFlow(

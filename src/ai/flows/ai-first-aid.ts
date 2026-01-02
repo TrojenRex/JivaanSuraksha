@@ -11,6 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { aiFirstAidImageGenerator } from './ai-first-aid-image-generator';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const AIFirstAidInputSchema = z.object({
   query: z.string().describe('The emergency or injury to get first-aid instructions for (e.g., "how to treat a jellyfish sting").'),
@@ -53,6 +54,7 @@ const prompt = ai.definePrompt({
   3.  Provide a separate, clear list of signs that indicate the person should see a doctor or call emergency services.
   
   IMPORTANT: Do NOT include any disclaimers or warnings like "This is not medical advice" in your output. This is handled by the application's UI. Focus only on providing the title, steps, and when to see a doctor.`,
+  model: googleAI.model('gemini-2.5-flash'),
 });
 
 const aiFirstAidFlow = ai.defineFlow(
