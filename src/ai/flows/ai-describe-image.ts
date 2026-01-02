@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { googleAI } from '@/ai/genkit';
 
 const AIDescribeImageInputSchema = z.object({
   photoDataUri: z
@@ -35,7 +34,7 @@ const prompt = ai.definePrompt({
     prompt: `Analyze the following image and provide a short, factual description of what you see. If there is a visible injury or what appears to be a medical emergency, describe it clearly and concisely. Focus on the most critical information.
 
     Visual Input: {{media url=photoDataUri}}`,
-    model: googleAI.model('gemini-2.5-flash'),
+    model: 'googleai/gemini-2.5-flash',
 });
 
 

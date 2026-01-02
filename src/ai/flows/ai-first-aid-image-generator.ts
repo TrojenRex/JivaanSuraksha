@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {googleAI} from '@/ai/genkit';
 
 const AIFirstAidImageGeneratorInputSchema = z.object({
   step: z.string().describe('A single step of first-aid instruction.'),
@@ -34,7 +33,7 @@ const aiFirstAidImageGeneratorFlow = ai.defineFlow(
   },
   async ({ step }) => {
     const { media } = await ai.generate({
-      model: googleAI.model('imagen-4.0-fast-generate-001'),
+      model: 'googleai/imagen-4.0-fast-generate-001',
       prompt: `Generate a simple, cartoon comic style, black and white line drawing icon. This demonstrative image should visually represent the following first-aid step. The background must be transparent. The drawing should be clear, easy to understand, and avoid any complex details or text. Focus on a single action or object.
 
       First-aid step: "${step}"`,

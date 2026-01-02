@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { googleAI } from '@/ai/genkit';
 
 const AISymptomDetectionInputSchema = z.object({
   symptoms: z
@@ -52,7 +51,7 @@ const prompt = ai.definePrompt({
   
   Based on your analysis, provide a brief list of possible diseases and another brief list of suggested cures or next steps. Prioritize accuracy but keep the response brief and easy to understand.
   `,
-  model: googleAI.model('gemini-1.5-pro-latest'),
+  model: 'googleai/gemini-1.5-pro-latest',
 });
 
 const aiSymptomDetectionFlow = ai.defineFlow(

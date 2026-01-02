@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { googleAI } from '@/ai/genkit';
 
 const AIMedicineCheckerInputSchema = z.object({
   medicine: z
@@ -52,7 +51,7 @@ const prompt = ai.definePrompt({
   Photo: {{media url=photoDataUri}}
   {{/if}}
   `,
-  model: googleAI.model('gemini-2.5-flash'),
+  model: 'googleai/gemini-2.5-flash',
 });
 
 const aiMedicineCheckerFlow = ai.defineFlow(
