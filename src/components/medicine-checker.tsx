@@ -57,6 +57,8 @@ export default function MedicineChecker() {
     },
   });
 
+  const medicineValue = form.watch('medicine');
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
@@ -325,7 +327,7 @@ export default function MedicineChecker() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" size="icon" disabled={isLoading || !form.getValues('medicine')}>
+              <Button type="submit" size="icon" disabled={isLoading || !medicineValue}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>
               </Button>
@@ -386,5 +388,3 @@ export default function MedicineChecker() {
     </>
   );
 }
-
-    

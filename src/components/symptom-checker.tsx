@@ -70,6 +70,8 @@ export default function SymptomChecker() {
     },
   });
   
+  const symptomsValue = form.watch('symptoms');
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
@@ -341,7 +343,7 @@ export default function SymptomChecker() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" size="icon" disabled={isLoading || !form.getValues('symptoms')}>
+              <Button type="submit" size="icon" disabled={isLoading || !symptomsValue}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>
               </Button>
@@ -374,5 +376,3 @@ export default function SymptomChecker() {
     </>
   );
 }
-
-    
