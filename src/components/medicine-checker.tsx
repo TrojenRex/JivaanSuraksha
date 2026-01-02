@@ -315,7 +315,7 @@ export default function MedicineChecker() {
                         {...field}
                       />
                     </FormControl>
-                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center bg-background">
                         <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}>
                             <Camera className="h-4 w-4" />
                             <span className="sr-only">Use Camera</span>
@@ -386,3 +386,5 @@ export default function MedicineChecker() {
     </>
   );
 }
+
+    

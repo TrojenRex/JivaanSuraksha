@@ -319,9 +319,21 @@ export default function SymptomChecker() {
                 render={({ field }) => (
                   <FormItem className="flex-1 relative">
                     <FormControl>
-                      <Textarea placeholder={isListening ? "Listening..." : "e.g., I have a high fever, headache, and a sore throat..."} className="resize-none pr-20" disabled={isLoading} rows={1} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.handleSubmit(onSubmit)(); } }} {...field} />
+                      <Textarea
+                        placeholder={isListening ? "Listening..." : "e.g., I have a high fever, headache, and a sore throat..."}
+                        className="resize-none pr-24"
+                        disabled={isLoading}
+                        rows={1}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        {...field}
+                      />
                     </FormControl>
-                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center bg-background">
                         <Button type="button" size="icon" variant={isListening ? 'destructive' : 'ghost'} onClick={handleListen} disabled={isLoading || micPermissionDenied}><Mic className="h-4 w-4" /><span className="sr-only">{isListening ? 'Stop listening' : 'Start listening'}</span></Button>
                         <Button type="button" size="icon" variant="ghost" onClick={handleCameraOpen} disabled={isLoading}><Camera className="h-4 w-4" /><span className="sr-only">Use Camera</span></Button>
                     </div>
@@ -329,7 +341,7 @@ export default function SymptomChecker() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" size="icon" disabled={isLoading || !form.watch('symptoms')}>
+              <Button type="submit" size="icon" disabled={isLoading || !form.getValues('symptoms')}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 <span className="sr-only">Send message</span>
               </Button>
@@ -362,3 +374,5 @@ export default function SymptomChecker() {
     </>
   );
 }
+
+    
