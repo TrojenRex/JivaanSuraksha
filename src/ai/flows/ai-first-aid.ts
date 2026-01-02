@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { aiFirstAidImageGenerator } from './ai-first-aid-image-generator';
-import { googleAI } from '@genkit-ai/google-genai';
+import { googleAI } from '@/ai/genkit';
 
 const AIFirstAidInputSchema = z.object({
   query: z.string().describe('The emergency or injury to get first-aid instructions for (e.g., "how to treat a jellyfish sting").'),

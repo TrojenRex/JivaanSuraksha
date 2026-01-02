@@ -10,7 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { googleAI } from '@genkit-ai/google-genai';
+import { googleAI } from '@/ai/genkit';
 
 const AIMedicineCheckerInputSchema = z.object({
   medicine: z
